@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>hcmgis_merge_field_form</class>
+ <widget class="QDialog" name="hcmgis_merge_field_form">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>340</width>
+    <height>307</height>
+   </rect>
+  </property>
+  <property name="mouseTracking">
+   <bool>false</bool>
+  </property>
+  <property name="windowTitle">
+   <string>Merge Fields</string>
+  </property>
+  <widget class="QDialogButtonBox" name="BtnOKCancel">
+   <property name="geometry">
+    <rect>
+     <x>174</x>
+     <y>259</y>
+     <width>156</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LblInput">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>8</y>
+     <width>321</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Input Layer</string>
+   </property>
+  </widget>
+  <widget class="QgsMapLayerComboBox" name="CboInput">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>24</y>
+     <width>321</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LblOutput_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>54</y>
+     <width>321</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fields (selected order = merged field order)</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="ListFields">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>70</y>
+     <width>321</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="acceptDrops">
+    <bool>false</bool>
+   </property>
+   <property name="toolTip">
+    <string>Drad &amp; Drop để thay đổi thứ tự trường dữ liệu</string>
+   </property>
+   <property name="dragEnabled">
+    <bool>false</bool>
+   </property>
+   <property name="dragDropMode">
+    <enum>QAbstractItemView::InternalMove</enum>
+   </property>
+   <property name="alternatingRowColors">
+    <bool>true</bool>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::ExtendedSelection</enum>
+   </property>
+   <property name="viewMode">
+    <enum>QListView::ListMode</enum>
+   </property>
+   <property name="selectionRectVisible">
+    <bool>true</bool>
+   </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="CboChar">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>210</y>
+     <width>321</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="editable">
+    <bool>true</bool>
+   </property>
+   <item>
+    <property name="text">
+     <string>Space</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>,</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>_</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>/</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>|</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>\</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>.</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>:</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>;</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>&amp;</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="LblChar">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>192</y>
+     <width>321</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Linking characters</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="ChkSelectedFeaturesOnly">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>247</y>
+     <width>151</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Selected features only</string>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsMapLayerComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgis.gui</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>BtnOKCancel</sender>
+   <signal>accepted()</signal>
+   <receiver>hcmgis_merge_field_form</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>251</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>169</x>
+     <y>143</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BtnOKCancel</sender>
+   <signal>rejected()</signal>
+   <receiver>hcmgis_merge_field_form</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>251</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>169</x>
+     <y>143</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

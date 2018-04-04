@@ -111,7 +111,13 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	parameter9 =  {'INPUT':medialaxis['OUTPUT'],
 					'FIELD' : selectedfield,
 					'OUTPUT':  "memory:medialaxis_collect"}
-	medialaxis_collect = processing.runAndLoadResults('qgis:collect',parameter9) 
+	medialaxis_collect = processing.run('qgis:collect',parameter9) 
+	
+	parameter10 = {'INPUT':medialaxis_collect['OUTPUT'],
+					'METHOD' : 0,
+					'TOLERANCE' : 0.1,
+					'OUTPUT':  "memory:medialaxis_simplify"}
+	processing.runAndLoadResults('qgis:simplifygeometries',parameter10) 
 	
 	#Calculate min/ max/ average width 
 	# parameter10 =  {'INPUT': explode['OUTPUT'],	
@@ -268,53 +274,40 @@ def hcmgis_merge(qgis, layernames, savename, addlayer):
 
 
 def hcmgis_split(qgis, layer,selectedfield, outdir):	
-	try:
-		import processing
-		parameters = {'INPUT':layer,
-					'FIELD': selectedfield,
-					'OUTPUT': outdir
-				  }
-		processing.run('qgis:splitvectorlayer',parameters)
-	except:
-		return u'Errors occured!'
+	import processing
+	parameters = {'INPUT':layer,
+				'FIELD': selectedfield,
+				'OUTPUT': outdir
+			  }
+	processing.run('qgis:splitvectorlayer',parameters)	
 
-def hcmgis_fixgeometries(qgis, input, output):	
-	try:
-		import qgis.utils
-		import processing
-		parameters = {'INPUT':input,
-					'OUTPUT': output
-				  }
-		processing.runAndLoadResults('qgis:fixgeometries',parameters)	
-	except:
-		return u'Errors occured!'
+def hcmgis_fixgeometries(qgis, input, output):		
+	import qgis.utils
+	import processing
+	parameters = {'INPUT':input,
+				'OUTPUT': output
+			  }
+	processing.runAndLoadResults('qgis:fixgeometries',parameters)	
 
 def hcmgis_checkvalidity(qgis, input):			
-	try:
-		import qgis.utils
-		import processing
-		parameters = { 'INPUT_LAYER' : input, 
-		'METHOD' : 2, 
-		'VALID_OUTPUT' : 'memory:', 
-		'INVALID_OUTPUT' : 'memory:', 
-		'ERROR_OUTPUT' : 'memory:' }		
-		processing.runAndLoadResults('qgis:checkvalidity',parameters)	
-	except:
-		return u'Errors occured!'
-
-def hcmgis_reprojection(qgis, input, destcrs, output):	
-	try:
-		import qgis.utils
-		import processing
-		parameters = {'INPUT':input,
-					'TARGET_CRS': str(destcrs),
-					#'OUTPUT': "memory:"
-					'OUTPUT': output
-				  }
-		processing.runAndLoadResults('qgis:reprojectlayer',parameters)	
-
-	except:
-		return u'Errors occured!'
+	import qgis.utils
+	import processing
+	parameters = { 'INPUT_LAYER' : input, 
+	'METHOD' : 2, 
+	'VALID_OUTPUT' : 'memory:', 
+	'INVALID_OUTPUT' : 'memory:', 
+	'ERROR_OUTPUT' : 'memory:' }		
+	processing.runAndLoadResults('qgis:checkvalidity',parameters)	
+	
+def hcmgis_reprojection(qgis, input, destcrs, output):		
+	import qgis.utils
+	import processing
+	parameters = {'INPUT':input,
+				'TARGET_CRS': str(destcrs),
+				#'OUTPUT': "memory:"
+				'OUTPUT': output
+			  }
+	processing.runAndLoadResults('qgis:reprojectlayer',parameters)	
 		
 
 def hcmgis_merge_field(qgis, layer, selectedfields, char,selectedfeatureonly):			

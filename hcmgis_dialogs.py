@@ -88,12 +88,14 @@ class hcmgis_merge_dialog(QDialog, Ui_hcmgis_merge_form):
 		self.sourcelayers.setDragDropMode(QAbstractItemView.InternalMove)
 		self.outfilename.setText(hcmgis_temp_file_name("merge",".shp"))	
 
+	
 	def browse_outfiles(self):
 		newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
-		self.outfilename.displayText(), "Shapefile (*.shp)")
-		if newname != None:
-			self.outfilename.setText(newname)
+			self.outfilename.displayText(), "Shapefile (*.shp)")
 
+		if newname and newname[0]:
+			self.outfilename.setText(newname[0])
+			
 	def run(self):
 		layernames = []
 		for x in range(0, self.sourcelayers.count()):
@@ -135,9 +137,11 @@ class hcmgis_fixgeometries_dialog(QDialog, Ui_hcmgis_fixgeometries_form):
 
 	def browse_outfiles(self):
 		newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
-		self.LinOutput.displayText(), "Shapefile (*.shp)")
-		if newname != None:
-			self.LinOutput.setText(newname)
+			self.LinOutput.displayText(), "Shapefile (*.shp)")
+
+		if newname and newname[0]:
+			self.LinOutput.setText(newname[0])
+			
 
 	def run(self):
 		layer = self.CboInput.currentLayer()
@@ -161,9 +165,11 @@ class hcmgis_reprojection_dialog(QDialog, Ui_hcmgis_reprojection_form):
 
 	def browse_outfiles(self):
 		newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
-		self.LinOutput.displayText(), "Shapefile (*.shp)")
-		if newname != None:
-			self.LinOutput.setText(newname)
+			self.LinOutput.displayText(), "Shapefile (*.shp)")
+
+		if newname and newname[0]:
+			self.LinOutput.setText(newname[0])
+			
 
 	def run(self):
 		layer = self.CboInput.currentLayer()
@@ -188,6 +194,7 @@ class hcmgis_split_dialog(QDialog, Ui_hcmgis_split_form):
 	
 	def update_field(self):
 		self.CboField.setLayer (self.CboInput.currentLayer () )	
+	
 	def browse_outfiles(self):
 		newname = QFileDialog.getExistingDirectory(None, "Output Shapefile", self.LinOutputFolder.displayText())
 		if newname != None:
@@ -234,11 +241,13 @@ class hcmgis_font_convert_dialog(QDialog, Ui_hcmgis_font_convert_form):
 				if field.type() in [QVariant.String]:
 					self.ListFields.addItem(field.name()) # lists layer fields
 			
-               
+    
 	def browse_outfiles(self):
-		newname = QFileDialog.getSaveFileName(None, "Output Shapefile", self.LinOutput.displayText(), "Shapefile (*.shp)")
-		if newname != None:
-			self.LinOutput.setText(newname)
+		newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
+			self.LinOutput.displayText(), "Shapefile (*.shp)")
+
+		if newname and newname[0]:
+			self.LinOutput.setText(newname[0])	
 				
 	def run(self):             		
 		input_layer = self.CboInput.currentLayer()

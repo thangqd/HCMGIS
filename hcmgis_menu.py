@@ -9,6 +9,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from qgis.core import *
 from .hcmgis_dialogs import *
+from .hcmgis_library import *
 # ---------------------------------------------
 
 class hcmgis_menu:
@@ -27,8 +28,65 @@ class hcmgis_menu:
 		self.hcmgis_menu = QMenu(QCoreApplication.translate("hcmgis", "HCMGIS"))
 		self.iface.mainWindow().menuBar().insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.hcmgis_menu)
 		
+		# OpenData_basemap submenu
+		self.basemap_menu = QMenu(u'Add BaseMap')		
+		self.hcmgis_add_submenu(self.basemap_menu)
+		
+		#OSM Stamen Watercolor
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamenwatercolor.png")
+		self.stamenwatercolor_action = QAction(icon, u'OSM Stamen Watercolor', self.iface.mainWindow())
+		self.stamenwatercolor_action.triggered.connect(self.stamenwatercolor_call)		
+		self.basemap_menu.addAction(self.stamenwatercolor_action)
+		
+		#OSM Stamen Toner
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamentoner.png")
+		self.stamentoner_action = QAction(icon, u'OSM Stamen Toner', self.iface.mainWindow())
+		self.stamentoner_action.triggered.connect(self.stamentoner_call)		
+		self.basemap_menu.addAction(self.stamentoner_action)
+		
+		#OSM Stamen Terrain
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamenterrain.png")
+		self.stamenterrain_action = QAction(icon, u'OSM Stamen Terrain', self.iface.mainWindow())
+		self.stamenterrain_action.triggered.connect(self.stamenterrain_action_call)		
+		self.basemap_menu.addAction(self.stamenterrain_action)
+		
+				
+		#Google Satellite
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlesatellite.png")
+		self.googlesatellite_action = QAction(icon, u'Google Satellite', self.iface.mainWindow())
+		self.googlesatellite_action.triggered.connect(self.googlesatellite_call)		
+		self.basemap_menu.addAction(self.googlesatellite_action)
+		
+		#Google Streets
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlestreets.png")
+		self.googlestreets_action = QAction(icon, u'Google Streets', self.iface.mainWindow())
+		self.googlestreets_action.triggered.connect(self.googlestreets_call)		
+		self.basemap_menu.addAction(self.googlestreets_action)
+		
+		#Google Hybrid
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlehybrid.png")
+		self.hcmgis_googlehybrid_action = QAction(icon, u'Google Hybrid', self.iface.mainWindow())
+		self.hcmgis_googlehybrid_action.triggered.connect(self.googlehybrid_call)		
+		self.basemap_menu.addAction(self.hcmgis_googlehybrid_action)
+		
+		#Google Physical
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlephysical.png")
+		self.hcmgis_googlephysical_action = QAction(icon, u'Google Physical', self.iface.mainWindow())
+		self.hcmgis_googlephysical_action.triggered.connect(self.googlephysical_call)		
+		self.basemap_menu.addAction(self.hcmgis_googlephysical_action)
+		
+				
+		#HCMGIS OpenData submenu
+		self.opendata_menu = QMenu(u'HCMGIS OpenData')		
+		self.hcmgis_add_submenu(self.opendata_menu)
+		
+		#HCMGIS OpenData
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.opendata_action = QAction(icon, u'Download Free and Open GeoData', self.iface.mainWindow())
+		self.opendata_action.triggered.connect(self.opendata)		
+		self.opendata_menu.addAction(self.opendata_action)
+		
 		# Merge_Split submenu
-		#self.merge_split_menu = QMenu(QCoreApplication.translate("hcmgis", "&Merge_Split"))
 		self.merge_split_menu = QMenu(u'Geometry Processing')		
 		self.hcmgis_add_submenu(self.merge_split_menu)
 
@@ -36,24 +94,22 @@ class hcmgis_menu:
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_merge.png")
 		self.merge_action = QAction(icon, u'Merge Layers', self.iface.mainWindow())
 		self.merge_action.triggered.connect(self.merge)		
-		#QObject.connect(self.merge_action, SIGNAL("triggered()"), self.merge)
 		self.merge_split_menu.addAction(self.merge_action)
 		
 		#Splits
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_split.png")
 		self.split_action = QAction(icon, u'Split Layer', self.iface.mainWindow())
 		self.split_action.triggered.connect(self.split)
-		#QObject.connect(self.split_action, SIGNAL("triggered()"), self.split)
 		self.merge_split_menu.addAction(self.split_action)
 		
 		#CheckValidity
-		icon = QIcon(os.path.dirname(__file__) + "/icons/checkvalidity.png")
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_checkvalidity.png")
 		self.checkvalidity_action = QAction(icon, u'Check Validity', self.iface.mainWindow())
 		self.checkvalidity_action.triggered.connect(self.checkvalidity)
 		self.merge_split_menu.addAction(self.checkvalidity_action)
 		
 		#Fixgeometries
-		icon = QIcon(os.path.dirname(__file__) + "/icons/fixgeometries.png")
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_fixgeometries.png")
 		self.fixgeometries_action = QAction(icon, u'Fix Geometries', self.iface.mainWindow())
 		self.fixgeometries_action.triggered.connect(self.fixgeometries)
 		self.merge_split_menu.addAction(self.fixgeometries_action)
@@ -70,7 +126,6 @@ class hcmgis_menu:
 		self.medialaxis_action.triggered.connect(self.medialaxis)
 		self.merge_split_menu.addAction(self.medialaxis_action)
 		
-	
 				
 		# Tool Submenu
 		self.tool_menu = QMenu(u'Calculate Field')	
@@ -116,10 +171,36 @@ class hcmgis_menu:
 		if self.hcmgis_menu != None:
 			self.iface.mainWindow().menuBar().removeAction(self.hcmgis_menu.menuAction())
 		else:
-			self.iface.removePluginMenu("&hcmgis", self.wfs_menu.menuAction())
+			self.iface.removePluginMenu("&hcmgis", self.basemap_menu.menuAction())
+			self.iface.removePluginMenu("&hcmgis", self.openddata_menu.menuAction())
 			self.iface.removePluginMenu("&hcmgis", self.merge_split_menu.menuAction())
 			self.iface.removePluginMenu("&hcmgis", self.tool_menu.menuAction())
 
+	def stamenwatercolor_call(self):
+		hcmgis_stamenwatercolor(self.iface)
+	
+	def stamentoner_call(self):
+		hcmgis_stamentoner(self.iface)
+	
+	def stamenterrain_call(self):
+		hcmgis_stamenterrain(self.iface)
+		
+	def googlesatellite_call(self):
+		hcmgis_googlesatellite(self.iface)
+	
+	def googlestreets_call(self):
+		hcmgis_googlestreets(self.iface)
+	
+	def googlehybrid_call(self):
+		hcmgis_googlehybrid(self.iface)
+	
+	def googlephysical_call(self):
+		hcmgis_googlephysical(self.iface)
+		
+	def opendata(self):
+		dialog = hcmgis_opendata_dialog(self.iface)
+		dialog.exec_()
+	
 	def prefix_suffix(self):
 		dialog = hcmgis_prefix_suffix_dialog(self.iface)
 		dialog.exec_()

@@ -59,7 +59,66 @@ u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',
 ]
 
 #--------------------------------------------------------
-#    hcmgis_medialaxis - Create skeleton/ media axis, estimate width (min, max, average) and length of polygon features (road/ river networks) 
+#    Add basemap
+# --------------------------------------------------------
+
+def hcmgis_watercolor(self):
+	import requests
+	import qgis.utils
+	service_url = "c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg" 
+	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Stamen Watercolor", "wms")
+
+def hcmgis_stamentoner(self):
+	import requests
+	import qgis.utils
+	service_url = "a.tile.stamen.com/toner-background/{z}/{x}/{y}.png" 		
+	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Stamen Toner", "wms")
+
+def hcmgis_stamenterrain(self):
+	import requests
+	import qgis.utils
+	service_url = "a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png" 		
+	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Stamen Toner", "wms")
+	
+def hcmgis_googlesatellite(self):
+	import requests
+	import qgis.utils
+	service_url = "mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" 
+	service_uri = "type=xyz&zmin=0&zmax=21&url=https://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "Google Sat", "wms")
+	#lyrs=y - hybrid
+	#lyrs=s - sat
+	#lyrs=m - road map
+	#lyrs=p - physical
+	
+def hcmgis_googlemaps(self):
+	import requests
+	import qgis.utils
+	service_url = "mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" 
+	service_uri = "type=xyz&zmin=0&zmax=21&url=https://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "Google Streets", "wms")
+	
+def hcmgis_googlehybrid(self):
+	import requests
+	import qgis.utils
+	service_url = "mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" 
+	service_uri = "type=xyz&zmin=0&zmax=21&url=https://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "Google Hybrid", "wms")
+
+def hcmgis_googlephysical(self):
+	import requests
+	import qgis.utils
+	service_url = "mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}" 
+	service_uri = "type=xyz&zmin=0&zmax=21&url=https://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "Google Physical", "wms")
+
+
+		
+#--------------------------------------------------------
+#    hcmgis_medialaxis - Create skeleton/ medial axis/ centerline of roads, rivers and similar linear structures
 # --------------------------------------------------------
 
 #for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
@@ -146,6 +205,7 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 
 # --------------------------------------------------------
 #    hcmgis_merge - Merge layers to single shapefile
+#	 Reference: mmqgis
 # --------------------------------------------------------
 
 def hcmgis_merge(qgis, layernames, savename, addlayer):
@@ -275,6 +335,8 @@ def hcmgis_merge(qgis, layernames, savename, addlayer):
 
 def hcmgis_split(qgis, layer,selectedfield, outdir):	
 	import processing
+	if layer is None:
+		return u'No selected layers!'  
 	parameters = {'INPUT':layer,
 				'FIELD': selectedfield,
 				'OUTPUT': outdir
@@ -284,6 +346,8 @@ def hcmgis_split(qgis, layer,selectedfield, outdir):
 def hcmgis_fixgeometries(qgis, input, output):		
 	import qgis.utils
 	import processing
+	if input is None:
+		return u'No selected layers!'  
 	parameters = {'INPUT':input,
 				'OUTPUT': output
 			  }
@@ -292,6 +356,8 @@ def hcmgis_fixgeometries(qgis, input, output):
 def hcmgis_checkvalidity(qgis, input):			
 	import qgis.utils
 	import processing
+	if input is None:
+		return u'No selected layers!'  
 	parameters = { 'INPUT_LAYER' : input, 
 	'METHOD' : 2, 
 	'VALID_OUTPUT' : 'memory:', 
@@ -302,6 +368,8 @@ def hcmgis_checkvalidity(qgis, input):
 def hcmgis_reprojection(qgis, input, destcrs, output):		
 	import qgis.utils
 	import processing
+	if input is None:
+		return u'No selected layers!'  
 	parameters = {'INPUT':input,
 				'TARGET_CRS': str(destcrs),
 				#'OUTPUT': "memory:"
@@ -385,6 +453,7 @@ def hcmgis_split_field(qgis, layer, selectedfield, char, selectedfeatureonly):
 		char = "\t"
 	if (len(selectedfield) <= 0):
 		return u'No selected field!'        	        
+	
 	top_occurence = hcmgis_top_occurence(layer, selectedfield,char,selectedfeatureonly)    
 	
 	if (top_occurence == 0):

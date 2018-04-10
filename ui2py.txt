@@ -10,10 +10,14 @@ pyuic5 -x hcmgis_reprojection_form.ui -o hcmgis_reprojection_form.py
 pyuic5 -x hcmgis_split_form.ui -o hcmgis_split_form.py
 pyuic5 -x hcmgis_split_field_form.ui -o hcmgis_split_field_form.py
 pyuic5 -x hcmgis_medialaxis_form.ui -o hcmgis_medialaxis_form.py
+pyuic5 -x hcmgis_opendata_form.ui -o hcmgis_opendata_form.py
+
 
 =====================
-for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
+http://leaflet-extras.github.io/leaflet-providers/preview/
+https://community.tibco.com/wiki/geoanalytics-resources
 
+for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
 3d:tessellate
 gdal:aspect
 gdal:assignprojection

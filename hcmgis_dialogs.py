@@ -26,7 +26,7 @@ from qgis.gui import QgsMessageBar
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/forms")
 
-
+from hcmgis_opendata_form import *
 from hcmgis_merge_form import *
 from hcmgis_split_form import *
 from hcmgis_checkvalidity_form import *
@@ -45,6 +45,105 @@ global _Unicode, _TCVN3, _VNIWin, _KhongDau
 # --------------------------------------------------------
 #    hcmggis_merge - Merge layers to single shapefile
 # --------------------------------------------------------
+class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):	
+	def __init__(self, iface):		
+		from owslib.wfs import WebFeatureService                
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)
+		self.buttonBox.accepted.connect(self.run)
+		self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+		self.LinOutputFolder.setText(os.getcwd())                                             
+		self.ChkSaveShapefile.stateChanged.connect(self.toggleCheckBox)
+		self.readwfs()
+		
+	def browse_outfile(self):
+		newname = QFileDialog.getExistingDirectory(None, "Output Shapefiles",self.LinOutputFolder.displayText())
+
+		if newname != None:
+			self.LinOutputFolder.setText(newname)
+                	
+	def toggleCheckBox(self,state):
+		if state > 0:
+			self.LinOutputFolder.setEnabled(True)
+			self.BtnOutputFolder.setEnabled(True)
+		else:
+			self.LinOutputFolder.setEnabled(False)
+			self.BtnOutputFolder.setEnabled(False)	   
+	
+	def readwfs(self):
+		opendata_url = "http://opendata.hcmgis.vn/geoserver/ows?"
+		import qgis.utils
+		from owslib.wfs import WebFeatureService
+		from PyQt5.QtWidgets import QProgressBar
+		from qgis.gui import QgsMessageBar
+
+		progressMessageBar = qgis.utils.iface.messageBar()
+		progress = QProgressBar()
+		#Maximum is set to 100, making it easy to work with percentage of completion
+		progress.setMaximum(100) 
+		#pass the progress bar to the message Bar
+		progressMessageBar.pushWidget(progress)                
+		# try:
+		self.sourcelayers.clear()			
+		wfs = WebFeatureService(url=opendata_url, version='1.0.0')
+		if wfs.contents is not None:
+			count =  len (list(wfs.contents))
+			ii = 0
+			for i in list(wfs.contents):  
+				self.sourcelayers.addItem(i)                         
+				ii+=1
+				percent = (ii/float(count)) * 100
+				progress.setValue(percent)                
+			# except Exception:
+				# QMessageBox.warning(None, "WFS ERROR",u'OpenData Reading Error') 
+		else: return				
+		qgis.utils.iface.messageBar().clearWidgets()  
+	
+	def run(self):
+		#from qgis.core import *
+		import qgis.utils
+		from owslib.wfs import WebFeatureService
+		from PyQt5.QtWidgets import QProgressBar
+
+		from qgis.gui import QgsMessageBar
+		opendata_url = "http://opendata.hcmgis.vn/geoserver/ows?"
+
+
+		outdir = unicode(self.LinOutputFolder.displayText())
+		layernames = []
+		for x in range(0, self.sourcelayers.count()):
+			if self.sourcelayers.item(x).isSelected():
+				layernames.append(unicode(self.sourcelayers.item(x).text()))
+		for i in layernames:            
+			#uri = opendata_url + "service=WFS&version=1.0.0&request=GetFeature&srsname=EPSG:4326&typename="+ str(i)
+			uri = opendata_url + "service=WFS&version=1.0.0&request=GetFeature&typename="+ str(i)						
+			if (not self.ChkSaveShapefile.isChecked()):
+				qgis.utils.iface.addVectorLayer(uri, str(i),"WFS")
+			else:                      
+				if (not os.path.isdir(outdir)):
+					QMessageBox.critical(self.iface.mainWindow(), "WFS", u"Invalid Output Folder: " + unicode(outdir))
+					return
+				else:		  
+					try:
+						layer = QgsVectorLayer( uri, str(i), "WFS" )
+						filename = outdir + "\\"+ str(i).replace(":","_") + ".shp"                                        
+						#QgsVectorFileWriter.writeAsVectorFormat( layer,filename,"UTF-8",QgsCoordinateReferenceSystem(4326),"ESRI Shapefile" )	
+						QgsVectorFileWriter.writeAsVectorFormat( layer,filename,"UTF-8",layer.crs(),"ESRI Shapefile" )						
+						qgis.utils.iface.addVectorLayer(filename, str(i).replace(":","_"), "ogr")						
+					except:
+						#if (error != QgsVectorFileWriter.NoError):
+						QMessageBox.critical(self.iface.mainWindow(), "WFS", u"Shapfiles Saving Error")
+						qgis.utils.iface.addVectorLayer(uri, str(i),"WFS")
+				
+		MessageBar = qgis.utils.iface.messageBar()
+		MessageBar.pushMessage(u"Complete Downloading " + unicode(len(layernames)) +u" OpenData Layers", 0, 3)                              
+		return			
+
+# --------------------------------------------------------
+#   hcmggis_merge - Merge layers to single shapefile
+#	Reference: mmqgis
+# --------------------------------------------------------			
 class hcmgis_medialaxis_dialog(QDialog, Ui_hcmgis_medialaxis_form):		
 	def __init__(self, iface):
 		QDialog.__init__(self)
@@ -61,6 +160,8 @@ class hcmgis_medialaxis_dialog(QDialog, Ui_hcmgis_medialaxis_form):
 				
 	def run(self):             		
 		layer = self.CboInput.currentLayer()
+		if layer is None:
+			return u'No selected layers!'  
 		selectedfield = self.CboField.currentText()
 		density = self.spinBox.value()
 		if layer.selectedFeatureCount()>0 and layer.selectedFeatureCount() <= 100:		

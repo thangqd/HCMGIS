@@ -62,7 +62,7 @@ u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',
 #    Add basemap
 # --------------------------------------------------------
 
-def hcmgis_watercolor(self):
+def hcmgis_stamenwatercolor(self):
 	import requests
 	import qgis.utils
 	service_url = "c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg" 
@@ -81,7 +81,21 @@ def hcmgis_stamenterrain(self):
 	import qgis.utils
 	service_url = "a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png" 		
 	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Stamen Toner", "wms")
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Stamen Terrain", "wms")
+
+def hcmgis_cartolight(self):
+	import requests
+	import qgis.utils
+	service_url = "a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" 		
+	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Carto Light", "wms")
+
+def hcmgis_cartodark(self):
+	import requests
+	import qgis.utils
+	service_url = "a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" 		
+	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Carto Dark", "wms")
 	
 def hcmgis_googlesatellite(self):
 	import requests

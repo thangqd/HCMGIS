@@ -47,9 +47,23 @@ class hcmgis_menu:
 		#OSM Stamen Terrain
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamenterrain.png")
 		self.stamenterrain_action = QAction(icon, u'OSM Stamen Terrain', self.iface.mainWindow())
-		self.stamenterrain_action.triggered.connect(self.stamenterrain_action_call)		
+		self.stamenterrain_action.triggered.connect(self.stamenterrain_call)		
 		self.basemap_menu.addAction(self.stamenterrain_action)
 		
+		
+		#OSM Carto Light
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_cartolight.png")
+		self.cartolight_action = QAction(icon, u'Carto Light', self.iface.mainWindow())
+		self.cartolight_action.triggered.connect(self.cartolight_call)		
+		self.basemap_menu.addAction(self.cartolight_action)
+		
+		
+		#OSM Carto Dark
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_cartodark.png")
+		self.cartodark_action = QAction(icon, u'Carto Dark', self.iface.mainWindow())
+		self.cartodark_action.triggered.connect(self.cartodark_call)		
+		self.basemap_menu.addAction(self.cartodark_action)
+				
 				
 		#Google Satellite
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlesatellite.png")
@@ -184,6 +198,12 @@ class hcmgis_menu:
 	
 	def stamenterrain_call(self):
 		hcmgis_stamenterrain(self.iface)
+	
+	def cartolight_call(self):
+		hcmgis_cartolight(self.iface)
+		
+	def cartodark_call(self):
+		hcmgis_cartodark(self.iface)
 		
 	def googlesatellite_call(self):
 		hcmgis_googlesatellite(self.iface)

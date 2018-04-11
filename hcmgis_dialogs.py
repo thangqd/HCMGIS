@@ -117,12 +117,12 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 				layernames.append(unicode(self.sourcelayers.item(x).text()))
 		for i in layernames:            
 			#uri = opendata_url + "service=WFS&version=1.0.0&request=GetFeature&srsname=EPSG:4326&typename="+ str(i)
-			uri = opendata_url + "service=WFS&version=1.0.0&request=GetFeature&typename="+ str(i)						
+			uri = opendata_url + "service=WFS&version=1.0.0&request=GetFeature&srsname=EPSG:4326&typename="+ str(i)						
 			if (not self.ChkSaveShapefile.isChecked()):
-				qgis.utils.iface.addVectorLayer(uri, str(i),"WFS")
+				qgis.utils.iface.addVectorLayer(uri, str(i),"OpenData")
 			else:                      
 				if (not os.path.isdir(outdir)):
-					QMessageBox.critical(self.iface.mainWindow(), "WFS", u"Invalid Output Folder: " + unicode(outdir))
+					QMessageBox.critical(self.iface.mainWindow(), "OpenData", u"Invalid Output Folder: " + unicode(outdir))
 					return
 				else:		  
 					try:
@@ -133,7 +133,7 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 						qgis.utils.iface.addVectorLayer(filename, str(i).replace(":","_"), "ogr")						
 					except:
 						#if (error != QgsVectorFileWriter.NoError):
-						QMessageBox.critical(self.iface.mainWindow(), "WFS", u"Shapfiles Saving Error")
+						QMessageBox.critical(self.iface.mainWindow(), "OpenData", u"Shapfiles Saving Error")
 						qgis.utils.iface.addVectorLayer(uri, str(i),"WFS")
 				
 		MessageBar = qgis.utils.iface.messageBar()

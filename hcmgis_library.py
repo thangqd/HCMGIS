@@ -62,75 +62,19 @@ u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',
 #    Add basemap
 # --------------------------------------------------------
 
-def hcmgis_stamenwatercolor(self):
+def hcmgis_basemap(self, service_url, name):
 	import requests
-	import qgis.utils
-	service_url = "c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg" 
+	import qgis.utils	
 	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Stamen Watercolor", "wms")
-
-def hcmgis_stamentoner(self):
-	import requests
-	import qgis.utils
-	service_url = "a.tile.stamen.com/toner-background/{z}/{x}/{y}.png" 		
-	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Stamen Toner", "wms")
-
-def hcmgis_stamenterrain(self):
-	import requests
-	import qgis.utils
-	service_url = "a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png" 		
-	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Stamen Terrain", "wms")
-
-def hcmgis_cartolight(self):
-	import requests
-	import qgis.utils
-	service_url = "a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" 		
-	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Carto Light", "wms")
-
-def hcmgis_cartodark(self):
-	import requests
-	import qgis.utils
-	service_url = "a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" 		
-	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "OSM Carto Dark", "wms")
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, name, "wms")
 	
-def hcmgis_googlesatellite(self):
+def hcmgis_opendata(self, service_url, name):
 	import requests
-	import qgis.utils
-	service_url = "mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" 
-	service_uri = "type=xyz&zmin=0&zmax=21&url=https://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "Google Sat", "wms")
-	#lyrs=y - hybrid
-	#lyrs=s - sat
-	#lyrs=m - road map
-	#lyrs=p - physical
+	import qgis.utils	
+	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
+	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, name, "wms")
 	
-def hcmgis_googlemaps(self):
-	import requests
-	import qgis.utils
-	service_url = "mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" 
-	service_uri = "type=xyz&zmin=0&zmax=21&url=https://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "Google Streets", "wms")
-	
-def hcmgis_googlehybrid(self):
-	import requests
-	import qgis.utils
-	service_url = "mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" 
-	service_uri = "type=xyz&zmin=0&zmax=21&url=https://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "Google Hybrid", "wms")
-
-def hcmgis_googlephysical(self):
-	import requests
-	import qgis.utils
-	service_url = "mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}" 
-	service_uri = "type=xyz&zmin=0&zmax=21&url=https://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, "Google Physical", "wms")
-
-
-		
+					
 #--------------------------------------------------------
 #    hcmgis_medialaxis - Create skeleton/ medial axis/ centerline of roads, rivers and similar linear structures
 # --------------------------------------------------------

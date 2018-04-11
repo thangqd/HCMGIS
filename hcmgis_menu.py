@@ -29,8 +29,20 @@ class hcmgis_menu:
 		self.iface.mainWindow().menuBar().insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.hcmgis_menu)
 		
 		# OpenData_basemap submenu
-		self.basemap_menu = QMenu(u'Add BaseMap')		
+		self.basemap_menu = QMenu(u'BaseMap')		
 		self.hcmgis_add_submenu(self.basemap_menu)
+		
+		#HCMGIS HCMGIS Map
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.hcmgismap_action = QAction(icon, u'HCMGIS Map', self.iface.mainWindow())
+		self.hcmgismap_action.triggered.connect(self.hcmgismap_call)		
+		self.basemap_menu.addAction(self.hcmgismap_action)
+		
+		#HCMGIS Aerial Image
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.hcmgisaerial_action = QAction(icon, u'HCMGIS Arerial Image', self.iface.mainWindow())
+		self.hcmgisaerial_action.triggered.connect(self.hcmgisaerial_call)		
+		self.basemap_menu.addAction(self.hcmgisaerial_action)
 		
 		#OSM Stamen Watercolor
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamenwatercolor.png")
@@ -63,8 +75,7 @@ class hcmgis_menu:
 		self.cartodark_action = QAction(icon, u'Carto Dark', self.iface.mainWindow())
 		self.cartodark_action.triggered.connect(self.cartodark_call)		
 		self.basemap_menu.addAction(self.cartodark_action)
-				
-				
+		
 		#Google Satellite
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlesatellite.png")
 		self.googlesatellite_action = QAction(icon, u'Google Satellite', self.iface.mainWindow())
@@ -89,7 +100,6 @@ class hcmgis_menu:
 		self.hcmgis_googlephysical_action.triggered.connect(self.googlephysical_call)		
 		self.basemap_menu.addAction(self.hcmgis_googlephysical_action)
 		
-				
 		#HCMGIS OpenData submenu
 		self.opendata_menu = QMenu(u'HCMGIS OpenData')		
 		self.hcmgis_add_submenu(self.opendata_menu)
@@ -190,32 +200,60 @@ class hcmgis_menu:
 			self.iface.removePluginMenu("&hcmgis", self.merge_split_menu.menuAction())
 			self.iface.removePluginMenu("&hcmgis", self.tool_menu.menuAction())
 
+	def hcmgismap_call(self):
+		service_url ="pcd.hcmgis.vn/geoserver/wms"
+		name = "HCMGIS Maps"
+		hcmgis_opendata(self.iface,service_url, name)
+		
+	def hcmgisaerial_call(self):
+		service_url = "trueortho.hcmgis.vn/basemap/cache_lidar/{z}/{x}/{y}.jpg" 
+		name = "HCMGIS Aerial Images"
+		hcmgis_basemap(self.iface,service_url, name)
+			
 	def stamenwatercolor_call(self):
-		hcmgis_stamenwatercolor(self.iface)
+		service_url = "c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg" 
+		name = "OSM Stamen Watercolor"
+		hcmgis_basemap(self.iface,service_url, name)
 	
 	def stamentoner_call(self):
-		hcmgis_stamentoner(self.iface)
+		service_url ="a.tile.stamen.com/toner-background/{z}/{x}/{y}.png"
+		name = "OSM Stamen Toner"
+		hcmgis_basemap(self.iface,service_url, name)
 	
 	def stamenterrain_call(self):
-		hcmgis_stamenterrain(self.iface)
+		service_url ="a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png" 
+		name = "OSM Stamen Terrain"
+		hcmgis_basemap(self.iface,service_url, name)
 	
 	def cartolight_call(self):
-		hcmgis_cartolight(self.iface)
+		service_url ="a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" 
+		name = "OSM Carto Light"
+		hcmgis_basemap(self.iface,service_url, name)
 		
 	def cartodark_call(self):
-		hcmgis_cartodark(self.iface)
+		service_url ="a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" 
+		name = "OSM Carto Dark"
+		hcmgis_basemap(self.iface,service_url, name)
 		
 	def googlesatellite_call(self):
-		hcmgis_googlesatellite(self.iface)
+		service_url ="mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" 
+		name = "Google Satellite"
+		hcmgis_basemap(self.iface,service_url, name)
 	
 	def googlestreets_call(self):
-		hcmgis_googlestreets(self.iface)
+		service_url ="mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+		name = "Google Streets"
+		hcmgis_basemap(self.iface,service_url, name)
 	
 	def googlehybrid_call(self):
-		hcmgis_googlehybrid(self.iface)
+		service_url ="mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+		name = "Google Hybrid"
+		hcmgis_basemap(self.iface,service_url, name)
 	
 	def googlephysical_call(self):
-		hcmgis_googlephysical(self.iface)
+		service_url ="mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}" 
+		name = "Google Physical"
+		hcmgis_basemap(self.iface,service_url, name)
 		
 	def opendata(self):
 		dialog = hcmgis_opendata_dialog(self.iface)

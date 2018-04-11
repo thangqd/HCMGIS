@@ -16,6 +16,7 @@ pyuic5 -x hcmgis_opendata_form.ui -o hcmgis_opendata_form.py
 =====================
 http://leaflet-extras.github.io/leaflet-providers/preview/
 https://community.tibco.com/wiki/geoanalytics-resources
+http://felix.rohrba.ch/en/2016/awesome-basemap-layer-for-your-qgis-project/
 
 for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
 3d:tessellate

@@ -21,6 +21,6 @@
 **- HCMGIS OpenData**:  Download miễn phí dữ liệu GIS từ http://opendata.hcmgis.vn
 
 
-**-Xử lý không gian**: Tạo xương (skeleton/ media axis) cho đối tượng dạng vùng (mạng giao thông/ sông rạch), gộp layers, tách layer, kiểm tra lỗi hình học, chỉnh sửa lỗi hình học, chuyển đổi hệ tọa độ.
+**-Xử lý không gian**: Tạo xương (skeleton/ media axis/ centerline) cho đối tượng dạng vùng (mạng giao thông/ sông rạch), gộp layers, tách layer, kiểm tra lỗi hình học, chỉnh sửa lỗi hình học, chuyển đổi hệ tọa độ.
 
 **-Xử lý thuộc tính**: Gộp/ tách trường dữ liệu, thêm tiền tố/ hậu tố, find & replace. Đặc biệt là chức năng chuyển đổi font chữ tiếng Việt Unicode <--> TCVN3 <--> Vni-Windows, với các tiện ích IN HOA, Hoa Mỗi Từ, Hoa đầu câu, in thường, khong dau.

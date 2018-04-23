@@ -7,7 +7,7 @@
 
 **- HCMGIS OpenData**:  Download free and open geodata from http://opendata.hcmgis.vn
 
-**- Spatial Processing**: Create Skeleton/ Medial Axis/ Centerline of (irregular) Polygon features (road/ river networks), Merging layers (with the same attributes and geometry type), split Layer (based on unique field), geometric error checking, geometric correction, CRS transformation (VN2000 <--> WGS84,...).
+**- Spatial Processing**: Create Skeleton/ Medial Axis/ Centerline of (irregular) Polygon features (road/ river networks), create centerline in Polygons' gaps (Ex: Building footprint blocks), Merging layers (with the same attributes and geometry type), split Layer (based on unique field), geometric error checking, geometric correction, CRS transformation (VN2000 <--> WGS84,...).
 
 **- Attribute Calculation**: merge/ split data fields, add prefix/ suffix, find & replace. Especially the Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case,...
 

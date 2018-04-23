@@ -10,7 +10,9 @@ pyuic5 -x hcmgis_reprojection_form.ui -o hcmgis_reprojection_form.py
 pyuic5 -x hcmgis_split_form.ui -o hcmgis_split_form.py
 pyuic5 -x hcmgis_split_field_form.ui -o hcmgis_split_field_form.py
 pyuic5 -x hcmgis_medialaxis_form.ui -o hcmgis_medialaxis_form.py
+pyuic5 -x hcmgis_centerline_form.ui -o hcmgis_centerline_form.py
 pyuic5 -x hcmgis_opendata_form.ui -o hcmgis_opendata_form.py
+
 
 
 =====================

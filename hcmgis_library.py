@@ -65,15 +65,8 @@ u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',
 def hcmgis_basemap(self, service_url, name):
 	import requests
 	import qgis.utils	
-	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
+	service_uri = "type=xyz&zmin=0&zmax=22&url=http://"+requests.utils.quote(service_url)
 	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, name, "wms")
-	
-def hcmgis_opendata(self, service_url, name):
-	import requests
-	import qgis.utils	
-	service_uri = "type=xyz&zmin=0&zmax=21&url=http://"+requests.utils.quote(service_url)
-	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, name, "wms")
-	
 					
 #--------------------------------------------------------
 #    hcmgis_medialaxis - Create skeleton/ medial axis/ centerline of roads, rivers and similar linear structures
@@ -132,7 +125,7 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	
 	parameter10 = {'INPUT':medialaxis_collect['OUTPUT'],
 					'METHOD' : 0,
-					'TOLERANCE' : 0.1,
+					'TOLERANCE' : 1,
 					'OUTPUT':  "memory:medialaxis_simplify"}
 	processing.runAndLoadResults('qgis:simplifygeometries',parameter10) 
 	
@@ -160,6 +153,111 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	
 	return
 
+def hcmgis_centerline(qgis,layer,density,chksurround,distance):		
+	import processing
+	convexhull	= None
+	## extract gaps of polygon
+	# fix geometries
+	parameters1_1 = {'INPUT':layer,
+				'OUTPUT': "memory:fix"
+			  }
+	fix = processing.run('qgis:fixgeometries',parameters1_1)	
+	
+	# aggregate polygons	
+	parameters1_2 = {'INPUT':fix['OUTPUT'],
+					'GROUP_BY' : 'NULL',
+					'AGGREGATES' : [],
+					'OUTPUT':  "memory:aggregate"}
+	aggregate = processing.run('qgis:aggregate',parameters1_2)
+	
+	# delete holes in aggregated polygons	
+	parameter1_3 = {'INPUT':aggregate['OUTPUT'],
+					'MIN_AREA' : 0,
+					'OUTPUT':  "memory:deleteholes"}
+	deleteholes = processing.run('qgis:deleteholes',parameter1_3) 
+		
+	# simplify geometries
+	parameter1_4 = {'INPUT':deleteholes['OUTPUT'],
+					'METHOD' : 0,
+					'TOLERANCE' : 1,
+					'OUTPUT':  "memory:simplify"}
+	simplify = processing.run('qgis:simplifygeometries',parameter1_4) 	
+	
+	
+	#create convexhull
+	parameters1_5 = {'INPUT':simplify['OUTPUT'],
+					'FIELD' : '',
+					'TYPE' : 3, # convex hull
+					'OUTPUT':  "memory:convexhull"}
+	convexhull = processing.run('qgis:minimumboundinggeometry',parameters1_5)
+	
+	if chksurround:
+		parameters1_6 = {'INPUT':convexhull['OUTPUT'],
+					'DISTANCE' : distance,
+					'SEGMENTS' : 5,
+					'END_CAP_STYLE' : 0, 
+					'JOIN_STYLE' : 0, 
+					'MITER_LIMIT' : 2, 
+					'DISSOLVE' : False, 
+					'OUTPUT':  "memory:convexhull"}
+		convexhull = processing.run('qgis:buffer',parameters1_6)
+	
+	
+	parameters1_7 = {'INPUT': convexhull['OUTPUT'],
+					'OVERLAY' : simplify['OUTPUT'],
+					'OUTPUT' : "memory:polygon"} 					
+	polygon = processing.run('qgis:symmetricaldifference',parameters1_7)	
+	
+
+	## create centerline
+	parameters2 = {'INPUT':polygon['OUTPUT'],
+					'OUTPUT':  "memory:polyline"}
+	polyline = processing.run('qgis:polygonstolines',parameters2)	
+	
+	parameters3 = {'INPUT': polyline['OUTPUT'],
+					'DISTANCE' : density,
+					'START_OFFSET' : 0, 
+					'END_OFFSET' : 0,
+					'OUTPUT' : "memory:points"} 
+	points = processing.run('qgis:pointsalonglines', parameters3)	
+	
+	parameters4 = {'INPUT': points['OUTPUT'],
+					 'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
+	voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)	 
+	
+	parameters5 = {'INPUT': voronoipolygon['OUTPUT'],
+					'OUTPUT' : 'memory:voronoipolyline'} 
+	voronoipolyline = processing.run('qgis:polygonstolines',parameters5)
+	
+	
+	parameters6 = {'INPUT': voronoipolyline['OUTPUT'],					
+					'OUTPUT' : 'memory:explode'}
+	explode = processing.run('qgis:explodelines',parameters6)
+	
+	parameters7 = {'INPUT': explode['OUTPUT'],
+					'PREDICATE' : [6], # within					
+					'INTERSECT': polygon['OUTPUT'],		
+					'METHOD' : 0,
+					'OUTPUT' : 'memory:candidate'}
+	candidate= processing.run('qgis:selectbylocation',parameters7)
+	
+	
+	parameters8 = {'INPUT':candidate['OUTPUT'],
+					'OUTPUT':  "memory:medialaxis"}
+	medialaxis = processing.run('qgis:saveselectedfeatures',parameters8)
+	
+	parameter9 =  {'INPUT':medialaxis['OUTPUT'],
+					'OUTPUT':  "memory:medialaxis_collect"}
+	medialaxis_collect = processing.run('qgis:collect',parameter9) 
+	
+	parameter10 = {'INPUT':medialaxis_collect['OUTPUT'],
+					'METHOD' : 0,
+					'TOLERANCE' : 0.1,
+					'OUTPUT':  "memory:centerline"}
+	processing.runAndLoadResults('qgis:simplifygeometries',parameter10) 	
+	
+	
+	return
 
 # --------------------------------------------------------
 #    hcmgis_merge - Merge layers to single shapefile

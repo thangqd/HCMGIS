@@ -32,15 +32,9 @@ class hcmgis_menu:
 		self.basemap_menu = QMenu(u'BaseMap')		
 		self.hcmgis_add_submenu(self.basemap_menu)
 		
-		#HCMGIS HCMGIS Map
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.hcmgismap_action = QAction(icon, u'HCMGIS Map', self.iface.mainWindow())
-		self.hcmgismap_action.triggered.connect(self.hcmgismap_call)		
-		self.basemap_menu.addAction(self.hcmgismap_action)
-		
 		#HCMGIS Aerial Image
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.hcmgisaerial_action = QAction(icon, u'HCMGIS Arerial Image', self.iface.mainWindow())
+		self.hcmgisaerial_action = QAction(icon, u'HCMGIS Arerial Images', self.iface.mainWindow())
 		self.hcmgisaerial_action.triggered.connect(self.hcmgisaerial_call)		
 		self.basemap_menu.addAction(self.hcmgisaerial_action)
 		
@@ -113,6 +107,19 @@ class hcmgis_menu:
 		# Merge_Split submenu
 		self.merge_split_menu = QMenu(u'Geometry Processing')		
 		self.hcmgis_add_submenu(self.merge_split_menu)
+		
+		# MediAxis Submenu
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_skeleton.png")
+		self.medialaxis_action = QAction(icon, u'Skeleton/ Medial Axis', self.iface.mainWindow())
+		self.medialaxis_action.triggered.connect(self.medialaxis)
+		self.merge_split_menu.addAction(self.medialaxis_action)
+		
+		# Centerline Submenu
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_centerline.png")
+		self.centerline_action = QAction(icon, u"Centerline in Polygon's Gaps", self.iface.mainWindow())
+		self.centerline_action.triggered.connect(self.centerline)
+		self.merge_split_menu.addAction(self.centerline_action)
+		
 
 		#Merge
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_merge.png")
@@ -144,11 +151,7 @@ class hcmgis_menu:
 		self.reproject_action.triggered.connect(self.reproject)
 		self.merge_split_menu.addAction(self.reproject_action)
 		
-		# MediAxis Submenu
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_skeleton.png")
-		self.medialaxis_action = QAction(icon, u'Skeleton/ Medial Axis', self.iface.mainWindow())
-		self.medialaxis_action.triggered.connect(self.medialaxis)
-		self.merge_split_menu.addAction(self.medialaxis_action)
+		
 		
 				
 		# Tool Submenu
@@ -200,11 +203,6 @@ class hcmgis_menu:
 			self.iface.removePluginMenu("&hcmgis", self.merge_split_menu.menuAction())
 			self.iface.removePluginMenu("&hcmgis", self.tool_menu.menuAction())
 
-	def hcmgismap_call(self):
-		service_url ="pcd.hcmgis.vn/geoserver/wms"
-		name = "HCMGIS Maps"
-		hcmgis_opendata(self.iface,service_url, name)
-		
 	def hcmgisaerial_call(self):
 		service_url = "trueortho.hcmgis.vn/basemap/cache_lidar/{z}/{x}/{y}.jpg" 
 		name = "HCMGIS Aerial Images"
@@ -276,6 +274,16 @@ class hcmgis_menu:
 		dialog = hcmgis_split_field_dialog(self.iface)
 		dialog.exec_()
 		
+			
+	def medialaxis(self):
+		dialog = hcmgis_medialaxis_dialog(self.iface)
+		dialog.exec_()
+	
+	def centerline(self):
+		dialog = hcmgis_centerline_dialog(self.iface)
+		dialog.exec_()
+		
+		
 	def merge(self):
 		dialog = hcmgis_merge_dialog(self.iface)
 		dialog.exec_()
@@ -299,10 +307,7 @@ class hcmgis_menu:
 	def reproject(self):
 		dialog = hcmgis_reprojection_dialog(self.iface)
 		dialog.exec_()
-		
-	def medialaxis(self):
-		dialog = hcmgis_medialaxis_dialog(self.iface)
-		dialog.exec_()
+
 	
 		
 

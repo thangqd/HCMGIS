@@ -39,6 +39,7 @@ from hcmgis_merge_field_form import *
 from hcmgis_find_replace_form import *
 from hcmgis_prefix_suffix_form import *
 from hcmgis_medialaxis_form import *
+from hcmgis_centerline_form import *
 
 global _Unicode, _TCVN3, _VNIWin, _KhongDau
 
@@ -111,13 +112,14 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 
 
 		outdir = unicode(self.LinOutputFolder.displayText())
-		layernames = []
+		layernames = []		
+		
 		for x in range(0, self.sourcelayers.count()):
 			if self.sourcelayers.item(x).isSelected():
 				layernames.append(unicode(self.sourcelayers.item(x).text()))
 		for i in layernames:            
 			#uri = opendata_url + "service=WFS&version=1.0.0&request=GetFeature&srsname=EPSG:4326&typename="+ str(i)
-			uri = opendata_url + "service=WFS&version=1.0.0&request=GetFeature&srsname=EPSG:4326&typename="+ str(i)						
+			uri = opendata_url + "service=WFS&version=1.0.0&request=GetFeature&srsname=EPSG:4326&typename="+ str(i)				  
 			if (not self.ChkSaveShapefile.isChecked()):
 				qgis.utils.iface.addVectorLayer(uri, str(i),"WFS")
 			else:                      
@@ -135,15 +137,12 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 						#if (error != QgsVectorFileWriter.NoError):
 						QMessageBox.critical(self.iface.mainWindow(), "WFS", u"Shapfiles Saving Error")
 						qgis.utils.iface.addVectorLayer(uri, str(i),"WFS")
-				
+		
 		MessageBar = qgis.utils.iface.messageBar()
-		MessageBar.pushMessage(u"Complete Downloading " + unicode(len(layernames)) +u" OpenData Layers", 0, 3)                              
+		MessageBar.pushMessage(u"Complete Downloading " + unicode(len(layernames)) +u" OpenData Layers", 0, 3)        
 		return			
 
-# --------------------------------------------------------
-#   hcmggis_merge - Merge layers to single shapefile
-#	Reference: mmqgis
-# --------------------------------------------------------			
+		
 class hcmgis_medialaxis_dialog(QDialog, Ui_hcmgis_medialaxis_form):		
 	def __init__(self, iface):
 		QDialog.__init__(self)
@@ -173,10 +172,46 @@ class hcmgis_medialaxis_dialog(QDialog, Ui_hcmgis_medialaxis_form):
 			#return u'Please select 1..100 features to create Skeleton/ Media Axis'		
 			QMessageBox.information(None,  "Skeleton/ Media Axis",u'Please select 1..100 features to create Skeleton/ Media Axis!') 
 		return
+
+class hcmgis_centerline_dialog(QDialog, Ui_hcmgis_centerline_form):		
+	def __init__(self, iface):
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)	
+		self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
+		self.BtnOKCancel.accepted.connect(self.run) 
+		self.chksurround.checked = False
+		self.lblsurround.setEnabled(False)
+		self.distance.setEnabled(False)			
+		self.chksurround.stateChanged.connect(self.toggleSurround)
+		
+
+	def toggleSurround(self,state):
+		if state > 0:
+			self.lblsurround.setEnabled(True)
+			self.distance.setEnabled(True)
+		else:
+			self.lblsurround.setEnabled(False)
+			self.distance.setEnabled(False)	
+			
+	def run(self):             		
+		layer = self.CboInput.currentLayer()
+		if layer is None:
+			return u'No selected layers!'  
+		density = self.spinBox.value()
+		chksurround = self.chksurround.isChecked() 
+		distance = self.distance.value()
+		message = hcmgis_centerline(self.iface,layer,density,chksurround,distance)
+		if message != None:
+			QMessageBox.critical(self.iface.mainWindow(), "Centerline in Polygon's Gaps", message)						               
+		else: return			
+		return
+		
 	
 # --------------------------------------------------------
-#    hcmggis_merge - Merge layers to single shapefile
-# --------------------------------------------------------
+#   hcmggis_merge - Merge layers to single shapefile
+#	Reference: mmqgis
+# --------------------------------------------------------	
 class hcmgis_merge_dialog(QDialog, Ui_hcmgis_merge_form):
 	def __init__(self, iface):
 		QDialog.__init__(self)

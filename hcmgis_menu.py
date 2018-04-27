@@ -105,51 +105,57 @@ class hcmgis_menu:
 		self.opendata_menu.addAction(self.opendata_action)
 		
 		# Merge_Split submenu
-		self.merge_split_menu = QMenu(u'Geometry Processing')		
-		self.hcmgis_add_submenu(self.merge_split_menu)
+		self.geoprocessing_menu = QMenu(u'Geometry Processing')		
+		self.hcmgis_add_submenu(self.geoprocessing_menu)
 		
 		# MediAxis Submenu
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_skeleton.png")
 		self.medialaxis_action = QAction(icon, u'Skeleton/ Medial Axis', self.iface.mainWindow())
 		self.medialaxis_action.triggered.connect(self.medialaxis)
-		self.merge_split_menu.addAction(self.medialaxis_action)
+		self.geoprocessing_menu.addAction(self.medialaxis_action)
 		
 		# Centerline Submenu
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_centerline.png")
-		self.centerline_action = QAction(icon, u"Centerline in Polygon's Gaps", self.iface.mainWindow())
+		self.centerline_action = QAction(icon, u"Centerline in Polygons' Gaps", self.iface.mainWindow())
 		self.centerline_action.triggered.connect(self.centerline)
-		self.merge_split_menu.addAction(self.centerline_action)
+		self.geoprocessing_menu.addAction(self.centerline_action)
+
+		# Closest pair of Points Submenu
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_closestpair.png")
+		self.closestpair_action = QAction(icon, u"Closest pair of Points", self.iface.mainWindow())
+		self.closestpair_action.triggered.connect(self.closestpair)
+		self.geoprocessing_menu.addAction(self.closestpair_action)
 		
 
 		#Merge
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_merge.png")
 		self.merge_action = QAction(icon, u'Merge Layers', self.iface.mainWindow())
 		self.merge_action.triggered.connect(self.merge)		
-		self.merge_split_menu.addAction(self.merge_action)
+		self.geoprocessing_menu.addAction(self.merge_action)
 		
 		#Splits
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_split.png")
 		self.split_action = QAction(icon, u'Split Layer', self.iface.mainWindow())
 		self.split_action.triggered.connect(self.split)
-		self.merge_split_menu.addAction(self.split_action)
+		self.geoprocessing_menu.addAction(self.split_action)
 		
 		#CheckValidity
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_checkvalidity.png")
 		self.checkvalidity_action = QAction(icon, u'Check Validity', self.iface.mainWindow())
 		self.checkvalidity_action.triggered.connect(self.checkvalidity)
-		self.merge_split_menu.addAction(self.checkvalidity_action)
+		self.geoprocessing_menu.addAction(self.checkvalidity_action)
 		
 		#Fixgeometries
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_fixgeometries.png")
 		self.fixgeometries_action = QAction(icon, u'Fix Geometries', self.iface.mainWindow())
 		self.fixgeometries_action.triggered.connect(self.fixgeometries)
-		self.merge_split_menu.addAction(self.fixgeometries_action)
+		self.geoprocessing_menu.addAction(self.fixgeometries_action)
 		
 		# Reproject Submenu
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_reproject.png")
 		self.reproject_action = QAction(icon, u'CRS Transformation', self.iface.mainWindow())
 		self.reproject_action.triggered.connect(self.reproject)
-		self.merge_split_menu.addAction(self.reproject_action)
+		self.geoprocessing_menu.addAction(self.reproject_action)
 		
 		
 		
@@ -200,7 +206,7 @@ class hcmgis_menu:
 		else:
 			self.iface.removePluginMenu("&hcmgis", self.basemap_menu.menuAction())
 			self.iface.removePluginMenu("&hcmgis", self.openddata_menu.menuAction())
-			self.iface.removePluginMenu("&hcmgis", self.merge_split_menu.menuAction())
+			self.iface.removePluginMenu("&hcmgis", self.geoprocessing_menu.menuAction())
 			self.iface.removePluginMenu("&hcmgis", self.tool_menu.menuAction())
 
 	def hcmgisaerial_call(self):
@@ -281,6 +287,10 @@ class hcmgis_menu:
 	
 	def centerline(self):
 		dialog = hcmgis_centerline_dialog(self.iface)
+		dialog.exec_()
+	
+	def closestpair(self):
+		dialog = hcmgis_closestpair_dialog(self.iface)
 		dialog.exec_()
 		
 		

@@ -40,6 +40,7 @@ from hcmgis_find_replace_form import *
 from hcmgis_prefix_suffix_form import *
 from hcmgis_medialaxis_form import *
 from hcmgis_centerline_form import *
+from hcmgis_closestpair_form import *
 
 global _Unicode, _TCVN3, _VNIWin, _KhongDau
 
@@ -185,7 +186,6 @@ class hcmgis_centerline_dialog(QDialog, Ui_hcmgis_centerline_form):
 		self.distance.setEnabled(False)			
 		self.chksurround.stateChanged.connect(self.toggleSurround)
 		
-
 	def toggleSurround(self,state):
 		if state > 0:
 			self.lblsurround.setEnabled(True)
@@ -206,7 +206,37 @@ class hcmgis_centerline_dialog(QDialog, Ui_hcmgis_centerline_form):
 			QMessageBox.critical(self.iface.mainWindow(), "Centerline in Polygon's Gaps", message)						               
 		else: return			
 		return
+
+# --------------------------------------------------------
+#   Finding closest pair of Points
+# --------------------------------------------------------			
+class hcmgis_closestpair_dialog(QDialog, Ui_hcmgis_closestpair_form):		
+	def __init__(self, iface):
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)	
+		self.CboInput.setFilters(QgsMapLayerProxyModel.PointLayer)
+		self.CboField.setLayer (self.CboInput.currentLayer () )		
+		self.CboInput.activated.connect(self.update_field)
+		self.BtnOKCancel.accepted.connect(self.run) 
+                
+	
+	def update_field(self):
+		self.CboField.setLayer (self.CboInput.currentLayer () )	
 		
+		
+	def run(self):             		
+		layer = self.CboInput.currentLayer()
+		field = self.CboField.currentText()
+		if layer is None:
+			return u'No selected layers!'  
+		
+		message = hcmgis_closestpair(self.iface,layer,field)
+		if message != None:
+			QMessageBox.critical(self.iface.mainWindow(), "Closest pair of Points", message)						               
+		else: return			
+		return
+	
 	
 # --------------------------------------------------------
 #   hcmggis_merge - Merge layers to single shapefile

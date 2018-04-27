@@ -79,7 +79,7 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	## create skeleton/ media axis
 	parameters1 = {'INPUT':layer,
 					'OUTPUT':  "memory:polygon"}
-	polygon = processing.run('qgis:saveselectedfeatures',parameters1)
+	polygon = processing.run('qgis:saveSelectedFeatures',parameters1)
 	
 	parameters2 = {'INPUT':polygon['OUTPUT'],
 					'OUTPUT':  "memory:polyline"}
@@ -115,41 +115,51 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	
 	
 	parameters8 = {'INPUT':candidate['OUTPUT'],
-					'OUTPUT':  "memory:medialaxis"}
-	medialaxis = processing.run('qgis:saveselectedfeatures',parameters8)
+					'OUTPUT':  'memory:medialaxis'}
+	medialaxis = processing.run('qgis:saveSelectedFeatures',parameters8)
 	
-	parameter9 =  {'INPUT':medialaxis['OUTPUT'],
+	parameters9 = {'INPUT':medialaxis['OUTPUT'],
+					'OUTPUT':  'memory:deleteduplicategeometries'}
+	deleteduplicategeometries = processing.run('qgis:deleteduplicategeometries',parameters9)
+	
+	parameter10 =  {'INPUT':deleteduplicategeometries['OUTPUT'],
 					'FIELD' : selectedfield,
-					'OUTPUT':  "memory:medialaxis_collect"}
-	medialaxis_collect = processing.run('qgis:collect',parameter9) 
+					'OUTPUT':  "memory:medialaxis_dissolve"}
+	medialaxis_dissolve = processing.run('qgis:dissolve',parameter10) 
 	
-	parameter10 = {'INPUT':medialaxis_collect['OUTPUT'],
+	parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
 					'METHOD' : 0,
 					'TOLERANCE' : 1,
 					'OUTPUT':  "memory:medialaxis_simplify"}
-	processing.runAndLoadResults('qgis:simplifygeometries',parameter10) 
+	processing.runAndLoadResults('qgis:simplifygeometries',parameter11) 
 	
 	#Calculate min/ max/ average width 
-	# parameter10 =  {'INPUT': explode['OUTPUT'],	
+	# parameter12 =  {'INPUT': explode['OUTPUT'],	
 					# 'OVERLAY': polygon['OUTPUT'], 
 					# 'OUTPUT':  "memory:clip"}
-	# clip = processing.runAndLoadResults('qgis:clip',parameter10) 
+	# clip = processing.runAndLoadResults('qgis:clip',parameter12) 
 	
-	# parameter11 = { 'INPUT' : clip['OUTPUT'], 
+	# parameter13 = { 'INPUT' : clip['OUTPUT'], 
 					# 'OUTPUT' : 'memory:' }
-	# clip_clean = processing.runAndLoadResults('qgis:deleteduplicategeometries',parameter11) 
+	# clip_clean = processing.runAndLoadResults('qgis:deleteduplicategeometries',parameter13) 
 
 	
-	# parameter12 = {'INPUT': clip_clean['OUTPUT'],
+	# parameter14 = {'INPUT': clip_clean['OUTPUT'],
 					# 'PREDICATE' : [4], # touch					
 					# 'INTERSECT': medialaxis_collect['OUTPUT'],		
 					# 'METHOD' : 0, 
 					# 'OUTPUT' : 'memory:width'}
-	# width_list= processing.run('qgis:selectbylocation',parameter12)
+	# width_list= processing.run('qgis:selectbylocation',parameter14)
 	
-	# parameters13 = {'INPUT':width_list['OUTPUT'],
+	# parameters15 = {'INPUT':width_list['OUTPUT'],
 					# 'OUTPUT':  "memory:width_list"}
-	# width_list = processing.runAndLoadResults('qgis:saveselectedfeatures',parameters13)
+	# width_list = processing.runAndLoadResults('qgis:saveSelectedFeatures',parameters15)
+
+	################################################################
+	#case 
+	# when degrees(azimuth(end_point($geometry), start_point($geometry))) > 180 then degrees(azimuth(end_point($geometry), start_point($geometry))) - 180
+	#else degrees(azimuth(end_point($geometry), start_point($geometry)))
+	#end
 	
 	return
 
@@ -159,15 +169,15 @@ def hcmgis_centerline(qgis,layer,density,chksurround,distance):
 	## extract gaps of polygon
 	# fix geometries
 	parameters1_1 = {'INPUT':layer,
-				'OUTPUT': "memory:fix"
-			  }
+				'OUTPUT': 'memory:fix'}
 	fix = processing.run('qgis:fixgeometries',parameters1_1)	
 	
 	# aggregate polygons	
 	parameters1_2 = {'INPUT':fix['OUTPUT'],
 					'GROUP_BY' : 'NULL',
 					'AGGREGATES' : [],
-					'OUTPUT':  "memory:aggregate"}
+					'OUTPUT':  'memory:aggregate'}
+	#aggregate = processing.runAndLoadResults('qgis:aggregate',parameters1_2)
 	aggregate = processing.run('qgis:aggregate',parameters1_2)
 	
 	# delete holes in aggregated polygons	
@@ -185,11 +195,9 @@ def hcmgis_centerline(qgis,layer,density,chksurround,distance):
 	
 	
 	#create convexhull
-	parameters1_5 = {'INPUT':simplify['OUTPUT'],
-					'FIELD' : '',
-					'TYPE' : 3, # convex hull
+	parameters1_5 = {'INPUT':simplify['OUTPUT'],					
 					'OUTPUT':  "memory:convexhull"}
-	convexhull = processing.run('qgis:minimumboundinggeometry',parameters1_5)
+	convexhull = processing.run('qgis:convexhull',parameters1_5)
 	
 	if chksurround:
 		parameters1_6 = {'INPUT':convexhull['OUTPUT'],
@@ -205,7 +213,7 @@ def hcmgis_centerline(qgis,layer,density,chksurround,distance):
 	
 	parameters1_7 = {'INPUT': convexhull['OUTPUT'],
 					'OVERLAY' : simplify['OUTPUT'],
-					'OUTPUT' : "memory:polygon"} 					
+					'OUTPUT' : 'memory:polygon'} 					
 	polygon = processing.run('qgis:symmetricaldifference',parameters1_7)	
 	
 
@@ -246,18 +254,126 @@ def hcmgis_centerline(qgis,layer,density,chksurround,distance):
 					'OUTPUT':  "memory:medialaxis"}
 	medialaxis = processing.run('qgis:saveselectedfeatures',parameters8)
 	
-	parameter9 =  {'INPUT':medialaxis['OUTPUT'],
-					'OUTPUT':  "memory:medialaxis_collect"}
-	medialaxis_collect = processing.run('qgis:collect',parameter9) 
+	parameters9 = {'INPUT':medialaxis['OUTPUT'],
+					'OUTPUT':  'memory:deleteduplicategeometries'}
+	deleteduplicategeometries = processing.run('qgis:deleteduplicategeometries',parameters9)
 	
-	parameter10 = {'INPUT':medialaxis_collect['OUTPUT'],
+	parameter10 =  {'INPUT':deleteduplicategeometries['OUTPUT'],
+					'FIELD' : selectedfield,
+					'OUTPUT':  "memory:medialaxis_dissolve"}
+	medialaxis_dissolve = processing.run('qgis:dissolve',parameter10) 
+	
+	parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
 					'METHOD' : 0,
-					'TOLERANCE' : 0.1,
-					'OUTPUT':  "memory:centerline"}
-	processing.runAndLoadResults('qgis:simplifygeometries',parameter10) 	
-	
+					'TOLERANCE' : 1,
+					'OUTPUT':  "memory:medialaxis_simplify"}
+	processing.runAndLoadResults('qgis:simplifygeometries',parameter11)  	
 	
 	return
+
+################################################################
+# Finding closest pair of Points
+################################################################
+def hcmgis_closestpair(qgis,layer,field):		
+	import processing
+
+	parameters1 = {'INPUT':layer,
+					'OUTPUT':  "memory:delaunay_polygon"}
+	delaunay_polygon = processing.run('qgis:delaunaytriangulation',parameters1)
+
+	parameters2 = {'INPUT':delaunay_polygon['OUTPUT'],
+					'OUTPUT':  "memory:delaunay_polyline"}
+	delaunay_polyline = processing.run('qgis:polygonstolines',parameters2)	
+
+	parameters3 = {'INPUT': delaunay_polyline['OUTPUT'],					
+					'OUTPUT' : 'memory:delaunay_explode'}
+	delaunay_explode = processing.run('qgis:explodelines',parameters3)
+
+	lengths = []
+	closest_candidates = delaunay_explode['OUTPUT']
+	for feature in closest_candidates.getFeatures():
+		length = feature.geometry().length() 		
+		lengths.append(length)
+
+	minlength = str(min(lengths))	
+	print ('length(  $geometry )'  + '=' + minlength)
+
+	selection = closest_candidates.getFeatures(QgsFeatureRequest(QgsExpression('length($geometry)'  + '=' + minlength)))
+	ids = [s.id() for s in selection]
+	closest_candidates.selectByIds(ids)
+	
+	parameters3_1 = {'INPUT':closest_candidates,
+	 				'OUTPUT':  'memory:min_delaunay'
+					 }
+	#min_delaunay = processing.run('qgis:saveselectedfeatures',parameters3_1)
+
+	min_delaunay = processing.run('qgis:saveselectedfeatures',parameters3_1)
+
+	parameters3_2 = {'INPUT': layer,
+					'PREDICATE' : [4],#touch
+					'INTERSECT' : min_delaunay['OUTPUT'],
+					'METHOD' : 0,									
+					'OUTPUT' : 'memory:closest'
+					}
+	
+	closest = processing.run('qgis:selectbylocation',parameters3_2)
+	
+	parameters3_3 = {'INPUT': closest['OUTPUT'],
+	 				'OUTPUT':  'memory:closest_points'
+					 }
+	processing.runAndLoadResults('qgis:saveselectedfeatures',parameters3_3)
+		
+
+	#Finding farthest pair of points
+	parameters4 = {'INPUT': delaunay_polygon['OUTPUT'],								
+					'OUTPUT' : 'memory:convexhull'}
+	convexhull = processing.run('qgis:dissolve',parameters4)
+
+	parameters5 = {'INPUT': layer,
+					'PREDICATE' : [4],
+					'INTERSECT' : convexhull['OUTPUT'],
+					'METHOD' : 0,									
+					'OUTPUT' : 'memory:convexhull_vertices'
+					}
+	
+	convexhull_vertices = processing.run('qgis:selectbylocation',parameters5)
+
+	parameters6 = {'INPUT':layer,
+					'OUTPUT':  "memory:farthest_candidates"}
+	farthest_candidates = processing.run('qgis:saveselectedfeatures',parameters6)
+	
+	layer.removeSelection()
+
+	parameters7 = {'INPUT':farthest_candidates['OUTPUT'],
+					'INPUT_FIELD' : field,
+					 'TARGET' : farthest_candidates['OUTPUT'],
+					 'TARGET_FIELD' : field,
+					 'MATRIX_TYPE' : 2,
+					 'NEAREST_POINTS' : 0,
+					 'OUTPUT':  'memory:distance_matrix'
+					}
+	distance_matrix = processing.run('qgis:distancematrix',parameters7)
+	
+
+	max_distance = distance_matrix['OUTPUT']
+	values = []
+	idx =  max_distance.dataProvider().fieldNameIndex("MAX")
+	for feat in max_distance.getFeatures():
+		attrs = feat.attributes()
+		values.append(attrs[idx])
+	
+	maxvalue = str(max(values))	
+	selection = max_distance.getFeatures(QgsFeatureRequest(QgsExpression('"MAX"' + '=' + maxvalue)))
+	ids = [s.id() for s in selection]
+	max_distance.selectByIds(ids)
+	
+	parameters8 = {'INPUT':max_distance,
+	 				'OUTPUT':  r"memory:farthest_points"
+					 }
+	processing.runAndLoadResults('qgis:saveselectedfeatures',parameters8)
+		
+	return
+
 
 # --------------------------------------------------------
 #    hcmgis_merge - Merge layers to single shapefile
@@ -462,7 +578,7 @@ def hcmgis_merge_field(qgis, layer, selectedfields, char,selectedfeatureonly):
 	layer.startEditing()
 	if selectedfeatureonly:
 		totalfeaturecount = layer.selectedFeatureCount()
-		for feature in  layer.selectedFeatures():  
+		for feature in  layer.SelectedFeatures():  
 			count = 0
 			merge_value = ""                
 			for j in selectedfields:                                       
@@ -536,7 +652,7 @@ def hcmgis_split_field(qgis, layer, selectedfield, char, selectedfeatureonly):
 	layer.startEditing()
 	if selectedfeatureonly:
 		totalfeaturecount = layer.selectedFeatureCount()
-		for feature in  layer.selectedFeatures():                    
+		for feature in  layer.SelectedFeatures():                    
 			fieldupdatenumber = unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).count(char)+1
 			for i in range (fieldupdatenumber):
 				if (feature[layer.dataProvider().fieldNameIndex(selectedfield)]):# is not NULL                                                         
@@ -591,7 +707,7 @@ def hcmgis_find_replace(qgis, layer, selectedfield, find, replace, selectedfeatu
 	layer.startEditing()
 	if selectedfeatureonly:
 		totalfeaturecount = layer.selectedFeatureCount()
-		for feature in  layer.selectedFeatures():
+		for feature in  layer.SelectedFeatures():
 			if (feature[layer.dataProvider().fieldNameIndex(selectedfield)]):# is not NULL
 				layer.changeAttributeValue(feature.id(), (fieldnumber-1), unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).replace(find ,replace))                                        
 			featurecount += 1
@@ -658,7 +774,7 @@ def hcmgis_prefix_suffix(qgis, layer, selectedfield, prefix, charprefix, suffix,
 	layer.startEditing()
 	if selectedfeatureonly:
 		totalfeaturecount = layer.selectedFeatureCount()
-		for feature in  layer.selectedFeatures():                        
+		for feature in  layer.SelectedFeatures():                        
 			if (feature[layer.dataProvider().fieldNameIndex(selectedfield)]):# is not NULL
 				layer.changeAttributeValue(feature.id(), (fieldnumber-1), (prefix + charprefix + unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)])+ charsuffix + suffix))
 			else:                      
@@ -707,7 +823,7 @@ def hcmgis_convertfont(qgis,input_layer, selectedfields, output_layer, sE, dE, c
    
 	if selectedfeatureonly:
 		totalfeaturecount = input_layer.selectedFeatureCount()
-		for feat in  input_layer.selectedFeatures():
+		for feat in  input_layer.SelectedFeatures():
 			for tf in selectedfields:
 				oldValue = feat[tf]
 				if oldValue != None:
@@ -889,7 +1005,7 @@ def ChangeCase(str, caseIndex):
 def hcmgis_top_occurence(layer, selectedfield, char, selectedfeatureonly):	
 	max = 0
 	if selectedfeatureonly:
-		for feature in layer.selectedFeatures():
+		for feature in layer.SelectedFeatures():
 			fieldvalue = unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).strip()
 			occurence = fieldvalue.count(char)
 			if (occurence > max):

@@ -122,7 +122,7 @@ class hcmgis_menu:
 
 		# Closest pair of Points Submenu
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_closestpair.png")
-		self.closestpair_action = QAction(icon, u"Closest pair of Points", self.iface.mainWindow())
+		self.closestpair_action = QAction(icon, u"Closest/ farthest pair of Points", self.iface.mainWindow())
 		self.closestpair_action.triggered.connect(self.closestpair)
 		self.geoprocessing_menu.addAction(self.closestpair_action)
 		

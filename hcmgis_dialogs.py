@@ -219,21 +219,16 @@ class hcmgis_closestpair_dialog(QDialog, Ui_hcmgis_closestpair_form):
 		self.CboField.setLayer (self.CboInput.currentLayer () )		
 		self.CboInput.activated.connect(self.update_field)
 		self.BtnOKCancel.accepted.connect(self.run) 
-                
-	
+           
 	def update_field(self):
 		self.CboField.setLayer (self.CboInput.currentLayer () )	
-		
 		
 	def run(self):             		
 		layer = self.CboInput.currentLayer()
 		field = self.CboField.currentText()
-		if layer is None:
-			return u'No selected layers!'  
-		
 		message = hcmgis_closestpair(self.iface,layer,field)
 		if message != None:
-			QMessageBox.critical(self.iface.mainWindow(), "Closest pair of Points", message)						               
+			QMessageBox.critical(self.iface.mainWindow(), "Closest/ farthest pair of Points", message)						               
 		else: return			
 		return
 	
@@ -372,7 +367,7 @@ class hcmgis_split_dialog(QDialog, Ui_hcmgis_split_form):
 		outdir = unicode(self.LinOutputFolder.displayText())
 		if layer is None:
 			return u'No selected layer!'
-		elif selectedfield is None:
+		elif ((selectedfield is None) or (selectedfield == '')):
 			return u'No selected field!'
 		elif (not os.path.isdir(outdir)):
 			return u'Không tồn tại đường dẫn!'

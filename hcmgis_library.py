@@ -79,7 +79,7 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	## create skeleton/ media axis
 	parameters1 = {'INPUT':layer,
 					'OUTPUT':  "memory:polygon"}
-	polygon = processing.run('qgis:saveSelectedFeatures',parameters1)
+	polygon = processing.run('qgis:saveselectedfeatures',parameters1)
 	
 	parameters2 = {'INPUT':polygon['OUTPUT'],
 					'OUTPUT':  "memory:polyline"}
@@ -116,7 +116,7 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	
 	parameters8 = {'INPUT':candidate['OUTPUT'],
 					'OUTPUT':  'memory:medialaxis'}
-	medialaxis = processing.run('qgis:saveSelectedFeatures',parameters8)
+	medialaxis = processing.run('qgis:saveselectedfeatures',parameters8)
 	
 	parameters9 = {'INPUT':medialaxis['OUTPUT'],
 					'OUTPUT':  'memory:deleteduplicategeometries'}
@@ -130,7 +130,7 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
 					'METHOD' : 0,
 					'TOLERANCE' : 1,
-					'OUTPUT':  "memory:medialaxis_simplify"}
+					'OUTPUT':  "memory:medialaxis"}
 	processing.runAndLoadResults('qgis:simplifygeometries',parameter11) 
 	
 	#Calculate min/ max/ average width 
@@ -153,7 +153,7 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	
 	# parameters15 = {'INPUT':width_list['OUTPUT'],
 					# 'OUTPUT':  "memory:width_list"}
-	# width_list = processing.runAndLoadResults('qgis:saveSelectedFeatures',parameters15)
+	# width_list = processing.runAndLoadResults('qgis:saveselectedfeatures',parameters15)
 
 	################################################################
 	#case 
@@ -259,24 +259,27 @@ def hcmgis_centerline(qgis,layer,density,chksurround,distance):
 	deleteduplicategeometries = processing.run('qgis:deleteduplicategeometries',parameters9)
 	
 	parameter10 =  {'INPUT':deleteduplicategeometries['OUTPUT'],
-					'FIELD' : selectedfield,
 					'OUTPUT':  "memory:medialaxis_dissolve"}
 	medialaxis_dissolve = processing.run('qgis:dissolve',parameter10) 
 	
 	parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
 					'METHOD' : 0,
 					'TOLERANCE' : 1,
-					'OUTPUT':  "memory:medialaxis_simplify"}
+					'OUTPUT':  "memory:centerline"}
 	processing.runAndLoadResults('qgis:simplifygeometries',parameter11)  	
 	
 	return
 
 ################################################################
-# Finding closest pair of Points
+# Finding closest/ Farthest pair of Points
 ################################################################
 def hcmgis_closestpair(qgis,layer,field):		
 	import processing
-
+	if layer is None:
+		return 'No selected layer!'
+	if ((field is None) or (field == '')):
+		return 'Please select an unique field!'	
+		
 	parameters1 = {'INPUT':layer,
 					'OUTPUT':  "memory:delaunay_polygon"}
 	delaunay_polygon = processing.run('qgis:delaunaytriangulation',parameters1)
@@ -291,22 +294,20 @@ def hcmgis_closestpair(qgis,layer,field):
 
 	lengths = []
 	closest_candidates = delaunay_explode['OUTPUT']
+	# calculate length in meters
 	for feature in closest_candidates.getFeatures():
 		length = feature.geometry().length() 		
 		lengths.append(length)
-
+	
 	minlength = str(min(lengths))	
-	print ('length(  $geometry )'  + '=' + minlength)
 
-	selection = closest_candidates.getFeatures(QgsFeatureRequest(QgsExpression('length($geometry)'  + '=' + minlength)))
+	selection = closest_candidates.getFeatures(QgsFeatureRequest(QgsExpression('$length'  + '=' + minlength)))
 	ids = [s.id() for s in selection]
 	closest_candidates.selectByIds(ids)
 	
 	parameters3_1 = {'INPUT':closest_candidates,
 	 				'OUTPUT':  'memory:min_delaunay'
 					 }
-	#min_delaunay = processing.run('qgis:saveselectedfeatures',parameters3_1)
-
 	min_delaunay = processing.run('qgis:saveselectedfeatures',parameters3_1)
 
 	parameters3_2 = {'INPUT': layer,
@@ -319,10 +320,26 @@ def hcmgis_closestpair(qgis,layer,field):
 	closest = processing.run('qgis:selectbylocation',parameters3_2)
 	
 	parameters3_3 = {'INPUT': closest['OUTPUT'],
+	 				'OUTPUT':  'memory:closest'
+					 }
+	closest_points = processing.run('qgis:saveselectedfeatures',parameters3_3)
+	
+	parameters3_4 = {'INPUT':closest_points['OUTPUT'],
+					'INPUT_FIELD' : field,
+					 'TARGET' : closest_points['OUTPUT'],
+					 'TARGET_FIELD' : field,
+					 'MATRIX_TYPE' : 2,
+					 'NEAREST_POINTS' : 0,
+					 'OUTPUT':  'memory:closest_points'
+					}
+	closest_points = processing.run('qgis:distancematrix',parameters3_4)
+	
+	parameters3_5 = {'INPUT':closest_points['OUTPUT'],
+					'COLUMN' : ['MEAN','STDDEV','MIN'],
 	 				'OUTPUT':  'memory:closest_points'
 					 }
-	processing.runAndLoadResults('qgis:saveselectedfeatures',parameters3_3)
-		
+	processing.runAndLoadResults('qgis:deletecolumn',parameters3_5)
+
 
 	#Finding farthest pair of points
 	parameters4 = {'INPUT': delaunay_polygon['OUTPUT'],								
@@ -342,7 +359,6 @@ def hcmgis_closestpair(qgis,layer,field):
 					'OUTPUT':  "memory:farthest_candidates"}
 	farthest_candidates = processing.run('qgis:saveselectedfeatures',parameters6)
 	
-	layer.removeSelection()
 
 	parameters7 = {'INPUT':farthest_candidates['OUTPUT'],
 					'INPUT_FIELD' : field,
@@ -368,10 +384,16 @@ def hcmgis_closestpair(qgis,layer,field):
 	max_distance.selectByIds(ids)
 	
 	parameters8 = {'INPUT':max_distance,
-	 				'OUTPUT':  r"memory:farthest_points"
+	 				'OUTPUT':  'memory:farthest'
 					 }
-	processing.runAndLoadResults('qgis:saveselectedfeatures',parameters8)
-		
+	farthest = processing.run('qgis:saveselectedfeatures',parameters8)
+
+	parameters9 = {'INPUT':farthest['OUTPUT'],
+					'COLUMN' : ['MEAN','STDDEV','MIN'],
+	 				'OUTPUT':  'memory:farthest_points'
+					 }
+	processing.runAndLoadResults('qgis:deletecolumn',parameters9)
+
 	return
 
 

@@ -39,7 +39,7 @@ class Ui_hcmgis_closestpair_form(object):
 
     def retranslateUi(self, hcmgis_closestpair_form):
         _translate = QtCore.QCoreApplication.translate
-        hcmgis_closestpair_form.setWindowTitle(_translate("hcmgis_closestpair_form", "Closest pair of Points"))
+        hcmgis_closestpair_form.setWindowTitle(_translate("hcmgis_closestpair_form", "Closest/farthest pair of Points"))
         self.LblInput.setText(_translate("hcmgis_closestpair_form", "Input Point Layer"))
         self.LblInput_2.setText(_translate("hcmgis_closestpair_form", "Unique Field"))
 
@@ -53,3 +53,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_closestpair_form)
     hcmgis_closestpair_form.show()
     sys.exit(app.exec_())
+

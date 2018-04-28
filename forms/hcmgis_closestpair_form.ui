@@ -20,7 +20,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>Closest pair of Points</string>
+   <string>Closest/farthest pair of Points</string>
   </property>
   <widget class="QDialogButtonBox" name="BtnOKCancel">
    <property name="geometry">

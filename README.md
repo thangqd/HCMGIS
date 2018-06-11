@@ -5,7 +5,7 @@
 
 **- Basemap**: Add global basemap from OSM Stamen, Carto, Google, HCMGIS Aerial Images,...
 
-**- HCMGIS OpenData**:  Download free and open geodata from http://opendata.hcmgis.vn
+**- HCMGIS OpenData**:  Download free and open geodata from https://opendata.hcmgis.vn
 
 **- Spatial Processing**: 
 

@@ -23,7 +23,7 @@
 
 **- Basemap**: Thêm bản đồ nền OSM Stamen, Carto, Google, HCMGIS Aerial Images,...trong QGIS
 
-**- HCMGIS OpenData**:  Download miễn phí dữ liệu GIS từ http://opendata.hcmgis.vn
+**- HCMGIS OpenData**:  Download miễn phí dữ liệu GIS từ https://opendata.hcmgis.vn
 
 
 **-Xử lý không gian**: 

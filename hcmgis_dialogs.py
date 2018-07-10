@@ -74,7 +74,7 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 			self.BtnOutputFolder.setEnabled(False)	   
 	
 	def readwfs(self):
-		opendata_url = "http://opendata.hcmgis.vn/geoserver/ows?"
+		opendata_url = "https://opendata.hcmgis.vn/geoserver/ows?"
 		import qgis.utils
 		from owslib.wfs import WebFeatureService
 		from PyQt5.QtWidgets import QProgressBar
@@ -109,7 +109,7 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 		from PyQt5.QtWidgets import QProgressBar
 
 		from qgis.gui import QgsMessageBar
-		opendata_url = "http://opendata.hcmgis.vn/geoserver/ows?"
+		opendata_url = "https://opendata.hcmgis.vn/geoserver/ows?"
 
 
 		outdir = unicode(self.LinOutputFolder.displayText())

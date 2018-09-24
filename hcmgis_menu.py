@@ -228,7 +228,7 @@ class hcmgis_menu:
 		
 		#HCMGIS Aerial Image
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.hcmgisaerial_action = QAction(icon, u'HCMGIS Arerial Images', self.iface.mainWindow())
+		self.hcmgisaerial_action = QAction(icon, u'HCMGIS Aerial Images', self.iface.mainWindow())
 		self.hcmgisaerial_action.triggered.connect(self.hcmgisaerial_call)		
 		self.basemap_menu.addAction(self.hcmgisaerial_action)
 		

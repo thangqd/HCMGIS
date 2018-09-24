@@ -65,7 +65,7 @@ u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',
 def hcmgis_basemap(self, service_url, name):
 	import requests
 	import qgis.utils	
-	service_uri = "type=xyz&zmin=0&zmax=22&url=http://"+requests.utils.quote(service_url)
+	service_uri = "type=xyz&zmin=0&zmax=22&url=http://"+requests.utils.quote(service_url)	
 	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, name, "wms")
 					
 #--------------------------------------------------------
@@ -397,6 +397,7 @@ def hcmgis_closestpair(qgis,layer,field):
 	return
 
 
+		
 # --------------------------------------------------------
 #    hcmgis_merge - Merge layers to single shapefile
 #	 Reference: mmqgis
@@ -537,41 +538,6 @@ def hcmgis_split(qgis, layer,selectedfield, outdir):
 			  }
 	processing.run('qgis:splitvectorlayer',parameters)	
 
-def hcmgis_fixgeometries(qgis, input, output):		
-	import qgis.utils
-	import processing
-	if input is None:
-		return u'No selected layers!'  
-	parameters = {'INPUT':input,
-				'OUTPUT': output
-			  }
-	processing.runAndLoadResults('qgis:fixgeometries',parameters)	
-
-def hcmgis_checkvalidity(qgis, input):			
-	import qgis.utils
-	import processing
-	if input is None:
-		return u'No selected layers!'  
-	parameters = { 'INPUT_LAYER' : input, 
-	'METHOD' : 2, 
-	'VALID_OUTPUT' : 'memory:', 
-	'INVALID_OUTPUT' : 'memory:', 
-	'ERROR_OUTPUT' : 'memory:' }		
-	processing.runAndLoadResults('qgis:checkvalidity',parameters)	
-	
-def hcmgis_reprojection(qgis, input, destcrs, output):		
-	import qgis.utils
-	import processing
-	if input is None:
-		return u'No selected layers!'  
-	parameters = {'INPUT':input,
-				'TARGET_CRS': str(destcrs),
-				#'OUTPUT': "memory:"
-				'OUTPUT': output
-			  }
-	processing.runAndLoadResults('qgis:reprojectlayer',parameters)	
-		
-
 def hcmgis_merge_field(qgis, layer, selectedfields, char,selectedfeatureonly):			
 	if layer is None:
 		return u'No selected layers!'  
@@ -699,125 +665,6 @@ def hcmgis_split_field(qgis, layer, selectedfield, char, selectedfeatureonly):
 	qgis.messageBar().clearWidgets() 	
 	return None
 
-def hcmgis_find_replace(qgis, layer, selectedfield, find, replace, selectedfeatureonly):
-	if layer is None:
-		return u'No selected layer!'           
-   
-	if (len(selectedfield) <= 0):
-		return u'No selected field!'        	                        
-	find = unicode(find)
-	replace = unicode(replace)      
-
-
-	layer.dataProvider().addAttributes([QgsField("find_replace",  QVariant.String)]) # define/add field data type
-	layer.updateFields()
-
-	progressMessageBar = qgis.messageBar()
-	progress = QProgressBar()
-	#Maximum is set to 100, making it easy to work with percentage of completion
-	progress.setMaximum(100) 
-	#pass the progress bar to the message Bar
-	progressMessageBar.pushWidget(progress)
-		
-	featurecount = 0
-	fieldnumber = 0
-   
-	for i in layer.fields():
-                fieldnumber += 1
-
-   
-	layer.startEditing()
-	if selectedfeatureonly:
-		totalfeaturecount = layer.selectedFeatureCount()
-		for feature in  layer.SelectedFeatures():
-			if (feature[layer.dataProvider().fieldNameIndex(selectedfield)]):# is not NULL
-				layer.changeAttributeValue(feature.id(), (fieldnumber-1), unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).replace(find ,replace))                                        
-			featurecount += 1
-			percent = (featurecount/float(totalfeaturecount)) * 100
-			progress.setValue(percent)                   
-	else:
-		totalfeaturecount = layer.featureCount()
-		for feature in layer.getFeatures():
-			if (feature[layer.dataProvider().fieldNameIndex(selectedfield)]):# is not NULL
-				layer.changeAttributeValue(feature.id(), (fieldnumber-1), unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).replace(find ,replace))                                        
-			featurecount += 1
-			percent = (featurecount/float(totalfeaturecount)) * 100
-			progress.setValue(percent)        
-	layer.commitChanges()        
-	#hcmgis_completion_message(qgis, unicode(featurecount) + " records updated")
-	qgis.messageBar().clearWidgets() 	
-	return None
-
-def hcmgis_prefix_suffix(qgis, layer, selectedfield, prefix, charprefix, suffix, charsuffix, selectedfeatureonly):
-	from PyQt5.QtWidgets import QProgressBar
-
-	if layer is None:
-		return u'No selected layer!'                  
-	if (len(selectedfield) <= 0):
-		return u'No selected field!'        
-	
-	if ( layer.isEditable == False): return u'Layer is read only!' 
-	
-	prefix = unicode(prefix)
-	charprefix = unicode(charprefix)
-	suffix = unicode(suffix)
-	charsuffix = unicode(charsuffix)
-	if (charprefix == u'Space'):
-		charprefix = " "
-	elif (charprefix == "Tab"):
-		charprefix = "\t"
-
-	if (charsuffix == u'Space'):
-		charsuffix = " "
-	elif (charsuffix == "Tab"):
-		charsuffix = "\t"
-							   
-	try:
-		layer.dataProvider().addAttributes([QgsField("pre_suf",  QVariant.String)]) # define/add field data type
-		layer.updateFields()
-	except: return u'Layer is read only!' 
-	#layer.commitChanges()        
-
-
-	progressMessageBar = qgis.messageBar()
-	progress = QProgressBar()
-	#Maximum is set to 100, making it easy to work with percentage of completion
-	progress.setMaximum(100) 
-	#pass the progress bar to the message Bar
-	progressMessageBar.pushWidget(progress)
-	
-	featurecount = 0
-	fieldnumber = 0
-	totalfeaturecount = 0
-	
-	for i in layer.fields():
-		fieldnumber += 1              
-		  
-	layer.startEditing()
-	if selectedfeatureonly:
-		totalfeaturecount = layer.selectedFeatureCount()
-		for feature in  layer.SelectedFeatures():                        
-			if (feature[layer.dataProvider().fieldNameIndex(selectedfield)]):# is not NULL
-				layer.changeAttributeValue(feature.id(), (fieldnumber-1), (prefix + charprefix + unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)])+ charsuffix + suffix))
-			else:                      
-				layer.changeAttributeValue(feature.id(), (fieldnumber-1), (prefix + charprefix + charsuffix + suffix))                                        
-			featurecount += 1
-			percent = (featurecount/float(totalfeaturecount)) * 100
-			progress.setValue(percent)
-	else:
-		totalfeaturecount = layer.featureCount()
-		for feature in  layer.getFeatures():
-			if (feature[layer.dataProvider().fieldNameIndex(selectedfield)]):# is not NULL
-				layer.changeAttributeValue(feature.id(), (fieldnumber-1), (prefix + charprefix + unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)])+ charsuffix + suffix))
-			else:                      
-				layer.changeAttributeValue(feature.id(), (fieldnumber-1), (prefix + charprefix + charsuffix + suffix))                                        
-			featurecount += 1
-			percent = (featurecount/float(totalfeaturecount)) * 100
-			progress.setValue(percent)
-	layer.commitChanges()        
-	#hcmgis_completion_message(qgis, unicode(featurecount) + " records updated")
-	qgis.messageBar().clearWidgets() 	
-	return None
 
 ##################################
 #Font Converter
@@ -1062,6 +909,420 @@ def hcmgis_status_message(qgis, message):
 	qgis.statusBarIface().showMessage(message)
 
 
-
 def hcmgis_completion_message(qgis, message):
 	hcmgis_status_message(qgis, message)
+
+# --------------------------------------------------------
+#    hcmgis_voronoi - Voronoi diagram creation
+#    reference: hcmgis
+# --------------------------------------------------------
+
+def hcmgis_voronoi_diagram(qgis, sourcelayer, savename, addlayer):
+	layer = hcmgis_find_layer(sourcelayer)
+	if layer == None:
+		return "Layer " + sourcename + " not found"
+	
+	if len(savename) <= 0:
+		return "No output filename given"
+
+	if QFile(savename).exists():
+		if not QgsVectorFileWriter.deleteShapeFile(savename):
+			return "Failure deleting existing shapefile: " + savename
+
+	outfile = QgsVectorFileWriter(savename, "utf-8", layer.fields(), \
+			QgsWkbTypes.Polygon, layer.crs(), "ESRI Shapefile")
+
+	if (outfile.hasError() != QgsVectorFileWriter.NoError):
+		return "Failure creating output shapefile: " + unicode(outfile.errorMessage())
+
+	points = []
+	xmin = 0
+	xmax = 0
+	ymin = 0
+	ymax = 0
+
+	for feature in layer.getFeatures():
+		# Re-read by feature ID because nextFeature() doesn't always seem to read attributes
+		# layer.featureAtId(feature.id(), feature)
+		geometry = feature.geometry()
+		hcmgis_status_message(qgis, "Reading feature " + unicode(feature.id()))
+		# print str(feature.id()) + ": " + str(geometry.wkbType())
+		if geometry.wkbType() == QgsWkbTypes.Point:
+			points.append( (geometry.asPoint().x(), geometry.asPoint().y(), feature.attributes()) )
+			if (len(points) <= 1) or (xmin > geometry.asPoint().x()):
+				xmin = geometry.asPoint().x()
+			if (len(points) <= 1) or (xmax < geometry.asPoint().x()):
+				xmax = geometry.asPoint().x()
+			if (len(points) <= 1) or (ymin > geometry.asPoint().y()):
+				ymin = geometry.asPoint().y()
+			if (len(points) <= 1) or (ymax < geometry.asPoint().y()):
+				ymax = geometry.asPoint().y()
+
+	if (len(points) < 3):
+		return "Too few points to create diagram"
+
+	for point_number, center in enumerate(points):
+	# for center in [ points[17] ]:
+		# print "\nCenter, " + str(center[0]) + ", " + str(center[1])
+		if (point_number % 20) == 0:
+			#hcmgis_status_message(qgis, "Processing point " + \
+			#	unicode(center[0]) + ", " + unicode(center[1]))
+			hcmgis_status_message(qgis, "Processing point " + unicode(point_number) + " of " + unicode(len(points)))
+
+		# Borders are tangents to midpoints between all neighbors
+		tangents = []
+		for neighbor in points:
+			border = hcmgis_voronoi_line((center[0] + neighbor[0]) / 2.0, (center[1] + neighbor[1]) / 2.0)
+			if ((neighbor[0] != center[0]) or (neighbor[1] != center[1])):
+				tangents.append(border)
+
+		# Add edge intersections to clip to extent of points
+		offset = (xmax - xmin) * 0.01
+		tangents.append(hcmgis_voronoi_line(xmax + offset, center[1]))
+		tangents.append(hcmgis_voronoi_line(center[0], ymax + offset))
+		tangents.append(hcmgis_voronoi_line(xmin - offset, center[1]))
+		tangents.append(hcmgis_voronoi_line(center[0], ymin - offset))
+		#print "Extent x = " + str(xmax) + " -> " + str(xmin) + ", y = " + str(ymax) + " -> " + str(ymin)
+
+		# Find vector distance and angle to border from center point
+		for scan in range(0, len(tangents)):
+			run = tangents[scan].x - center[0]
+			rise = tangents[scan].y - center[1]
+			tangents[scan].distance = sqrt((run * run) + (rise * rise))
+			if (tangents[scan].distance <= 0):
+				tangents[scan].angle = 0
+			elif (tangents[scan].y >= center[1]):
+				tangents[scan].angle = acos(run / tangents[scan].distance)
+			elif (tangents[scan].y < center[1]):
+				tangents[scan].angle = (2 * pi) - acos(run / tangents[scan].distance)
+			elif (tangents[scan].x > center[0]):
+				tangents[scan].angle = pi / 2.0
+			else:
+				tangents[scan].angle = 3 * pi / 4
+
+			#print "  Tangent, " + str(tangents[scan].x) + ", " + str(tangents[scan].y) + \
+			#	", angle " + str(tangents[scan].angle * 180 / pi) + ", distance " + \
+			#	str(tangents[scan].distance)
+
+
+		# Find the closest line - guaranteed to be a border
+		closest = -1
+		for scan in range(0, len(tangents)):
+			if ((closest == -1) or (tangents[scan].distance < tangents[closest].distance)):
+				closest = scan
+
+		# Use closest as the first border
+		border = hcmgis_voronoi_line(tangents[closest].x, tangents[closest].y)
+		border.angle = tangents[closest].angle
+		border.distance = tangents[closest].distance
+		borders = [ border ]
+
+		#print "  Border 0) " + str(closest) + " of " + str(len(tangents)) + ", " \
+		#	+ str(border.x) + ", " + str(border.y) \
+		#	+ ", (angle " + str(border.angle * 180 / pi) + ", distance " \
+		#	+ str(border.distance) + ")"
+
+		# Work around the tangents in a CCW circle
+		circling = 1
+		while circling:
+			next = -1
+			scan = 0
+			while (scan < len(tangents)):
+				anglebetween = tangents[scan].angle - borders[len(borders) - 1].angle
+				if (anglebetween < 0):
+					anglebetween += (2 * pi)
+				elif (anglebetween > (2 * pi)):
+					anglebetween -= (2 * pi)
+
+				#print "    Scanning " + str(scan) + " of " + str(len(borders)) + \
+				#	", " + str(tangents[scan].x) + ", " + str(tangents[scan].y) + \
+				#	", angle " + str(tangents[scan].angle * 180 / pi) + \
+				#	", anglebetween " + str(anglebetween * 180 / pi)
+
+				# If border intersects to the left
+				if (anglebetween < pi) and (anglebetween > 0):
+					# A typo here with a reversed slash cost 8/13/2009 debugging
+					tangents[scan].iangle = atan2( (tangents[scan].distance / 
+						borders[len(borders) - 1].distance) \
+						- cos(anglebetween), sin(anglebetween))
+					tangents[scan].idistance = borders[len(borders) - 1].distance \
+						/ cos(tangents[scan].iangle)
+
+					tangents[scan].iangle += borders[len(borders) - 1].angle
+
+					# If the rightmost intersection so far, it's a candidate for next border
+					if (next < 0) or (tangents[scan].iangle < tangents[next].iangle):
+						# print "      Take idistance " + str(tangents[scan].idistance)
+						next = scan
+
+				scan += 1
+
+			# iangle/distance are for intersection of border with next border
+			borders[len(borders) - 1].iangle = tangents[next].iangle
+			borders[len(borders) - 1].idistance = tangents[next].idistance
+
+			# Stop circling if back to the beginning
+			if (borders[0].x == tangents[next].x) and (borders[0].y == tangents[next].y):
+				circling = 0
+
+			else:
+				# Add the next border
+				border = hcmgis_voronoi_line(tangents[next].x, tangents[next].y)
+				border.angle = tangents[next].angle
+				border.distance = tangents[next].distance
+				border.iangle = tangents[next].iangle
+				border.idistance = tangents[next].idistance
+				borders.append(border)
+				#print "  Border " + str(len(borders) - 1) + \
+				#	") " + str(next) + ", " + str(border.x) + \
+				#	", " + str(border.y) + ", angle " + str(border.angle * 180 / pi) +\
+				#	", iangle " + str(border.iangle * 180 / pi) +\
+				#	", idistance " + str(border.idistance) + "\n"
+
+			# Remove the border from the list so not repeated
+			tangents.pop(next)
+			if (len(tangents) <= 0):
+				circling = 0
+
+		polygon = []
+		if len(borders) >= 3:
+			for border in borders:
+				ix = center[0] + (border.idistance * cos(border.iangle))
+				iy = center[1] + (border.idistance * sin(border.iangle))
+				#print "  Node, " + str(ix) + ", " + str(iy) + \
+				#	", angle " + str(border.angle * 180 / pi) + \
+				#	", iangle " + str(border.iangle * 180 / pi) + \
+				#	", idistance " + str(border.idistance) + ", from " \
+				#	+ str(border.x) + ", " + str(border.y)
+				polygon.append(QgsPointXY(ix, iy))
+
+			#print "Polygon " + unicode(point_number)
+			#for x in range(0, len(polygon)):
+			#	print "  Point " + unicode(polygon[x].x()) + ", " + unicode(polygon[x].y())
+
+			# Remove duplicate nodes
+			# Compare as strings (unicode) to avoid odd precision discrepancies
+			# that sometimes cause duplicate points to be unrecognized
+			dup = 0
+			while (dup < (len(polygon) - 1)):
+				if (unicode(polygon[dup].x()) == unicode(polygon[dup + 1].x())) and \
+				   (unicode(polygon[dup].y()) == unicode(polygon[dup + 1].y())):
+					polygon.pop(dup)
+					# print "  Removed duplicate node " + unicode(dup) + \
+					#	" in polygon " + unicode(point_number)
+				else:
+					# print "  " + unicode(polygon[dup].x()) + ", " + \
+					#	unicode(polygon[dup].y()) + " != " + \
+					#	unicode(polygon[dup + 1].x()) + ", " + \
+					#	unicode(polygon[dup + 1].y())
+					dup = dup + 1
+
+			# attributes = { 0:QVariant(center[0]), 1:QVariant(center[1]) }
+
+		if len(polygon) >= 3:
+			geometry = QgsGeometry.fromPolygonXY([ polygon ])
+			feature = QgsFeature()
+			feature.setGeometry(geometry)
+			feature.setAttributes(center[2])
+			outfile.addFeature(feature)
+				
+	del outfile
+
+	if addlayer:
+		qgis.addVectorLayer(savename, os.path.basename(savename), "ogr")
+
+	hcmgis_completion_message(qgis, "Created " + unicode(len(points)) + " polygon Voronoi diagram")
+
+	return None
+
+def hcmgis_endpoint(start, distance, degrees):
+	# Assumes points are WGS 84 lat/long, distance in meters,
+	# bearing in degrees with north = 0, east = 90, west = -90
+	# Uses the haversine formula for calculation:
+	# http://www.movable-type.co.uk/scripts/latlong.html
+	radius = 6378137.0 # meters
+
+	start_lon = start.x() * pi / 180
+	start_lat = start.y() * pi / 180
+	bearing = degrees * pi / 180
+
+	end_lat = asin((sin(start_lat) * cos(distance / radius)) +
+		(cos(start_lat) * sin(distance / radius) * cos(bearing)))
+	end_lon = start_lon + atan2( \
+		sin(bearing) * sin(distance / radius) * cos(start_lat),
+		cos(distance / radius) - (sin(start_lat) * sin(end_lat)))
+
+	return QgsPointXY(end_lon * 180 / pi, end_lat * 180 / pi)
+
+
+# --------------------------------------------------------
+# hcmgis_lec - Largest Empty Circle inside the convexhull of a point set based on Voronoi Diagram
+# 	 
+# --------------------------------------------------------
+
+def hcmgis_lec(qgis, layer, selectedfield, savename):	
+	import processing
+	if layer is None:
+		return u'No selected point layer!'  
+	parameters1 = {'INPUT': layer,
+				  'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'
+				  } 
+	voronoipolygon = processing.run('qgis:voronoipolygons', parameters1)
+
+	#parameters2 = {'INPUT': layer,
+	#				'OUTPUT' : 'memory:convexhull'} 
+	#convexhull = processing.run('qgis:convexhull', parameters2)	
+
+	parameters2 = {'INPUT': layer,
+				'FIELD' : None,
+				 'TYPE' : 3,
+					'OUTPUT' : 'memory:convexhull'} 
+	convexhull = processing.run('qgis:minimumboundinggeometry', parameters2)	
+
+	parameter2_1 =  {'INPUT': convexhull['OUTPUT'],					 
+				  'OUTPUT':  "memory:convexhull_vertices"}
+	convexhull_vertices = processing.run('qgis:extractvertices',parameter2_1) 
+ 
+
+
+	parameter3 =  {'INPUT': voronoipolygon['OUTPUT'],	
+				   'OVERLAY': convexhull['OUTPUT'], 
+				  'OUTPUT':  "memory:voronoi_clip"}
+	voronoi_clip = processing.run('qgis:clip',parameter3) 
+
+	parameter4 =  {'INPUT': voronoi_clip['OUTPUT'],					 
+				  'OUTPUT':  "memory:voronoi_vertices"}
+	voronoi_vertices = processing.run('qgis:extractvertices',parameter4) 
+
+	parameter5 =  {'INPUT': voronoi_vertices['OUTPUT'],					 
+				  'OUTPUT':  "memory:voronoi_vertices_clean"}
+	voronoi_vertices_clean = processing.run('qgis:deleteduplicategeometries',parameter5) 
+
+	parameter6 =  {'INPUT': voronoi_vertices_clean['OUTPUT'],
+					'OVERLAY': 	convexhull_vertices['OUTPUT'],				 
+				   'OUTPUT':  "memory:candidates"}
+	candidates = processing.run('qgis:difference',parameter6) 
+
+	parameter7 =  {'INPUT': candidates['OUTPUT'],
+					'FIELD': selectedfield,
+					'HUBS' : layer,
+					'UNIT' : 0,
+				   'OUTPUT':  "memory:distances"}
+	max_distances = processing.run('qgis:distancetonearesthubpoints',parameter7) 
+	
+	values = []
+	centers = max_distances['OUTPUT']
+	idx =  centers.dataProvider().fieldNameIndex("HubDist")
+	for feat in centers.getFeatures():
+		attrs = feat.attributes()
+		values.append(attrs[idx])
+	
+	maxvalue = max(values)
+	maxvaluestr = str(max(values))	
+	
+	selection = centers.getFeatures(QgsFeatureRequest(QgsExpression('"HubDist"' + '=' + maxvaluestr)))
+	ids = [s.id() for s in selection]
+	centers.selectByIds(ids)
+
+	parameters8 = {'INPUT':centers,
+					'OUTPUT':  "memory:center"}
+	processing.runAndLoadResults('qgis:saveselectedfeatures',parameters8)
+	
+	radius_attribute = None
+	radius_unit = 'Meters'
+	edge_attribute = 'Rounded'
+	edge_count = 64
+	hcmgis_buffers_radius = maxvalue
+	rotation_attribute = None
+	hcmgis_buffers_rotation = 0
+	#savename = "E:/circle.shp"
+	selectedonly = False
+	center = hcmgis_find_layer('center')
+	hcmgis_buffers(qgis, center, radius_attribute, hcmgis_buffers_radius, radius_unit, 
+			edge_attribute, edge_count, rotation_attribute, hcmgis_buffers_rotation,
+			savename, selectedonly, True)
+
+# --------------------------------------------------------
+#    hcmgis_buffers - Create buffers around shapes
+# --------------------------------------------------------
+def hcmgis_buffer_point(point, meters, edges, rotation_degrees):
+	if (meters <= 0) or (edges < 3):
+		return None
+
+	# Points are treated separately from other geometries so that discrete
+	# edges can be supplied for non-circular buffers that are not supported
+	# by the QgsGeometry.buffer() function
+
+	wgs84 = QgsCoordinateReferenceSystem()
+	wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
+
+	# print "Point " + unicode(point.x()) + ", " + unicode(point.y()) + " meters " + unicode(meters)
+
+	polyline = []
+	for edge in range(0, edges + 1):
+		degrees = ((float(edge) * 360.0 / float(edges)) + rotation_degrees) % 360
+		polyline.append(hcmgis_endpoint(QgsPointXY(point), meters, degrees))
+
+	return QgsGeometry.fromPolygonXY([polyline])
+
+
+def hcmgis_buffers(qgis, layer, radius_attribute, radius, radius_unit, edge_attribute, edge_count, 
+	rotation_attribute, rotation_degrees, savename, selectedonly, addlayer):
+	# Create the output file
+	if QFile(savename).exists():
+		if not QgsVectorFileWriter.deleteShapeFile(savename):
+			return "Failure deleting existing shapefile: " + savename
+ 
+	wgs84 = QgsCoordinateReferenceSystem()
+	wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
+	transform = QgsCoordinateTransform(layer.crs(), wgs84, QgsProject.instance())
+	# print layer.crs().toProj4() + " -> " + wgs84.toProj4()
+	
+	outfile = QgsVectorFileWriter(savename, "utf-8", layer.fields(), QgsWkbTypes.Polygon, wgs84, "ESRI Shapefile")
+
+	if (outfile.hasError() != QgsVectorFileWriter.NoError):
+		return "Failure creating output shapefile: " + unicode(outfile.errorMessage())
+
+	# Create buffers for each feature
+	buffercount = 0
+	featurecount = layer.featureCount();
+	if selectedonly:
+		feature_list = layer.selectedFeatures()
+	else:
+		feature_list = layer.getFeatures()
+
+	for feature_index, feature in enumerate(feature_list):
+		#hcmgis_status_message(qgis, "Writing feature " + \
+			#unicode(feature.id()) + " of " + unicode(featurecount))
+
+		geometry = feature.geometry()
+		geometry.transform(transform) # Needs to be WGS 84 to use Haversine distance calculation
+		# print "Transform " + unicode(x) + ": " + unicode(geometry.centroid().asPoint().x())
+
+		if (geometry.wkbType() in [QgsWkbTypes.Point, QgsWkbTypes.Point25D, QgsWkbTypes.MultiPoint, QgsWkbTypes.MultiPoint25D]):
+
+			#newgeometry = hcmgis_buffer_point(geometry.asPoint(), feature_radius, feature_edges, feature_rotation)
+			newgeometry = hcmgis_buffer_point(geometry.asPoint(), radius, edge_count, 0)
+
+		if newgeometry == None:
+			return "Failure converting geometry for feature " + unicode(buffercount)
+
+		else:
+			newfeature = QgsFeature()
+			newfeature.setGeometry(newgeometry)
+			newfeature.setAttributes(feature.attributes())
+			outfile.addFeature(newfeature)
+	
+		buffercount = buffercount + 1
+
+	del outfile
+
+	if addlayer:
+		vlayer = qgis.addVectorLayer(savename, os.path.basename(savename), "ogr")
+		
+	#hcmgis_completion_message(qgis, unicode(buffercount) + " buffers created for " + \
+		#unicode(featurecount) + " features")
+
+	return None
+
+

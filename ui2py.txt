@@ -1,18 +1,14 @@
 C:\Users\KT_HCMGIS\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\HCMGIS\forms\
-pyuic5 -x hcmgis_checkvalidity_form.ui -o hcmgis_checkvalidity_form.py
-pyuic5 -x hcmgis_find_replace_form.ui -o hcmgis_find_replace_form.py
-pyuic5 -x hcmgis_fixgeometries_form.ui -o hcmgis_fixgeometries_form.py
 pyuic5 -x hcmgis_font_convert_form.ui -o hcmgis_font_convert_form.py
 pyuic5 -x hcmgis_merge_field_form.ui -o hcmgis_merge_field_form.py
 pyuic5 -x hcmgis_merge_form.ui -o hcmgis_merge_form.py
-pyuic5 -x hcmgis_prefix_suffix_form.ui -o hcmgis_prefix_suffix_form.py
-pyuic5 -x hcmgis_reprojection_form.ui -o hcmgis_reprojection_form.py
 pyuic5 -x hcmgis_split_form.ui -o hcmgis_split_form.py
 pyuic5 -x hcmgis_split_field_form.ui -o hcmgis_split_field_form.py
 pyuic5 -x hcmgis_medialaxis_form.ui -o hcmgis_medialaxis_form.py
 pyuic5 -x hcmgis_centerline_form.ui -o hcmgis_centerline_form.py
 pyuic5 -x hcmgis_opendata_form.ui -o hcmgis_opendata_form.py
 pyuic5 -x hcmgis_closestpair_form.ui -o hcmgis_closestpair_form.py
+pyuic5 -x hcmgis_lec_form.ui -o hcmgis_lec_form.py
 
 =====================
 http://leaflet-extras.github.io/leaflet-providers/preview/

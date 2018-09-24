@@ -31,6 +31,200 @@ class hcmgis_menu:
 		# OpenData_basemap submenu
 		self.basemap_menu = QMenu(u'BaseMap')		
 		self.hcmgis_add_submenu(self.basemap_menu)
+
+		##https://mc.bbbike.org/mc/?num=2&mt0=mapnik&mt1=watercolor
+		#https://gitlab.com/GIS-projects/Belgium-XYZ-tiles/tree/b538df2c2de0d16937641742f25e4709ca94e42e
+		
+
+		#Carto Antique
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")
+		self.cartoantique_action = QAction(icon, u'Carto Antique', self.iface.mainWindow())
+		self.cartoantique_action.triggered.connect(self.cartoantique_call)		
+		self.basemap_menu.addAction(self.cartoantique_action)
+
+		#Carto Dark
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")
+		self.cartodark_action = QAction(icon, u'Carto Dark', self.iface.mainWindow())
+		self.cartodark_action.triggered.connect(self.cartodark_call)		
+		self.basemap_menu.addAction(self.cartodark_action)
+
+		#Carto Eco
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")
+		self.cartoeco_action = QAction(icon, u'Carto Eco', self.iface.mainWindow())
+		self.cartoeco_action.triggered.connect(self.cartoeco_call)		
+		self.basemap_menu.addAction(self.cartoeco_action)
+
+		#Carto Light
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")
+		self.cartolight_action = QAction(icon, u'Carto Light', self.iface.mainWindow())
+		self.cartolight_action.triggered.connect(self.cartolight_call)		
+		self.basemap_menu.addAction(self.cartolight_action)
+
+		#########################		
+		# ESRI https://gitlab.com/GIS-projects/Belgium-XYZ-tiles/tree/b538df2c2de0d16937641742f25e4709ca94e42e
+		#####################
+		#Esri Boundaries and Places 
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esriboundary_action = QAction(icon, u'Esri Boundaries and Places', self.iface.mainWindow())
+		self.esriboundary_action.triggered.connect(self.esriboundary_call)		
+		self.basemap_menu.addAction(self.esriboundary_action)
+
+		#Esri Dark Gray 
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esridarkgray_action = QAction(icon, u'Esri Dark Gray', self.iface.mainWindow())
+		self.esridarkgray_action.triggered.connect(self.esridarkgray_call)		
+		self.basemap_menu.addAction(self.esridarkgray_action)
+
+		#Esri DeLorme World Base Map
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esridelorme_action = QAction(icon, u'ESri DeLorme', self.iface.mainWindow())
+		self.esridelorme_action.triggered.connect(self.esridelorme_call)		
+		self.basemap_menu.addAction(self.esridelorme_action)
+
+		#Esri Imagery 
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esriimagery_action = QAction(icon, u'Esri Imagery', self.iface.mainWindow())
+		self.esriimagery_action.triggered.connect(self.esriimagery_call)		
+		self.basemap_menu.addAction(self.esriimagery_action)
+	
+		#Esri Light Gray 
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esrilightgray_action = QAction(icon, u'Esri Light Gray', self.iface.mainWindow())
+		self.esrilightgray_action.triggered.connect(self.esrilightgray_call)		
+		self.basemap_menu.addAction(self.esrilightgray_action)
+
+		#Esri National Geographic World Map
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esrinational_action = QAction(icon, u'Esri National Geographic', self.iface.mainWindow())
+		self.esrinational_action.triggered.connect(self.esrinational_call)		
+		self.basemap_menu.addAction(self.esrinational_action)
+
+		#Esri Ocean Basemap
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esriocean_action = QAction(icon, u'Esri Ocean', self.iface.mainWindow())
+		self.esriocean_action.triggered.connect(self.esriocean_call)		
+		self.basemap_menu.addAction(self.esriocean_action)
+
+		#Esri Physical Map
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esriphysical_action = QAction(icon, u'Esri Physical', self.iface.mainWindow())
+		self.esriphysical_action.triggered.connect(self.esriphysical_call)		
+		self.basemap_menu.addAction(self.esriphysical_action)
+
+		#Esri Shaded Relief
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esrishaded_action = QAction(icon, u'Esri Shaded Relief', self.iface.mainWindow())
+		self.esrishaded_action.triggered.connect(self.esrishaded_call)		
+		self.basemap_menu.addAction(self.esrishaded_action)
+
+		#Esri Street Map
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esristreet_action = QAction(icon, u'Esri Street', self.iface.mainWindow())
+		self.esristreet_action.triggered.connect(self.esristreet_call)		
+		self.basemap_menu.addAction(self.esristreet_action)
+
+		#Esri Terrain Map
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esriterrain_action = QAction(icon, u'Esri Terrain', self.iface.mainWindow())
+		self.esriterrain_action.triggered.connect(self.esriterrain_call)		
+		self.basemap_menu.addAction(self.esriterrain_action)
+		
+		#Esri World Topo Map
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esritopo_action = QAction(icon, u'Esri Topographic', self.iface.mainWindow())
+		self.esritopo_action.triggered.connect(self.esritopo_call)		
+		self.basemap_menu.addAction(self.esritopo_action)
+
+		#Esri World Transportation
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		self.esritransport_action = QAction(icon, u'Esri Transport', self.iface.mainWindow())
+		self.esritransport_action.triggered.connect(self.esritransport_call)		
+		self.basemap_menu.addAction(self.esritransport_action)
+
+		
+
+		#############3
+
+		#Google Maps
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.googlemaps_action = QAction(icon, u'Google Maps', self.iface.mainWindow())
+		self.googlemaps_action.triggered.connect(self.googlemaps_call)		
+		self.basemap_menu.addAction(self.googlemaps_action)
+		
+				
+		#Google Terrain
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.hcmgis_googleterrain_action = QAction(icon, u'Google Terrain', self.iface.mainWindow())
+		self.hcmgis_googleterrain_action.triggered.connect(self.googleterrain_call)		
+		self.basemap_menu.addAction(self.hcmgis_googleterrain_action)
+
+		#Google Terrain Hybrid
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.hcmgis_googleterrainhybrid_action = QAction(icon, u'Google Terrain Hybrid', self.iface.mainWindow())
+		self.hcmgis_googleterrainhybrid_action.triggered.connect(self.googleterrainhybrid_call)		
+		self.basemap_menu.addAction(self.hcmgis_googleterrainhybrid_action)
+
+		#Google Satellite
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.googlesatellite_action = QAction(icon, u'Google Satellite', self.iface.mainWindow())
+		self.googlesatellite_action.triggered.connect(self.googlesatellite_call)		
+		self.basemap_menu.addAction(self.googlesatellite_action)
+
+		#Google Satellite Hybrid
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.hcmgis_googlesatellitehybrid_action = QAction(icon, u'Google Satellite Hybrid', self.iface.mainWindow())
+		self.hcmgis_googlesatellitehybrid_action.triggered.connect(self.googlesatellitehybrid_call)		
+		self.basemap_menu.addAction(self.hcmgis_googlesatellitehybrid_action)
+		
+		
+		##############################
+		#Stamen
+		#############################
+
+	
+		
+		#Stamen Toner
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
+		self.stamentoner_action = QAction(icon, u'Stamen Toner', self.iface.mainWindow())
+		self.stamentoner_action.triggered.connect(self.stamentoner_call)		
+		self.basemap_menu.addAction(self.stamentoner_action)
+
+		# Stamen Toner Background
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
+		self.stamentonerbkg_action = QAction(icon, u'Stamen Toner Background', self.iface.mainWindow())
+		self.stamentonerbkg_action.triggered.connect(self.stamentonerbkg_call)		
+		self.basemap_menu.addAction(self.stamentonerbkg_action)
+
+		# Stamen Toner Hybrid
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
+		self.stamentonerhybrid_action = QAction(icon, u'Stamen Toner Hybrid', self.iface.mainWindow())
+		self.stamentonerhybrid_action.triggered.connect(self.stamentonerhybrid_call)		
+		self.basemap_menu.addAction(self.stamentonerhybrid_action)
+
+		# Stamen Toner Lite
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
+		self.stamentonerlite_action = QAction(icon, u'Stamen Toner Lite', self.iface.mainWindow())
+		self.stamentonerlite_action.triggered.connect(self.stamentonerlite_call)		
+		self.basemap_menu.addAction(self.stamentonerlite_action)
+		
+		# Stamen Terrain
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
+		self.stamenterrain_action = QAction(icon, u'Stamen Terrain', self.iface.mainWindow())
+		self.stamenterrain_action.triggered.connect(self.stamenterrain_call)		
+		self.basemap_menu.addAction(self.stamenterrain_action)
+
+		# Stamen Terrain Background
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
+		self.stamenterrainbkg_action = QAction(icon, u'Stamen Terrain Background', self.iface.mainWindow())
+		self.stamenterrainbkg_action.triggered.connect(self.stamenterrainbkg_call)		
+		self.basemap_menu.addAction(self.stamenterrainbkg_action)
+		
+		# Stamen Watercolor
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
+		self.stamenwatercolor_action = QAction(icon, u'Stamen Watercolor', self.iface.mainWindow())
+		self.stamenwatercolor_action.triggered.connect(self.stamenwatercolor_call)		
+		self.basemap_menu.addAction(self.stamenwatercolor_action)
+			
 		
 		#HCMGIS Aerial Image
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
@@ -38,61 +232,6 @@ class hcmgis_menu:
 		self.hcmgisaerial_action.triggered.connect(self.hcmgisaerial_call)		
 		self.basemap_menu.addAction(self.hcmgisaerial_action)
 		
-		#OSM Stamen Watercolor
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamenwatercolor.png")
-		self.stamenwatercolor_action = QAction(icon, u'OSM Stamen Watercolor', self.iface.mainWindow())
-		self.stamenwatercolor_action.triggered.connect(self.stamenwatercolor_call)		
-		self.basemap_menu.addAction(self.stamenwatercolor_action)
-		
-		#OSM Stamen Toner
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamentoner.png")
-		self.stamentoner_action = QAction(icon, u'OSM Stamen Toner', self.iface.mainWindow())
-		self.stamentoner_action.triggered.connect(self.stamentoner_call)		
-		self.basemap_menu.addAction(self.stamentoner_action)
-		
-		#OSM Stamen Terrain
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamenterrain.png")
-		self.stamenterrain_action = QAction(icon, u'OSM Stamen Terrain', self.iface.mainWindow())
-		self.stamenterrain_action.triggered.connect(self.stamenterrain_call)		
-		self.basemap_menu.addAction(self.stamenterrain_action)
-		
-		
-		#OSM Carto Light
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_cartolight.png")
-		self.cartolight_action = QAction(icon, u'Carto Light', self.iface.mainWindow())
-		self.cartolight_action.triggered.connect(self.cartolight_call)		
-		self.basemap_menu.addAction(self.cartolight_action)
-		
-		
-		#OSM Carto Dark
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_cartodark.png")
-		self.cartodark_action = QAction(icon, u'Carto Dark', self.iface.mainWindow())
-		self.cartodark_action.triggered.connect(self.cartodark_call)		
-		self.basemap_menu.addAction(self.cartodark_action)
-		
-		#Google Satellite
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlesatellite.png")
-		self.googlesatellite_action = QAction(icon, u'Google Satellite', self.iface.mainWindow())
-		self.googlesatellite_action.triggered.connect(self.googlesatellite_call)		
-		self.basemap_menu.addAction(self.googlesatellite_action)
-		
-		#Google Streets
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlestreets.png")
-		self.googlestreets_action = QAction(icon, u'Google Streets', self.iface.mainWindow())
-		self.googlestreets_action.triggered.connect(self.googlestreets_call)		
-		self.basemap_menu.addAction(self.googlestreets_action)
-		
-		#Google Hybrid
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlehybrid.png")
-		self.hcmgis_googlehybrid_action = QAction(icon, u'Google Hybrid', self.iface.mainWindow())
-		self.hcmgis_googlehybrid_action.triggered.connect(self.googlehybrid_call)		
-		self.basemap_menu.addAction(self.hcmgis_googlehybrid_action)
-		
-		#Google Physical
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlephysical.png")
-		self.hcmgis_googlephysical_action = QAction(icon, u'Google Physical', self.iface.mainWindow())
-		self.hcmgis_googlephysical_action.triggered.connect(self.googlephysical_call)		
-		self.basemap_menu.addAction(self.hcmgis_googlephysical_action)
 		
 		#HCMGIS OpenData submenu
 		self.opendata_menu = QMenu(u'HCMGIS OpenData')		
@@ -125,6 +264,13 @@ class hcmgis_menu:
 		self.closestpair_action = QAction(icon, u"Closest/ farthest pair of Points", self.iface.mainWindow())
 		self.closestpair_action.triggered.connect(self.closestpair)
 		self.geoprocessing_menu.addAction(self.closestpair_action)
+
+		
+		# Largest Empty Circle Submenu
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_lec.png")
+		self.lec_action = QAction(icon, u"Largest Empty Circle", self.iface.mainWindow())
+		self.lec_action.triggered.connect(self.lec)
+		self.geoprocessing_menu.addAction(self.lec_action)
 		
 
 		#Merge
@@ -139,37 +285,10 @@ class hcmgis_menu:
 		self.split_action.triggered.connect(self.split)
 		self.geoprocessing_menu.addAction(self.split_action)
 		
-		#CheckValidity
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_checkvalidity.png")
-		self.checkvalidity_action = QAction(icon, u'Check Validity', self.iface.mainWindow())
-		self.checkvalidity_action.triggered.connect(self.checkvalidity)
-		self.geoprocessing_menu.addAction(self.checkvalidity_action)
-		
-		#Fixgeometries
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_fixgeometries.png")
-		self.fixgeometries_action = QAction(icon, u'Fix Geometries', self.iface.mainWindow())
-		self.fixgeometries_action.triggered.connect(self.fixgeometries)
-		self.geoprocessing_menu.addAction(self.fixgeometries_action)
-		
-		# Reproject Submenu
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_reproject.png")
-		self.reproject_action = QAction(icon, u'CRS Transformation', self.iface.mainWindow())
-		self.reproject_action.triggered.connect(self.reproject)
-		self.geoprocessing_menu.addAction(self.reproject_action)
-		
-		
-		
-				
 		# Tool Submenu
 		self.tool_menu = QMenu(u'Calculate Field')	
 		self.hcmgis_add_submenu(self.tool_menu)
 				
-		# FontConverter Submenu
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_font_converter.png")
-		self.fontconverter_action = QAction(icon, u'Vietnamese Font Converter', self.iface.mainWindow())
-		self.fontconverter_action.triggered.connect(self.fontconverter)
-		#QObject.connect(self.fontconverter_action, SIGNAL("triggered()"), self.fontconverter)
-		self.tool_menu.addAction(self.fontconverter_action)
 		
 		# Merge Field Submenu
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_merge_field.png")
@@ -185,19 +304,14 @@ class hcmgis_menu:
 		#QObject.connect(self.splitfield_action, SIGNAL("triggered()"), self.splitfield)
 		self.tool_menu.addAction(self.splitfield_action)
 
-		# Find and Replace Submenu
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_find_replace.png")
-		self.find_replace_action = QAction(icon, u'Find and Replace', self.iface.mainWindow())
-		self.find_replace_action.triggered.connect(self.find_replace)
-		#QObject.connect(self.find_replace_action, SIGNAL("triggered()"), self.find_replace)
-		self.tool_menu.addAction(self.find_replace_action)
-
-		# Prefix/ Suffix Submenu
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_prefix_suffix.png")
-		self.prefix_suffix_action = QAction(icon, u'Add Prefix/ Suffix', self.iface.mainWindow())
-		self.prefix_suffix_action.triggered.connect(self.prefix_suffix)
-		#QObject.connect(self.prefix_suffix_action, SIGNAL("triggered()"), self.prefix_suffix)
-		self.tool_menu.addAction(self.prefix_suffix_action)
+		# FontConverter Submenu
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_font_converter.png")
+		self.fontconverter_action = QAction(icon, u'Vietnamese Font Converter', self.iface.mainWindow())
+		self.fontconverter_action.triggered.connect(self.fontconverter)
+		#QObject.connect(self.fontconverter_action, SIGNAL("triggered()"), self.fontconverter)
+		self.tool_menu.addAction(self.fontconverter_action)
+		
+		
 		
 		
 	def unload(self):
@@ -209,6 +323,95 @@ class hcmgis_menu:
 			self.iface.removePluginMenu("&hcmgis", self.geoprocessing_menu.menuAction())
 			self.iface.removePluginMenu("&hcmgis", self.tool_menu.menuAction())
 
+	def cartolight_call(self):
+		service_url ="a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" 
+		name = "Carto Light"
+		hcmgis_basemap(self.iface,service_url, name)
+		
+	def cartodark_call(self):
+		service_url ="a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" 
+		name = "Carto Dark"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+	def cartoantique_call(self):
+		service_url ="cartocdn_a.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png" 
+		name = "Carto Antique"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def cartoeco_call(self):
+		service_url ="cartocdn_a.global.ssl.fastly.net/base-eco/{z}/{x}/{y}.png" 
+		name = "Carto Eco"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+	#########################		
+	# ESRI
+	#####################
+	def esridelorme_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri DeLorme"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+	def esrinational_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri National Geographic"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+	def esriocean_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Ocean"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def esriboundary_call(self):
+		service_url ="server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Boundaries and Places"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+	def esridarkgray_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Dark Gray"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def esrilightgray_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Light Gray"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def esriimagery_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Imagery"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def esriphysical_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Physical"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+	def esristreet_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Street"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+	def esriterrain_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Terrain"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def esritopo_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Topographic"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+	def esritransport_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Transport"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def esrishaded_call(self):
+		service_url ="server.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}" 
+		name = "Esri Shaded Relief"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	####################################
 	def hcmgisaerial_call(self):
 		service_url = "trueortho.hcmgis.vn/basemap/cache_lidar/{z}/{x}/{y}.jpg" 
 		name = "HCMGIS Aerial Images"
@@ -216,49 +419,72 @@ class hcmgis_menu:
 			
 	def stamenwatercolor_call(self):
 		service_url = "c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg" 
-		name = "OSM Stamen Watercolor"
+		name = "Stamen Watercolor"
 		hcmgis_basemap(self.iface,service_url, name)
 	
 	def stamentoner_call(self):
-		service_url ="a.tile.stamen.com/toner-background/{z}/{x}/{y}.png"
-		name = "OSM Stamen Toner"
+		service_url ="a.tile.stamen.com/toner/{z}/{x}/{y}.png"
+		name = "Stamen Toner"
 		hcmgis_basemap(self.iface,service_url, name)
+	
+	def stamentonerbkg_call(self):
+		service_url ="a.tile.stamen.com/toner-background/{z}/{x}/{y}.png"
+		name = "Stamen Toner Background"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def stamentonerhybrid_call(self):
+		service_url ="a.tile.stamen.com/toner-hybrid/{z}/{x}/{y}.png"
+		name = "Stamen Toner Hybrid"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def stamentonerlite_call(self):
+		service_url ="a.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
+		name = "Stamen Toner Lite"
+		hcmgis_basemap(self.iface,service_url, name)
+
 	
 	def stamenterrain_call(self):
-		service_url ="a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png" 
-		name = "OSM Stamen Terrain"
+		service_url ="a.tile.stamen.com/terrain/{z}/{x}/{y}.png" 
+		name = "Stamen Terrain"
 		hcmgis_basemap(self.iface,service_url, name)
 	
-	def cartolight_call(self):
-		service_url ="a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" 
-		name = "OSM Carto Light"
+	def stamenterrainbkg_call(self):
+		service_url ="a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png" 
+		name = "Stamen Terrain Background"
 		hcmgis_basemap(self.iface,service_url, name)
-		
-	def cartodark_call(self):
-		service_url ="a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png" 
-		name = "OSM Carto Dark"
+	
+	##############
+	# Google
+	############
+	def googlemaps_call(self):
+		service_url ="mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+		name = "Google Maps"
 		hcmgis_basemap(self.iface,service_url, name)
-		
+
+
 	def googlesatellite_call(self):
 		service_url ="mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" 
 		name = "Google Satellite"
 		hcmgis_basemap(self.iface,service_url, name)
 	
-	def googlestreets_call(self):
-		service_url ="mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
-		name = "Google Streets"
-		hcmgis_basemap(self.iface,service_url, name)
-	
-	def googlehybrid_call(self):
+
+	def googlesatellitehybrid_call(self):
 		service_url ="mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
-		name = "Google Hybrid"
+		name = "Google Satellite Hybrid"
 		hcmgis_basemap(self.iface,service_url, name)
 	
-	def googlephysical_call(self):
-		service_url ="mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}" 
-		name = "Google Physical"
+
+	def googleterrain_call(self):
+		service_url ="mt1.google.com/vt/lyrs=t&x={x}&y={y}&z={z}" 
+		name = "Google Terrain"
 		hcmgis_basemap(self.iface,service_url, name)
-		
+
+	def googleterrainhybrid_call(self):
+		service_url ="mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}"
+		name = "Google Terrain Hybrid"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	##########################	
 	def opendata(self):
 		dialog = hcmgis_opendata_dialog(self.iface)
 		dialog.exec_()
@@ -292,7 +518,11 @@ class hcmgis_menu:
 	def closestpair(self):
 		dialog = hcmgis_closestpair_dialog(self.iface)
 		dialog.exec_()
-		
+	
+	def lec(self):
+		dialog = hcmgis_lec_dialog(self.iface)
+		dialog.exec_()
+			
 		
 	def merge(self):
 		dialog = hcmgis_merge_dialog(self.iface)

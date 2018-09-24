@@ -29,18 +29,15 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/forms")
 from hcmgis_opendata_form import *
 from hcmgis_merge_form import *
 from hcmgis_split_form import *
-from hcmgis_checkvalidity_form import *
-from hcmgis_fixgeometries_form import *
-from hcmgis_reprojection_form import *
 
 from hcmgis_font_convert_form import *
 from hcmgis_split_field_form import *
 from hcmgis_merge_field_form import *
-from hcmgis_find_replace_form import *
-from hcmgis_prefix_suffix_form import *
 from hcmgis_medialaxis_form import *
 from hcmgis_centerline_form import *
 from hcmgis_closestpair_form import *
+from hcmgis_lec_form import *
+
 
 global _Unicode, _TCVN3, _VNIWin, _KhongDau
 
@@ -231,7 +228,45 @@ class hcmgis_closestpair_dialog(QDialog, Ui_hcmgis_closestpair_form):
 			QMessageBox.critical(self.iface.mainWindow(), "Closest/ farthest pair of Points", message)						               
 		else: return			
 		return
+
+# --------------------------------------------------------
+#   Finding largest empty circle
+# --------------------------------------------------------			
+class hcmgis_lec_dialog(QDialog, Ui_hcmgis_lec_form):		
+	def __init__(self, iface):
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)	
+		self.browseoutfile.clicked.connect(self.browse_outfiles)
+		self.CboInput.setFilters(QgsMapLayerProxyModel.PointLayer)
+		self.CboInput.activated.connect(self.update_field)         
+		self.BtnOKCancel.accepted.connect(self.run) 
+		self.outfilename.setText(hcmgis_temp_file_name("circle",".shp"))	
+          
 	
+	def update_field(self):
+		self.CboField.setLayer (self.CboInput.currentLayer () )	
+
+	def browse_outfiles(self):
+		newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
+			self.outfilename.displayText(), "Shapefile (*.shp)")
+
+		if newname and newname[0]:
+			self.outfilename.setText(newname[0])
+
+	def run(self):             		
+		layer = self.CboInput.currentLayer()
+		selectedfield = self.CboField.currentText()
+		savename = unicode(self.outfilename.displayText()).strip()
+
+		if layer is None:
+			return u'No selected point layer!'		
+		else:
+			message = hcmgis_lec(self.iface,layer, selectedfield, savename)
+			if message != None:
+				QMessageBox.critical(self.iface.mainWindow(), "Largest Empty Circle", message)						               
+			else: return		
+		return
 	
 # --------------------------------------------------------
 #   hcmggis_merge - Merge layers to single shapefile
@@ -271,76 +306,6 @@ class hcmgis_merge_dialog(QDialog, Ui_hcmgis_merge_form):
 
 			
 
-class hcmgis_checkvalidity_dialog(QDialog, Ui_hcmgis_checkvalidity_form):
-	def __init__(self, iface):
-		QDialog.__init__(self)
-		self.iface = iface
-		self.setupUi(self)
-		self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)		
-		self.BtnOKCancel.accepted.connect(self.run)
-
-	def run(self):
-		layer = self.CboInput.currentLayer()
-		message = hcmgis_checkvalidity(self.iface, layer)
-		if message != None:
-			QMessageBox.critical(self.iface.mainWindow(), "Check Validity", message)
-
-			
-class hcmgis_fixgeometries_dialog(QDialog, Ui_hcmgis_fixgeometries_form):
-	def __init__(self, iface):
-		QDialog.__init__(self)
-		self.iface = iface
-		self.setupUi(self)
-		self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)		
-		self.BtnOutput.clicked.connect(self.browse_outfiles)
-		self.BtnOKCancel.accepted.connect(self.run)
-		self.LinOutput.setText(hcmgis_temp_file_name("fixgeometries",".shp"))	
-
-	def browse_outfiles(self):
-		newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
-			self.LinOutput.displayText(), "Shapefile (*.shp)")
-
-		if newname and newname[0]:
-			self.LinOutput.setText(newname[0])
-			
-
-	def run(self):
-		layer = self.CboInput.currentLayer()
-		savename = unicode(self.LinOutput.displayText()).strip()
-
-		message = hcmgis_fixgeometries(self.iface, layer, savename)
-		if message != None:
-			QMessageBox.critical(self.iface.mainWindow(), "Fix Geometries", message)
-
-class hcmgis_reprojection_dialog(QDialog, Ui_hcmgis_reprojection_form):
-	def __init__(self, iface):
-		QDialog.__init__(self)
-		self.iface = iface
-		self.setupUi(self)
-		self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)		
-		self.BtnOutput.clicked.connect(self.browse_outfiles)
-		self.BtnOKCancel.accepted.connect(self.run)
-		self.LinOutput.setText(hcmgis_temp_file_name("reproject",".shp"))	
-		self.crs.setCrs(QgsCoordinateReferenceSystem(4326))
-
-
-	def browse_outfiles(self):
-		newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
-			self.LinOutput.displayText(), "Shapefile (*.shp)")
-
-		if newname and newname[0]:
-			self.LinOutput.setText(newname[0])
-			
-
-	def run(self):
-		layer = self.CboInput.currentLayer()
-		savename = unicode(self.LinOutput.displayText()).strip()
-		destcrs = self.crs.crs()
-		message = hcmgis_reprojection(self.iface, layer,destcrs, savename)
-		if message != None:
-			QMessageBox.critical(self.iface.mainWindow(), "Reprojection", message)
-			
-			
 class hcmgis_split_dialog(QDialog, Ui_hcmgis_split_form):	
 	def __init__(self, iface):
 		QDialog.__init__(self)
@@ -370,7 +335,7 @@ class hcmgis_split_dialog(QDialog, Ui_hcmgis_split_form):
 		elif ((selectedfield is None) or (selectedfield == '')):
 			return u'No selected field!'
 		elif (not os.path.isdir(outdir)):
-			return u'Không tồn tại đường dẫn!'
+			return u'Invalid Folder!'
 		else:
 			message = hcmgis_split(self.iface,layer,selectedfield,outdir)
 			if message != None:
@@ -488,66 +453,6 @@ class hcmgis_merge_field_dialog(QDialog, Ui_hcmgis_merge_field_form):
 		return
 
 		
-# --------------------------------------------------------
-#    hcmggis_find_replace - Find and Replace
-# --------------------------------------------------------
-class hcmgis_find_replace_dialog(QDialog, Ui_hcmgis_find_replace_form):
-	def __init__(self, iface):
-		QDialog.__init__(self)
-		self.iface = iface
-		self.setupUi(self)
-		self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)
-		self.CboField.setLayer (self.CboInput.currentLayer () )
-		self.BtnOKCancel.accepted.connect(self.run)
-		self.CboInput.activated.connect(self.update_field)                
-			
-	def update_field(self):
-		self.CboField.setLayer (self.CboInput.currentLayer () )
-				
-	def run(self):             		
-		layer = self.CboInput.currentLayer()
-		find = self.LinFind.text()
-		replace = self.LinReplace.text()
-		selectedfield = self.CboField.currentText()
-		selectedfeatureonly = self.ChkSelectedFeaturesOnly.isChecked()
-		message = hcmgis_find_replace(self.iface,layer, selectedfield, find, replace,selectedfeatureonly)
-		if message != None:
-			QMessageBox.critical(self.iface.mainWindow(), "Find and Replace", message)						               
-		else: return		
-		return
-# --------------------------------------------------------
-#    hcmggis_prefix_suffix - Prefix/ Suffix
-# --------------------------------------------------------
-class hcmgis_prefix_suffix_dialog(QDialog, Ui_hcmgis_prefix_suffix_form):
-	def __init__(self, iface):
-		QDialog.__init__(self)
-		self.iface = iface
-		self.setupUi(self)	
-		self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)
-		self.CboField.setLayer (self.CboInput.currentLayer () )
-		self.BtnOKCancel.accepted.connect(self.run)              
-		self.CboInput.activated.connect(self.update_field)                
-			
-	def update_field(self):                
-		self.CboField.setLayer (self.CboInput.currentLayer () )
-				
-	def run(self):             		
-		layer = self.CboInput.currentLayer()		
-		selectedfield = self.CboField.currentText()
-		prefix = self.LinPrefix.text()
-		suffix = self.LinSuffix.text()
-		charprefix = self.CboCharPrefix.currentText()
-		charsuffix = self.CboCharSuffix.currentText()
-		selectedfeatureonly = self.ChkSelectedFeaturesOnly.isChecked()
-		message = hcmgis_prefix_suffix(self.iface,layer, selectedfield, prefix, charprefix, suffix, charsuffix, selectedfeatureonly)
-		if message != None:
-			QMessageBox.critical(self.iface.mainWindow(), "Append prefix/ suffix", message)						               
-		else: return		
-		return	
-
-
-
-
 def hcmgis_load_combo_box_with_vector_layers(qgis, combo_box, set_selected):
 	
 	combo_box.clear()

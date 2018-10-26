@@ -198,12 +198,16 @@ class hcmgis_centerline_dialog(QDialog, Ui_hcmgis_centerline_form):
 		density = self.spinBox.value()
 		chksurround = self.chksurround.isChecked() 
 		distance = self.distance.value()
-		message = hcmgis_centerline(self.iface,layer,density,chksurround,distance)
-		if message != None:
-			QMessageBox.critical(self.iface.mainWindow(), "Centerline in Polygon's Gaps", message)						               
-		else: return			
+		if layer.selectedFeatureCount()>0:		
+			message = hcmgis_centerline(self.iface,layer,density,chksurround,distance)
+			if message != None:
+				QMessageBox.critical(self.iface.mainWindow(), "Centerline in Polygon's Gaps", message)						               
+			else: return	
+		else:
+			#return u'Please select at least 1 feature to create centerline		
+			QMessageBox.information(None,  "Centerline",u'Please select at least 1 feature to create Centerline!') 
 		return
-
+		
 # --------------------------------------------------------
 #   Finding closest pair of Points
 # --------------------------------------------------------			

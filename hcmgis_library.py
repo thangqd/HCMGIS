@@ -74,18 +74,14 @@ def hcmgis_basemap(self, service_url, name):
 
 #for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
 
-def hcmgis_medialaxis(qgis, layer,selectedfield,density):		
+def hcmgis_medialaxis(qgis, layer, selectedfield, density):		
 	import processing
 	## create skeleton/ media axis
 	parameters1 = {'INPUT':layer,
 					'OUTPUT':  "memory:polygon"}
 	polygon = processing.run('qgis:saveselectedfeatures',parameters1)
 	
-	parameters2 = {'INPUT':polygon['OUTPUT'],
-					'OUTPUT':  "memory:polyline"}
-	polyline = processing.run('qgis:polygonstolines',parameters2)	
-	
-	parameters3 = {'INPUT': polyline['OUTPUT'],
+	parameters3 = {'INPUT': polygon['OUTPUT'],
 					'DISTANCE' : density,
 					'START_OFFSET' : 0, 
 					'END_OFFSET' : 0,
@@ -95,7 +91,8 @@ def hcmgis_medialaxis(qgis, layer,selectedfield,density):
 	
 	parameters4 = {'INPUT': points['OUTPUT'],
 					 'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
-	voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)	 
+	voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)	
+	#processing.runAndLoadResults('qgis:voronoipolygons', parameters4) 
 	
 	parameters5 = {'INPUT': voronoipolygon['OUTPUT'],
 					'OUTPUT' : 'memory:voronoipolyline'} 
@@ -168,7 +165,11 @@ def hcmgis_centerline(qgis,layer,density,chksurround,distance):
 	convexhull	= None
 	## extract gaps of polygon
 	# fix geometries
-	parameters1_1 = {'INPUT':layer,
+	parameters1 = {'INPUT':layer,
+					'OUTPUT':  "memory:polygon"}
+	polygon = processing.run('qgis:saveselectedfeatures',parameters1)
+
+	parameters1_1 = {'INPUT':polygon['OUTPUT'],
 				'OUTPUT': 'memory:fix'}
 	fix = processing.run('qgis:fixgeometries',parameters1_1)	
 	
@@ -218,16 +219,16 @@ def hcmgis_centerline(qgis,layer,density,chksurround,distance):
 	
 
 	## create centerline
-	parameters2 = {'INPUT':polygon['OUTPUT'],
-					'OUTPUT':  "memory:polyline"}
-	polyline = processing.run('qgis:polygonstolines',parameters2)	
+	# parameters2 = {'INPUT':polygon['OUTPUT'],
+	# 				'OUTPUT':  "memory:polyline"}
+	# polyline = processing.run('qgis:polygonstolines',parameters2)	
 	
-	parameters3 = {'INPUT': polyline['OUTPUT'],
+	parameters3 = {'INPUT': polygon['OUTPUT'],
 					'DISTANCE' : density,
 					'START_OFFSET' : 0, 
 					'END_OFFSET' : 0,
 					'OUTPUT' : "memory:points"} 
-	points = processing.run('qgis:pointsalonglines', parameters3)	
+	points = processing.run('qgis:pointsalonglines', parameters3)	# also works for polygons
 	
 	parameters4 = {'INPUT': points['OUTPUT'],
 					 'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
@@ -336,7 +337,7 @@ def hcmgis_closestpair(qgis,layer,field):
 	
 	parameters3_5 = {'INPUT':closest_points['OUTPUT'],
 					'COLUMN' : ['MEAN','STDDEV','MIN'],
-	 				'OUTPUT':  'memory:closest_points'
+	 				'OUTPUT':  'memory:closest'
 					 }
 	processing.runAndLoadResults('qgis:deletecolumn',parameters3_5)
 
@@ -364,7 +365,7 @@ def hcmgis_closestpair(qgis,layer,field):
 					'INPUT_FIELD' : field,
 					 'TARGET' : farthest_candidates['OUTPUT'],
 					 'TARGET_FIELD' : field,
-					 'MATRIX_TYPE' : 2,
+					 'MATRIX_TYPE' : 0,
 					 'NEAREST_POINTS' : 0,
 					 'OUTPUT':  'memory:distance_matrix'
 					}
@@ -373,26 +374,35 @@ def hcmgis_closestpair(qgis,layer,field):
 
 	max_distance = distance_matrix['OUTPUT']
 	values = []
-	idx =  max_distance.dataProvider().fieldNameIndex("MAX")
+	idx =  max_distance.dataProvider().fieldNameIndex("Distance")
 	for feat in max_distance.getFeatures():
 		attrs = feat.attributes()
 		values.append(attrs[idx])
 	
 	maxvalue = str(max(values))	
-	selection = max_distance.getFeatures(QgsFeatureRequest(QgsExpression('"MAX"' + '=' + maxvalue)))
+	selection = max_distance.getFeatures(QgsFeatureRequest(QgsExpression('"Distance"' + '=' + maxvalue)))
 	ids = [s.id() for s in selection]
 	max_distance.selectByIds(ids)
 	
 	parameters8 = {'INPUT':max_distance,
 	 				'OUTPUT':  'memory:farthest'
 					 }
-	farthest = processing.run('qgis:saveselectedfeatures',parameters8)
+	processing.runAndLoadResults('qgis:saveselectedfeatures',parameters8)
 
-	parameters9 = {'INPUT':farthest['OUTPUT'],
-					'COLUMN' : ['MEAN','STDDEV','MIN'],
-	 				'OUTPUT':  'memory:farthest_points'
-					 }
-	processing.runAndLoadResults('qgis:deletecolumn',parameters9)
+	# parameters9= {'INPUT':farthest_multipoint['OUTPUT'],
+	#  				'TYPE' : 1, # To Point
+	#  				'OUTPUT':  'memory:farthest'
+	# 				 }
+	# processing.runAndLoadResults('qgis:convertgeometrytype',parameters9)
+
+
+	layer.removeSelection()
+
+	# parameters9 = {'INPUT':farthest['OUTPUT'],
+	# 				'COLUMN' : ['MEAN','STDDEV','MIN'],
+	#  				'OUTPUT':  'memory:farthest_points'
+	# 				 }
+	# processing.runAndLoadResults('qgis:deletecolumn',parameters9)
 
 	return
 
@@ -1163,11 +1173,12 @@ def hcmgis_endpoint(start, distance, degrees):
 def hcmgis_lec(qgis, layer, selectedfield, savename):	
 	import processing
 	if layer is None:
-		return u'No selected point layer!'  
+		return u'No selected point layer!'  	
 	parameters1 = {'INPUT': layer,
 				  'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'
 				  } 
 	voronoipolygon = processing.run('qgis:voronoipolygons', parameters1)
+	#processing.runAndLoadResults('qgis:voronoipolygons', parameters1)
 
 	#parameters2 = {'INPUT': layer,
 	#				'OUTPUT' : 'memory:convexhull'} 

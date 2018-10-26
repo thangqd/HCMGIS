@@ -9,9 +9,9 @@
 
 **- Spatial Processing**: 
 
-+ Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures
-+ Create Centerline in Polygon's gaps (E.g building blocks)
-+ Finding closest/ farthest pair of Points of a Point set based on Voronoi Diagram
++ Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures (layer must be in projected coordinate reference system)
++ Create Centerline in Polygon's gaps (E.g building blocks) (layer must be in projected coordinate reference system)
++ Finding closest/ farthest pair of Points in a Point set based on Voronoi Diagram
 + Finding Largest Empty Circle of a Point set.
 + Merging layers (with the same attributes and geometry type), split Layer (based on unique field),...
 
@@ -28,9 +28,9 @@
 
 
 **-Xử lý không gian**: 
-+ Tạo xương (skeleton/ medial axis/ Centerline) cho đối tượng dạng vùng (mạng giao thông/ sông rạch)
-+ Tạo Centerline (tim hẻm, đường phân phối điện/ nước) cho các block nhà
-+ Tìm cặp điểm gần nhất/ xa nhất của một tập điểm dựa trên Voronoi Diagram
++ Tạo xương (skeleton/ medial axis/ Centerline) cho đối tượng dạng vùng (mạng giao thông/ sông rạch) (Layer dạng vùng phải ở dạng projected coordinate reference system)
++ Tạo Centerline (tim hẻm, đường phân phối điện/ nước) cho các block nhà (Layer Block nhà phải ở dạng projected coordinate reference system)
++ Tìm cặp điểm gần nhất/ xa nhất cho một tập điểm dựa trên Voronoi Diagram
 + Tìm đường tròn rỗng lớn nhất (không chứa bất cứ điểm nào) của một tập điểm
 + Gộp layers, tách layer.
 

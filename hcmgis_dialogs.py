@@ -42,7 +42,7 @@ from hcmgis_lec_form import *
 global _Unicode, _TCVN3, _VNIWin, _KhongDau
 
 # --------------------------------------------------------
-#    hcmggis_merge - Merge layers to single shapefile
+#    HCMGIS Opendata
 # --------------------------------------------------------
 class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):	
 	def __init__(self, iface):		
@@ -83,20 +83,20 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 		progress.setMaximum(100) 
 		#pass the progress bar to the message Bar
 		progressMessageBar.pushWidget(progress)                
-		# try:
-		self.sourcelayers.clear()			
-		wfs = WebFeatureService(url=opendata_url, version='1.0.0')
-		if wfs.contents is not None:
-			count =  len (list(wfs.contents))
-			ii = 0
-			for i in list(wfs.contents):  
-				self.sourcelayers.addItem(i)                         
-				ii+=1
-				percent = (ii/float(count)) * 100
-				progress.setValue(percent)                
-			# except Exception:
-				# QMessageBox.warning(None, "WFS ERROR",u'OpenData Reading Error') 
-		else: return				
+		try:
+			self.sourcelayers.clear()			
+			wfs = WebFeatureService(url=opendata_url, version='1.0.0')
+			if wfs.contents is not None:
+				count =  len (list(wfs.contents))
+				ii = 0
+				for i in list(wfs.contents):  
+					self.sourcelayers.addItem(i)                         
+					ii+=1
+					percent = (ii/float(count)) * 100
+					progress.setValue(percent)      
+			else: return				
+		except Exception:
+			QMessageBox.warning(None, "WFS ERROR",u'OpenData Reading Error')			
 		qgis.utils.iface.messageBar().clearWidgets()  
 	
 	def run(self):
@@ -241,32 +241,22 @@ class hcmgis_lec_dialog(QDialog, Ui_hcmgis_lec_form):
 		QDialog.__init__(self)
 		self.iface = iface
 		self.setupUi(self)	
-		self.browseoutfile.clicked.connect(self.browse_outfiles)
 		self.CboInput.setFilters(QgsMapLayerProxyModel.PointLayer)
+		self.CboField.setLayer (self.CboInput.currentLayer () )	
 		self.CboInput.activated.connect(self.update_field)         
 		self.BtnOKCancel.accepted.connect(self.run) 
-		self.outfilename.setText(hcmgis_temp_file_name("circle",".shp"))	
           
 	
 	def update_field(self):
 		self.CboField.setLayer (self.CboInput.currentLayer () )	
 
-	def browse_outfiles(self):
-		newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
-			self.outfilename.displayText(), "Shapefile (*.shp)")
-
-		if newname and newname[0]:
-			self.outfilename.setText(newname[0])
-
 	def run(self):             		
 		layer = self.CboInput.currentLayer()
 		selectedfield = self.CboField.currentText()
-		savename = unicode(self.outfilename.displayText()).strip()
-
 		if layer is None:
 			return u'No selected point layer!'		
 		else:
-			message = hcmgis_lec(self.iface,layer, selectedfield, savename)
+			message = hcmgis_lec(self.iface,layer, selectedfield)
 			if message != None:
 				QMessageBox.critical(self.iface.mainWindow(), "Largest Empty Circle", message)						               
 			else: return		
@@ -501,7 +491,7 @@ def hcmgis_load_combo_box_with_vector_layers(qgis, combo_box, set_selected):
 	
 
 def hcmgis_temp_file_name(temp, suffix):
-	preferred = os.getcwd() + temp + suffix
+	preferred = os.getcwd() +"\\" + temp + suffix
 	if not os.path.isfile(preferred):
 		return preferred
 

@@ -67,6 +67,8 @@ def hcmgis_basemap(self, service_url, name):
 	import qgis.utils	
 	service_uri = "type=xyz&zmin=0&zmax=22&url=http://"+requests.utils.quote(service_url)	
 	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, name, "wms")
+	if not tms_layer.isValid():
+  		print("Layer failed to load!")
 					
 #--------------------------------------------------------
 #    hcmgis_medialaxis - Create skeleton/ medial axis/ centerline of roads, rivers and similar linear structures
@@ -81,18 +83,20 @@ def hcmgis_medialaxis(qgis, layer, selectedfield, density):
 					'OUTPUT':  "memory:polygon"}
 	polygon = processing.run('qgis:saveselectedfeatures',parameters1)
 	
-	parameters3 = {'INPUT': polygon['OUTPUT'],
-					'DISTANCE' : density,
-					'START_OFFSET' : 0, 
-					'END_OFFSET' : 0,
+	#densify by interval
+	parameters2 = {'INPUT': polygon['OUTPUT'],
+					'INTERVAL' : 1,
+					'OUTPUT' : "memory:polygon_densify"} 
+	polygon_densify = processing.run('qgis:densifygeometriesgivenaninterval', parameters2)
+	
+	# extract vertices
+	parameters3 = {'INPUT': polygon_densify['OUTPUT'],					
 					'OUTPUT' : "memory:points"} 
-	#processing.runAndLoadResults('qgis:pointsalonglines', parameters3)
-	points = processing.run('qgis:pointsalonglines', parameters3)	
+	points = processing.run('qgis:extractvertices', parameters3)	
 	
 	parameters4 = {'INPUT': points['OUTPUT'],
 					 'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
 	voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)	
-	#processing.runAndLoadResults('qgis:voronoipolygons', parameters4) 
 	
 	parameters5 = {'INPUT': voronoipolygon['OUTPUT'],
 					'OUTPUT' : 'memory:voronoipolyline'} 
@@ -102,6 +106,7 @@ def hcmgis_medialaxis(qgis, layer, selectedfield, density):
 	parameters6 = {'INPUT': voronoipolyline['OUTPUT'],					
 					'OUTPUT' : 'memory:explode'}
 	explode = processing.run('qgis:explodelines',parameters6)
+	#processing.runAndLoadResults('qgis:explodelines',parameters6)
 	
 	parameters7 = {'INPUT': explode['OUTPUT'],
 					'PREDICATE' : [6], # within					
@@ -114,6 +119,7 @@ def hcmgis_medialaxis(qgis, layer, selectedfield, density):
 	parameters8 = {'INPUT':candidate['OUTPUT'],
 					'OUTPUT':  'memory:medialaxis'}
 	medialaxis = processing.run('qgis:saveselectedfeatures',parameters8)
+	#processing.runAndLoadResults('qgis:saveselectedfeatures',parameters8)
 	
 	parameters9 = {'INPUT':medialaxis['OUTPUT'],
 					'OUTPUT':  'memory:deleteduplicategeometries'}
@@ -128,7 +134,7 @@ def hcmgis_medialaxis(qgis, layer, selectedfield, density):
 					'METHOD' : 0,
 					'TOLERANCE' : 1,
 					'OUTPUT':  "memory:medialaxis"}
-	processing.runAndLoadResults('qgis:simplifygeometries',parameter11) 
+	processing.runAndLoadResults('qgis:simplifygeometries',parameter11)  
 	
 	#Calculate min/ max/ average width 
 	# parameter12 =  {'INPUT': explode['OUTPUT'],	
@@ -217,19 +223,18 @@ def hcmgis_centerline(qgis,layer,density,chksurround,distance):
 					'OUTPUT' : 'memory:polygon'} 					
 	polygon = processing.run('qgis:symmetricaldifference',parameters1_7)	
 	
-
-	## create centerline
-	# parameters2 = {'INPUT':polygon['OUTPUT'],
-	# 				'OUTPUT':  "memory:polyline"}
-	# polyline = processing.run('qgis:polygonstolines',parameters2)	
+	#densify by interval
+	parameters2 = {'INPUT': polygon['OUTPUT'],
+					'INTERVAL' : 1,
+					'OUTPUT' : "memory:polygon_densify"} 
+	polygon_densify = processing.run('qgis:densifygeometriesgivenaninterval', parameters2)
 	
-	parameters3 = {'INPUT': polygon['OUTPUT'],
-					'DISTANCE' : density,
-					'START_OFFSET' : 0, 
-					'END_OFFSET' : 0,
+	# extract vertices
+	parameters3 = {'INPUT': polygon_densify['OUTPUT'],					
 					'OUTPUT' : "memory:points"} 
-	points = processing.run('qgis:pointsalonglines', parameters3)	# also works for polygons
-	
+	points = processing.run('qgis:extractvertices', parameters3)	
+
+		
 	parameters4 = {'INPUT': points['OUTPUT'],
 					 'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
 	voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)	 
@@ -280,7 +285,9 @@ def hcmgis_closestpair(qgis,layer,field):
 		return 'No selected layer!'
 	if ((field is None) or (field == '')):
 		return 'Please select an unique field!'	
-		
+	if (not layer.wkbType()== QgsWkbTypes.Point):
+		return 'Multipoint layer is not supported. Please convert to Point layer!'
+
 	parameters1 = {'INPUT':layer,
 					'OUTPUT':  "memory:delaunay_polygon"}
 	delaunay_polygon = processing.run('qgis:delaunaytriangulation',parameters1)
@@ -295,12 +302,14 @@ def hcmgis_closestpair(qgis,layer,field):
 
 	lengths = []
 	closest_candidates = delaunay_explode['OUTPUT']
+
 	# calculate length in meters
 	for feature in closest_candidates.getFeatures():
 		length = feature.geometry().length() 		
 		lengths.append(length)
 	
-	minlength = str(min(lengths))	
+	minlength = str(min(lengths))
+	
 
 	selection = closest_candidates.getFeatures(QgsFeatureRequest(QgsExpression('$length'  + '=' + minlength)))
 	ids = [s.id() for s in selection]
@@ -336,10 +345,11 @@ def hcmgis_closestpair(qgis,layer,field):
 	closest_points = processing.run('qgis:distancematrix',parameters3_4)
 	
 	parameters3_5 = {'INPUT':closest_points['OUTPUT'],
-					'COLUMN' : ['MEAN','STDDEV','MIN'],
+					'COLUMN' : ['MEAN','STDDEV','MAX'],
 	 				'OUTPUT':  'memory:closest'
 					 }
 	processing.runAndLoadResults('qgis:deletecolumn',parameters3_5)
+	layer.removeSelection()	
 
 
 	#Finding farthest pair of points
@@ -350,60 +360,53 @@ def hcmgis_closestpair(qgis,layer,field):
 	parameters5 = {'INPUT': layer,
 					'PREDICATE' : [4],
 					'INTERSECT' : convexhull['OUTPUT'],
-					'METHOD' : 0,									
+					'METHOD' : 0,	# touch								
 					'OUTPUT' : 'memory:convexhull_vertices'
 					}
-	
-	convexhull_vertices = processing.run('qgis:selectbylocation',parameters5)
+	processing.run('qgis:selectbylocation',parameters5)
 
 	parameters6 = {'INPUT':layer,
 					'OUTPUT':  "memory:farthest_candidates"}
 	farthest_candidates = processing.run('qgis:saveselectedfeatures',parameters6)
 	
-
 	parameters7 = {'INPUT':farthest_candidates['OUTPUT'],
 					'INPUT_FIELD' : field,
 					 'TARGET' : farthest_candidates['OUTPUT'],
 					 'TARGET_FIELD' : field,
-					 'MATRIX_TYPE' : 0,
+					 'MATRIX_TYPE' : 2,
 					 'NEAREST_POINTS' : 0,
 					 'OUTPUT':  'memory:distance_matrix'
 					}
 	distance_matrix = processing.run('qgis:distancematrix',parameters7)
 	
+	farthest_candidates = distance_matrix['OUTPUT']
 
-	max_distance = distance_matrix['OUTPUT']
 	values = []
-	idx =  max_distance.dataProvider().fieldNameIndex("Distance")
-	for feat in max_distance.getFeatures():
+	idx = farthest_candidates.dataProvider().fieldNameIndex('MAX')
+
+	for feat in farthest_candidates.getFeatures():
 		attrs = feat.attributes()
 		values.append(attrs[idx])
+
+	max_value = str(round(max(values),1))
+	selection2 = farthest_candidates.getFeatures(QgsFeatureRequest(QgsExpression('round("MAX",1)' + '=' + max_value)))
+	ids = [s.id() for s in selection2]
+	farthest_candidates.selectByIds(ids)
+
+	parameters8 = {'INPUT':farthest_candidates,
+	 				'OUTPUT':  'memory:farthest_points'
+					 }
+	farthest_points = processing.run('qgis:saveselectedfeatures',parameters8)
+
 	
-	maxvalue = str(max(values))	
-	selection = max_distance.getFeatures(QgsFeatureRequest(QgsExpression('"Distance"' + '=' + maxvalue)))
-	ids = [s.id() for s in selection]
-	max_distance.selectByIds(ids)
-	
-	parameters8 = {'INPUT':max_distance,
+	parameters9 = {'INPUT': farthest_points['OUTPUT'],
+					'COLUMN' : ['MEAN','STDDEV','MIN'],
 	 				'OUTPUT':  'memory:farthest'
 					 }
-	processing.runAndLoadResults('qgis:saveselectedfeatures',parameters8)
-
-	# parameters9= {'INPUT':farthest_multipoint['OUTPUT'],
-	#  				'TYPE' : 1, # To Point
-	#  				'OUTPUT':  'memory:farthest'
-	# 				 }
-	# processing.runAndLoadResults('qgis:convertgeometrytype',parameters9)
+	processing.runAndLoadResults('qgis:deletecolumn',parameters9)
 
 
-	layer.removeSelection()
-
-	# parameters9 = {'INPUT':farthest['OUTPUT'],
-	# 				'COLUMN' : ['MEAN','STDDEV','MIN'],
-	#  				'OUTPUT':  'memory:farthest_points'
-	# 				 }
-	# processing.runAndLoadResults('qgis:deletecolumn',parameters9)
-
+	layer.removeSelection()	
 	return
 
 
@@ -924,7 +927,7 @@ def hcmgis_completion_message(qgis, message):
 
 # --------------------------------------------------------
 #    hcmgis_voronoi - Voronoi diagram creation
-#    reference: hcmgis
+#    reference: mmqgis
 # --------------------------------------------------------
 
 def hcmgis_voronoi_diagram(qgis, sourcelayer, savename, addlayer):
@@ -939,7 +942,7 @@ def hcmgis_voronoi_diagram(qgis, sourcelayer, savename, addlayer):
 		if not QgsVectorFileWriter.deleteShapeFile(savename):
 			return "Failure deleting existing shapefile: " + savename
 
-	outfile = QgsVectorFileWriter(savename, "utf-8", layer.fields(), \
+	outfile = QgsVectorFileWriter(savename, "utf-8", layer.fields(), 
 			QgsWkbTypes.Polygon, layer.crs(), "ESRI Shapefile")
 
 	if (outfile.hasError() != QgsVectorFileWriter.NoError):
@@ -1170,10 +1173,12 @@ def hcmgis_endpoint(start, distance, degrees):
 # 	 
 # --------------------------------------------------------
 
-def hcmgis_lec(qgis, layer, selectedfield, savename):	
+def hcmgis_lec(qgis, layer, selectedfield):	
 	import processing
 	if layer is None:
-		return u'No selected point layer!'  	
+		return u'No selected point layer!'  
+	if (not layer.wkbType()== QgsWkbTypes.Point):
+		return 'Multipoint layer is not supported. Please convert to Point layer!'	
 	parameters1 = {'INPUT': layer,
 				  'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'
 				  } 
@@ -1237,7 +1242,7 @@ def hcmgis_lec(qgis, layer, selectedfield, savename):
 
 	parameters8 = {'INPUT':centers,
 					'OUTPUT':  "memory:center"}
-	processing.runAndLoadResults('qgis:saveselectedfeatures',parameters8)
+	center = processing.runAndLoadResults('qgis:saveselectedfeatures',parameters8)
 	
 	radius_attribute = None
 	radius_unit = 'Meters'
@@ -1248,10 +1253,14 @@ def hcmgis_lec(qgis, layer, selectedfield, savename):
 	hcmgis_buffers_rotation = 0
 	#savename = "E:/circle.shp"
 	selectedonly = False
-	center = hcmgis_find_layer('center')
-	hcmgis_buffers(qgis, center, radius_attribute, hcmgis_buffers_radius, radius_unit, 
-			edge_attribute, edge_count, rotation_attribute, hcmgis_buffers_rotation,
-			savename, selectedonly, True)
+	#center_layer = center['OUTPUT']	
+	# try:
+	# 	hcmgis_buffers(qgis, center_layer, radius_attribute, hcmgis_buffers_radius, radius_unit, 
+	# 		edge_attribute, edge_count, rotation_attribute, hcmgis_buffers_rotation,
+	# 		savename, selectedonly, True)
+	# 	#hcmgis_buffer_point(point, hcmgis_buffers_radius,edge_count,hcmgis_buffers_rotation)
+	# except Exception:
+	# 	return	
 
 # --------------------------------------------------------
 #    hcmgis_buffers - Create buffers around shapes
@@ -1296,7 +1305,7 @@ def hcmgis_buffers(qgis, layer, radius_attribute, radius, radius_unit, edge_attr
 
 	# Create buffers for each feature
 	buffercount = 0
-	featurecount = layer.featureCount();
+	featurecount = layer.featureCount()
 	if selectedonly:
 		feature_list = layer.selectedFeatures()
 	else:

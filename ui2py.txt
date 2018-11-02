@@ -1,4 +1,4 @@
-C:\Users\KT_HCMGIS\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\HCMGIS\forms\
+C:\Users\THANGQD_HCMGIS\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\HCMGIS\forms
 pyuic5 -x hcmgis_font_convert_form.ui -o hcmgis_font_convert_form.py
 pyuic5 -x hcmgis_merge_field_form.ui -o hcmgis_merge_field_form.py
 pyuic5 -x hcmgis_merge_form.ui -o hcmgis_merge_form.py
@@ -55,6 +55,7 @@ gdal:polygonize
 gdal:proximity
 gdal:rastercalculator
 gdal:rasterize
+gdal:rearrange_bands
 gdal:retile
 gdal:rgbtopct
 gdal:roughness
@@ -364,21 +365,26 @@ grass7:v.what.rast
 grass7:v.what.vect
 native:addautoincrementalfield
 native:adduniquevalueindexfield
+native:arrayoffsetlines
+native:arraytranslatedfeatures
 native:assignprojection
 native:boundary
 native:boundingboxes
 native:buffer
 native:bufferbym
+native:categorizeusingstyle
 native:centroids
 native:clip
 native:collect
 native:convexhull
+native:dbscanclustering
 native:deleteholes
 native:difference
 native:dissolve
 native:dropgeometries
 native:dropmzvalues
 native:explodelines
+native:extendlines
 native:extenttolayer
 native:extractbyattribute
 native:extractbyexpression
@@ -387,12 +393,17 @@ native:extractbylocation
 native:extractvertices
 native:filedownloader
 native:filter
+native:filterverticesbym
+native:filterverticesbyz
 native:fixgeometries
 native:hublines
 native:importphotos
+native:interpolatepoint
 native:intersection
 native:joinattributestable
+native:kmeansclustering
 native:lineintersections
+native:linesubstring
 native:loadlayer
 native:meancoordinates
 native:mergelines
@@ -400,9 +411,12 @@ native:mergevectorlayers
 native:minimumenclosingcircle
 native:multiparttosingleparts
 native:multiringconstantbuffer
+native:offsetline
 native:orderbyexpression
 native:orientedminimumboundingbox
 native:package
+native:pixelstopoints
+native:pixelstopolygons
 native:pointonsurface
 native:projectpointcartesian
 native:promotetomulti
@@ -413,11 +427,17 @@ native:removeduplicatevertices
 native:removenullgeometries
 native:renamelayer
 native:reprojectlayer
+native:reverselinedirection
 native:rotatefeatures
 native:saveselectedfeatures
 native:segmentizebymaxangle
 native:segmentizebymaxdistance
 native:selectbylocation
+native:setmfromraster
+native:setzfromraster
+native:shortestpathlayertopoint
+native:shortestpathpointtolayer
+native:shortestpathpointtopoint
 native:simplifygeometries
 native:smoothgeometry
 native:snappointstogrid
@@ -461,7 +481,6 @@ qgis:distancetonearesthubpoints
 qgis:eliminateselectedpolygons
 qgis:executesql
 qgis:exportaddgeometrycolumns
-qgis:extendlines
 qgis:extractspecificvertices
 qgis:fieldcalculator
 qgis:findprojection
@@ -477,12 +496,12 @@ qgis:importintospatialite
 qgis:joinattributesbylocation
 qgis:joinbylocationsummary
 qgis:keepnbiggestparts
+qgis:knearestconcavehull
 qgis:linestopolygons
 qgis:listuniquevalues
 qgis:meanandstandarddeviationplot
 qgis:minimumboundinggeometry
 qgis:nearestneighbouranalysis
-qgis:offsetline
 qgis:orthogonalize
 qgis:pointsalonglines
 qgis:pointsdisplacement
@@ -492,6 +511,7 @@ qgis:poleofinaccessibility
 qgis:polygonfromlayerextent
 qgis:polygonize
 qgis:polygonstolines
+qgis:postgisexecuteandloadsql
 qgis:postgisexecutesql
 qgis:randomextract
 qgis:randomextractwithinsubsets
@@ -505,12 +525,12 @@ qgis:rastercalculator
 qgis:rasterize
 qgis:rasterlayerhistogram
 qgis:rasterlayerstatistics
+qgis:rastersampling
 qgis:rectanglesovalsdiamondsfixed
 qgis:rectanglesovalsdiamondsvariable
 qgis:refactorfields
 qgis:regularpoints
 qgis:relief
-qgis:reverselinedirection
 qgis:ruggednessindex
 qgis:scatter3dplot
 qgis:selectbyattribute
@@ -521,9 +541,6 @@ qgis:setmvalue
 qgis:setstyleforrasterlayer
 qgis:setstyleforvectorlayer
 qgis:setzvalue
-qgis:shortestpathlayertopoint
-qgis:shortestpathpointtolayer
-qgis:shortestpathpointtopoint
 qgis:singlesidedbuffer
 qgis:slope
 qgis:snapgeometries

@@ -9,11 +9,11 @@
 
 **- Spatial Processing**: 
 
-+ Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures (layer must be in projected coordinate reference system)
-+ Create Centerline in Polygon's gaps (E.g building blocks) (layer must be in projected coordinate reference system)
++ Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures (layers must be in projected coordinate reference system)
++ Create Centerline in Polygon's gaps (E.g building blocks) (layers must be in projected coordinate reference system)
 + Finding closest/ farthest pair of Points in a Point set based on Voronoi Diagram
 + Finding Largest Empty Circle of a Point set.
-+ Merging layers (with the same attributes and geometry type), split Layer (based on unique field),...
++ Merging layers (with the same geometry type), split Layer (based on unique field),...
 
 **- Attribute Calculation**: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case,...
 

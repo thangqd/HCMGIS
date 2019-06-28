@@ -35,6 +35,46 @@ class hcmgis_menu:
 		##https://mc.bbbike.org/mc/?num=2&mt0=mapnik&mt1=watercolor
 		#https://gitlab.com/GIS-projects/Belgium-XYZ-tiles/tree/b538df2c2de0d16937641742f25e4709ca94e42e
 		
+		#############
+		#Google Maps
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.googlemaps_action = QAction(icon, u'Google Maps', self.iface.mainWindow())
+		self.googlemaps_action.triggered.connect(self.googlemaps_call)		
+		self.basemap_menu.addAction(self.googlemaps_action)
+		
+		#Google Satellite
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.googlesatellite_action = QAction(icon, u'Google Satellite', self.iface.mainWindow())
+		self.googlesatellite_action.triggered.connect(self.googlesatellite_call)		
+		self.basemap_menu.addAction(self.googlesatellite_action)
+
+		#Google Satellite Hybrid
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.hcmgis_googlesatellitehybrid_action = QAction(icon, u'Google Satellite Hybrid', self.iface.mainWindow())
+		self.hcmgis_googlesatellitehybrid_action.triggered.connect(self.googlesatellitehybrid_call)		
+		self.basemap_menu.addAction(self.hcmgis_googlesatellitehybrid_action)
+
+				
+		#Google Terrain
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.hcmgis_googleterrain_action = QAction(icon, u'Google Terrain', self.iface.mainWindow())
+		self.hcmgis_googleterrain_action.triggered.connect(self.googleterrain_call)		
+		self.basemap_menu.addAction(self.hcmgis_googleterrain_action)
+
+		#Google Terrain Hybrid
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+		self.hcmgis_googleterrainhybrid_action = QAction(icon, u'Google Terrain Hybrid', self.iface.mainWindow())
+		self.hcmgis_googleterrainhybrid_action.triggered.connect(self.googleterrainhybrid_call)		
+		self.basemap_menu.addAction(self.hcmgis_googleterrainhybrid_action)
+
+		
+		#############
+		#Bing Maps
+	#	icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_bing.png")
+	# 	self.bingaerial_action = QAction(icon, u'Bing Aerial', self.iface.mainWindow())
+	# 	self.bingaerial_action.triggered.connect(self.bingaerial_call)		
+	# 	self.basemap_menu.addAction(self.bingaerial_action) 
+
 
 		#Carto Antique
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")
@@ -135,53 +175,22 @@ class hcmgis_menu:
 		self.esritopo_action.triggered.connect(self.esritopo_call)		
 		self.basemap_menu.addAction(self.esritopo_action)
 
-		#Esri World Transportation
+		""" #Esri World Transportation
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
 		self.esritransport_action = QAction(icon, u'Esri Transport', self.iface.mainWindow())
 		self.esritransport_action.triggered.connect(self.esritransport_call)		
 		self.basemap_menu.addAction(self.esritransport_action)
-
-		
-
-		#############3
-
-		#Google Maps
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
-		self.googlemaps_action = QAction(icon, u'Google Maps', self.iface.mainWindow())
-		self.googlemaps_action.triggered.connect(self.googlemaps_call)		
-		self.basemap_menu.addAction(self.googlemaps_action)
-		
-				
-		#Google Terrain
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
-		self.hcmgis_googleterrain_action = QAction(icon, u'Google Terrain', self.iface.mainWindow())
-		self.hcmgis_googleterrain_action.triggered.connect(self.googleterrain_call)		
-		self.basemap_menu.addAction(self.hcmgis_googleterrain_action)
-
-		#Google Terrain Hybrid
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
-		self.hcmgis_googleterrainhybrid_action = QAction(icon, u'Google Terrain Hybrid', self.iface.mainWindow())
-		self.hcmgis_googleterrainhybrid_action.triggered.connect(self.googleterrainhybrid_call)		
-		self.basemap_menu.addAction(self.hcmgis_googleterrainhybrid_action)
-
-		#Google Satellite
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
-		self.googlesatellite_action = QAction(icon, u'Google Satellite', self.iface.mainWindow())
-		self.googlesatellite_action.triggered.connect(self.googlesatellite_call)		
-		self.basemap_menu.addAction(self.googlesatellite_action)
-
-		#Google Satellite Hybrid
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
-		self.hcmgis_googlesatellitehybrid_action = QAction(icon, u'Google Satellite Hybrid', self.iface.mainWindow())
-		self.hcmgis_googlesatellitehybrid_action.triggered.connect(self.googlesatellitehybrid_call)		
-		self.basemap_menu.addAction(self.hcmgis_googlesatellitehybrid_action)
-		
+		 """
 		
 		##############################
-		#Stamen
+		# F4map - 2D
 		#############################
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_f4map.png")
+		self.f4map_action = QAction(icon, u'F4 Map - 2D', self.iface.mainWindow())
+		self.f4map_action.triggered.connect(self.f4map_call)		
+		self.basemap_menu.addAction(self.f4map_action)
+		
 
-	
 		
 		#Stamen Toner
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
@@ -225,10 +234,16 @@ class hcmgis_menu:
 		self.stamenwatercolor_action.triggered.connect(self.stamenwatercolor_call)		
 		self.basemap_menu.addAction(self.stamenwatercolor_action)
 			
+		# Wikimedia Maps
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_wikimedia.png")
+		self.wikimedia_action = QAction(icon, u'Wikimedia Maps', self.iface.mainWindow())
+		self.wikimedia_action.triggered.connect(self.wikimedia_call)		
+		self.basemap_menu.addAction(self.wikimedia_action)
 		
+
 		#HCMGIS Aerial Image
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.hcmgisaerial_action = QAction(icon, u'HCMGIS Arerial Images', self.iface.mainWindow())
+		self.hcmgisaerial_action = QAction(icon, u'HCMGIS Aerial Images', self.iface.mainWindow())
 		self.hcmgisaerial_action.triggered.connect(self.hcmgisaerial_call)		
 		self.basemap_menu.addAction(self.hcmgisaerial_action)
 		
@@ -309,10 +324,7 @@ class hcmgis_menu:
 		self.fontconverter_action = QAction(icon, u'Vietnamese Font Converter', self.iface.mainWindow())
 		self.fontconverter_action.triggered.connect(self.fontconverter)
 		#QObject.connect(self.fontconverter_action, SIGNAL("triggered()"), self.fontconverter)
-		self.tool_menu.addAction(self.fontconverter_action)
-		
-		
-		
+		self.tool_menu.addAction(self.fontconverter_action)	
 		
 	def unload(self):
 		if self.hcmgis_menu != None:
@@ -323,6 +335,48 @@ class hcmgis_menu:
 			self.iface.removePluginMenu("&hcmgis", self.geoprocessing_menu.menuAction())
 			self.iface.removePluginMenu("&hcmgis", self.tool_menu.menuAction())
 
+	##############
+	# Google
+	############
+	def googlemaps_call(self):
+		service_url ="mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+		name = "Google Maps"
+		hcmgis_basemap(self.iface,service_url, name)
+
+
+	def googlesatellite_call(self):
+		service_url ="mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" 
+		name = "Google Satellite"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+
+	def googlesatellitehybrid_call(self):
+		service_url ="mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+		name = "Google Satellite Hybrid"
+		hcmgis_basemap(self.iface,service_url, name)
+	
+
+	def googleterrain_call(self):
+		service_url ="mt1.google.com/vt/lyrs=t&x={x}&y={y}&z={z}" 
+		name = "Google Terrain"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	def googleterrainhybrid_call(self):
+		service_url ="mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}"
+		name = "Google Terrain Hybrid"
+		hcmgis_basemap(self.iface,service_url, name)
+
+	##############
+	# Bing
+	############
+	""" def bingaerial_call(self):
+		service_url ="ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1"
+		name = "Bing Aerial"
+		hcmgis_basemap(self.iface,service_url, name) """
+
+	##############
+	# Carto
+	############
 	def cartolight_call(self):
 		service_url ="a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" 
 		name = "Carto Light"
@@ -401,22 +455,27 @@ class hcmgis_menu:
 		name = "Esri Topographic"
 		hcmgis_basemap(self.iface,service_url, name)
 	
-	def esritransport_call(self):
+	""" def esritransport_call(self):
 		service_url ="server.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}" 
 		name = "Esri Transport"
-		hcmgis_basemap(self.iface,service_url, name)
+		hcmgis_basemap(self.iface,service_url, name) """
 
 	def esrishaded_call(self):
 		service_url ="server.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}" 
 		name = "Esri Shaded Relief"
 		hcmgis_basemap(self.iface,service_url, name)
 
-	####################################
-	def hcmgisaerial_call(self):
-		service_url = "trueortho.hcmgis.vn/basemap/cache_lidar/{z}/{x}/{y}.jpg" 
-		name = "HCMGIS Aerial Images"
+	#########################		
+	# F4 Map
+	#####################
+	def f4map_call(self):
+		service_url ="tile1.f4map.com/tiles/f4_2d/{z}/{x}/{y}.png" 
+		name = "F4map"
 		hcmgis_basemap(self.iface,service_url, name)
-			
+	
+	#########################		
+	# Stamen
+	#####################	
 	def stamenwatercolor_call(self):
 		service_url = "c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg" 
 		name = "Stamen Watercolor"
@@ -452,37 +511,19 @@ class hcmgis_menu:
 		service_url ="a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png" 
 		name = "Stamen Terrain Background"
 		hcmgis_basemap(self.iface,service_url, name)
-	
-	##############
-	# Google
-	############
-	def googlemaps_call(self):
-		service_url ="mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
-		name = "Google Maps"
-		hcmgis_basemap(self.iface,service_url, name)
 
-
-	def googlesatellite_call(self):
-		service_url ="mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" 
-		name = "Google Satellite"
+	###################################
+	def hcmgisaerial_call(self):
+		service_url = "trueortho.hcmgis.vn/basemap/cache_lidar/{z}/{x}/{y}.jpg" 
+		name = "HCMGIS Aerial Images"
 		hcmgis_basemap(self.iface,service_url, name)
-	
-
-	def googlesatellitehybrid_call(self):
-		service_url ="mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
-		name = "Google Satellite Hybrid"
+			
+	###################################
+	def wikimedia_call(self):
+		service_url = "maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png" 
+		name = "Wikimedia Maps"
 		hcmgis_basemap(self.iface,service_url, name)
-	
-
-	def googleterrain_call(self):
-		service_url ="mt1.google.com/vt/lyrs=t&x={x}&y={y}&z={z}" 
-		name = "Google Terrain"
-		hcmgis_basemap(self.iface,service_url, name)
-
-	def googleterrainhybrid_call(self):
-		service_url ="mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}"
-		name = "Google Terrain Hybrid"
-		hcmgis_basemap(self.iface,service_url, name)
+			
 
 	##########################	
 	def opendata(self):

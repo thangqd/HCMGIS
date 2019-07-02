@@ -1,4 +1,4 @@
-# HCMGIS - Geometry Processing and Field Calculation plugin for QGIS3
+# HCMGIS - Basemap, Geometry Processing and Field Calculation plugin for QGIS3
 
 **HCMGIS** is a set of useful geometry processing and field calculation utilities:
 

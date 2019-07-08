@@ -257,6 +257,18 @@ class hcmgis_menu:
 		self.opendata_action = QAction(icon, u'Download Free and Open GeoData', self.iface.mainWindow())
 		self.opendata_action.triggered.connect(self.opendata)		
 		self.opendata_menu.addAction(self.opendata_action)
+
+		
+		# VN-2000 Projections submenu
+		self.projections_menu = QMenu(u'VN-2000 Projections')		
+		self.hcmgis_add_submenu(self.projections_menu)
+		
+		# VN-2000 Projections
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_projections.png")
+		self.projections_action = QAction(icon, u'Create VN-2000 Projections', self.iface.mainWindow())
+		self.projections_action.triggered.connect(self.projections)		
+		self.projections_menu.addAction(self.projections_action)
+
 		
 		# Merge_Split submenu
 		self.geoprocessing_menu = QMenu(u'Geometry Processing')		
@@ -530,15 +542,11 @@ class hcmgis_menu:
 		dialog = hcmgis_opendata_dialog(self.iface)
 		dialog.exec_()
 	
-	def prefix_suffix(self):
-		dialog = hcmgis_prefix_suffix_dialog(self.iface)
+	def projections(self):
+		dialog = hcmgis_customprojections_dialog(self.iface)
 		dialog.exec_()
-		
-	def find_replace(self):
-		dialog = hcmgis_find_replace_dialog(self.iface)
-		dialog.exec_()
-		
-		
+	
+
 	def mergefield(self):
 		dialog = hcmgis_merge_field_dialog(self.iface)
 		dialog.exec_()
@@ -573,22 +581,9 @@ class hcmgis_menu:
 		dialog = hcmgis_split_dialog(self.iface)
 		dialog.exec_()
 	
-	def checkvalidity(self):
-		dialog = hcmgis_checkvalidity_dialog(self.iface)
-		dialog.exec_()
-		
-	def fixgeometries(self):
-		dialog = hcmgis_fixgeometries_dialog(self.iface)
-		dialog.exec_()
-	
 	def fontconverter(self):
 		dialog = hcmgis_font_convert_dialog(self.iface)
-		dialog.exec_()
-	
-	def reproject(self):
-		dialog = hcmgis_reprojection_dialog(self.iface)
-		dialog.exec_()
-
+		dialog.exec_()	
 	
 		
 

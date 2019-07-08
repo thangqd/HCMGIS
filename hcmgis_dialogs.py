@@ -37,10 +37,11 @@ from hcmgis_medialaxis_form import *
 from hcmgis_centerline_form import *
 from hcmgis_closestpair_form import *
 from hcmgis_lec_form import *
+from hcmgis_customprojections_form import *
+
 
 
 global _Unicode, _TCVN3, _VNIWin, _KhongDau
-
 # --------------------------------------------------------
 #    HCMGIS Opendata
 # --------------------------------------------------------
@@ -138,9 +139,195 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 		
 		MessageBar = qgis.utils.iface.messageBar()
 		MessageBar.pushMessage(u"Complete Downloading " + unicode(len(layernames)) +u" OpenData Layers", 0, 3)        
-		return			
+		return		
 
+# --------------------------------------------------------
+#    VN-2000 Projections
+# --------------------------------------------------------
+class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form):		
+
+	def __init__(self, iface):		
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)
+		#self.BtnOKCancel.accepted.connect(self.run)
+		self.cboProvinces.setCurrentIndex(-1)
+		self.cboKTT.setCurrentIndex(-1)
+		self.cboZone.setCurrentIndex(0)
+		self.cboKTT.setEnabled(False)
+		self.cboZone.setEnabled(False)
 		
+		self.rad3do.toggled.connect(self.togglerad3do)
+		self.radcustom.toggled.connect(self.toggleradcustom)
+		self.cboZone.currentIndexChanged.connect(self.zonechange)
+	
+		self.cboProvinces.currentIndexChanged.connect(self.update_proj)
+		self.cboFormat.currentIndexChanged.connect(self.update_proj)
+		self.cboParameters.currentIndexChanged.connect(self.update_proj)
+		self.cboKTT.currentTextChanged.connect(self.update_proj)
+
+
+
+	def update_proj(self):		
+		self.txtProjections.clear()
+		provinces = ['Lai Châu','Sơn La','Kiên Giang','Cà Mau','Lào Cai','Yên Bái','Nghệ An',
+				'Phú Thọ','An Giang', 'Thanh Hoá', 'Vĩnh Phúc', 'Hà Tây', 'Đồng Tháp','Cần Thơ',
+				'Bạc Liêu','Hà Nội','Ninh Bình','Hà Nam','Hà Giang','Hải Dương','Hà Tĩnh','Bắc Ninh','Hưng Yên',
+				'Thái Bình','Nam Định','Tây Ninh','Vĩnh Long','Sóc Trăng','Trà Vinh',
+				'Cao Bằng','Long An','Tiền Giang','Bến Tre','Hải Phòng','TP.HCM','Bình Dương','Tuyên Quang','Hoà Bình',
+				'Quảng Bình','Quảng Trị','Bình Phước','Bắc Kạn','Thái Nguyên','Bắc Giang','Thừa Thiên - Huế','Lạng Sơn',
+				'Kon Tum','Quảng Ninh','Đồng Nai','Bà Rịa - Vũng Tàu', 'Quảng Nam','Lâm Đồng','Đà Nẵng',
+				'Quảng Ngãi','Ninh Thuận','Khánh Hoà','Bình Định','Đắc Lắc','Phú Yên','Gia Lai','Bình Thuận']		
+		ktt = [103,104,104.5, 104.5, 104.75, 104.75, 104.75,
+		104.75, 104.75, 105,  105, 105, 105, 105,
+		105,105,105, 105,105.5,105.5,105.5,105.5,105.5,105.5,
+		105.5,105.5,105.5,105.5,105.5,105.5,
+		105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 106, 106,
+		106, 106.25,106.25,106.5, 106.5, 107, 107,107.25,
+		107.5, 107.75, 107.75,107.75,107.75,107.75,107.75,
+		108, 108.25, 108.25,108.25,108.5,108.5,108.5,108.5]
+		parameters = self.cboParameters.currentText()
+
+		if self.rad3do.isChecked():
+			i = self.cboProvinces.currentIndex()
+			self.cboKTT.setCurrentText(str(ktt[i]))
+			self.cboZone.setCurrentIndex(0)
+			self.cboZone.setEnabled(False)
+			self.cboKTT.setEnabled(False)
+			k = 0.9999
+			self.txtProjections.setText(self.hcmgis_projections_generate(parameters, ktt[i],k))
+		
+		elif self.radcustom.isChecked():
+			if ((self.cboKTT.currentText() is not None) and  (self.cboKTT.currentText().strip() != '') and (self.cboKTT.currentIndex() != -1)):
+				ktt = self.cboKTT.currentText().strip()
+				if self.cboZone.currentIndex() == 0 :
+					k = 0.9999
+				else: k = 0.9996
+				self.txtProjections.setText(self.hcmgis_projections_generate(parameters,ktt,k))
+	
+	
+	def hcmgis_projections_generate(self,parameters,ktt,scale_factor):	
+		projections_text =''
+		ktt = self.cboKTT.currentText().strip()
+		try:
+			srid = int(float(self.cboKTT.currentText().strip())*100)
+		except:
+			srid = 10500
+		
+		if self.cboZone.currentIndex() == 0 :
+			k = 0.9999
+		else: k = 0.9996	
+		
+		#Proj.4
+		if self.cboFormat.currentIndex() == 0: 
+			projections_text = '+proj=tmerc +lat_0=0 +lon_0='
+			projections_text+= str(ktt)
+			projections_text+=' +k='
+			projections_text+= str(k)
+			projections_text+= ' +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84='
+			projections_text+= parameters
+			projections_text+= ' +units=m +no_defs'
+		
+		#ESRI WKT
+		#PROJCS["VN_2000_UTM_zone_48N",GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1]]
+		elif self.cboFormat.currentIndex() == 1:			
+			projections_text = 'PROJCS['
+			projections_text += '"'+  str(srid) +'"'
+			projections_text += ',GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
+			projections_text += ktt + ']'
+			projections_text +=',PARAMETER["scale_factor",'
+			projections_text += str(k) +']'
+			projections_text +=',PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1]]'			
+		
+		#PostGIS
+		#INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 3405, 'EPSG', 3405, '+proj=utm +zone=48 +ellps=WGS84 +towgs84=-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188 +units=m +no_defs ', 'PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3405"]]');
+		elif self.cboFormat.currentIndex() == 2:		
+			projections_text = 'INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values('
+			projections_text += str(srid) 
+			projections_text += ',\'' 
+			projections_text +=	'HCMGIS'
+			projections_text += '\',' 
+			projections_text += str(srid)
+			projections_text += ',\''
+			projections_text += '+proj=utm +ellps=WGS84 +towgs84='
+			projections_text +=	parameters 
+			projections_text += ' +units=m +no_defs'
+			projections_text += '\''
+			projections_text += ',\''
+			projections_text += 'PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-191.9044129,-39.30318279,-111.45032835,-0.00928836, 0.01975479, -0.004274, 0.252906278],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
+			projections_text +=str(ktt)
+			projections_text +='],PARAMETER["scale_factor",'
+			projections_text +=str(k)
+			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["HCMGIS",'
+			projections_text += '"'
+			projections_text += str(srid)
+			projections_text += '"'
+			projections_text += ']]'
+			projections_text +='\''
+			projections_text +=');'
+
+		#GeoServer:
+		#3405=PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3405"]]
+		elif self.cboFormat.currentIndex() == 3:			
+			projections_text = str(srid)
+			projections_text += '=PROJCS['
+			projections_text +='"'
+			projections_text +=str(srid)
+			projections_text +='"'
+			projections_text += ',GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84['
+			projections_text += parameters
+			projections_text += '],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
+			projections_text +=str(ktt)
+			projections_text +='],PARAMETER["scale_factor",'
+			projections_text +=str(k)
+			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["HCMGIS",'
+			projections_text +=  '"'
+			projections_text +=  str(srid)
+			projections_text +=  '"'
+			projections_text +=']]'
+		
+		return projections_text
+
+	def zonechange(self):
+		self.txtProjections.clear()
+		
+		listKTT6do = ['105','111','117']
+		listKTT3do = ['102', '103', '104','104.5', '104.75', '105','105.5', '105.75','106', '106.25', '106.5',
+		'107','107.25','107.5','107.75','108','108.25','108.5', '111','114', '117']
+
+		if (self.cboZone.currentIndex() == 1):
+			self.cboKTT.clear()
+			self.cboKTT.addItems(listKTT6do)
+			self.cboKTT.setCurrentIndex(-1)
+	
+		elif (self.cboZone.currentIndex() == 0):
+			self.cboKTT.clear()
+			self.cboKTT.addItems(listKTT3do)
+			self.cboKTT.setCurrentIndex(-1)
+         	
+	def togglerad3do(self):
+		self.txtProjections.clear()
+		self.cboKTT.clear()
+		if self.rad3do.isChecked():
+			self.cboProvinces.setCurrentIndex(-1)
+			self.cboKTT.setCurrentIndex(-1)
+			self.cboZone.setCurrentIndex(-1)
+			self.cboProvinces.setEnabled(True)
+			self.cboKTT.setEnabled(False)
+			self.cboZone.setEnabled(False)
+		
+	def toggleradcustom(self):
+		self.txtProjections.clear()
+		self.cboKTT.clear()
+		if self.radcustom.isChecked():			
+			self.cboProvinces.setCurrentIndex(-1)
+			self.cboKTT.setCurrentIndex(-1)
+			self.cboZone.setCurrentIndex(-1)
+			self.cboProvinces.setEnabled(False)
+			self.cboKTT.setEnabled(True)
+			self.cboZone.setEnabled(True)
+
+			
 class hcmgis_medialaxis_dialog(QDialog, Ui_hcmgis_medialaxis_form):		
 	def __init__(self, iface):
 		QDialog.__init__(self)

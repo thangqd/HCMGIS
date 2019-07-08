@@ -7,6 +7,9 @@
 
 **- HCMGIS OpenData**:  Download free and open geodata from https://opendata.hcmgis.vn
 
+**- Vn-2000 Projections**:  Define local UTM projections for each provinces of VietNam in Vn-2000 Coordinate Reference System
+
+
 **- Spatial Processing**: 
 
 + Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures (layers must be in projected coordinate reference system)
@@ -25,6 +28,8 @@
 **- Basemap**: Thêm bản đồ nền Carto, ESRI, Google, OSM Stamen, HCMGIS Aerial Images,...trong QGIS
 
 **- HCMGIS OpenData**:  Download miễn phí dữ liệu GIS từ https://opendata.hcmgis.vn
+
+**- Vn-2000 Projections**:  Định nghĩa hệ tọa độ địa phương cho các tỉnh/ thành ở Việt Nam
 
 
 **-Xử lý không gian**: 

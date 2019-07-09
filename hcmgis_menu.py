@@ -265,7 +265,7 @@ class hcmgis_menu:
 		
 		# VN-2000 Projections
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_projections.png")
-		self.projections_action = QAction(icon, u'Create VN-2000 Projections', self.iface.mainWindow())
+		self.projections_action = QAction(icon, u'VN-2000 Projections Define', self.iface.mainWindow())
 		self.projections_action.triggered.connect(self.projections)		
 		self.projections_menu.addAction(self.projections_action)
 

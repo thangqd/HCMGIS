@@ -232,7 +232,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 		#PROJCS["VN_2000_UTM_zone_48N",GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1]]
 		elif self.cboFormat.currentIndex() == 1:			
 			projections_text = 'PROJCS['
-			projections_text += '"'+  str(srid) +'"'
+			projections_text += '"VN-2000 / '+  str(srid) +'"'
 			projections_text += ',GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
 			projections_text += ktt + ']'
 			projections_text +=',PARAMETER["scale_factor",'
@@ -254,11 +254,13 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 			projections_text += ' +units=m +no_defs'
 			projections_text += '\''
 			projections_text += ',\''
-			projections_text += 'PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-191.9044129,-39.30318279,-111.45032835,-0.00928836, 0.01975479, -0.004274, 0.252906278],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
+			projections_text += 'PROJCS["'
+			projections_text += 'VN-2000 / ' + str(srid) + '"'
+			projections_text += ',GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-191.9044129,-39.30318279,-111.45032835,-0.00928836, 0.01975479, -0.004274, 0.252906278],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
 			projections_text +=str(ktt)
 			projections_text +='],PARAMETER["scale_factor",'
 			projections_text +=str(k)
-			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["HCMGIS",'
+			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG",'
 			projections_text += '"'
 			projections_text += str(srid)
 			projections_text += '"'
@@ -272,7 +274,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 			projections_text = str(srid)
 			projections_text += '=PROJCS['
 			projections_text +='"'
-			projections_text +=str(srid)
+			projections_text += 'VN-2000 / '+str(srid)
 			projections_text +='"'
 			projections_text += ',GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84['
 			projections_text += parameters
@@ -280,7 +282,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 			projections_text +=str(ktt)
 			projections_text +='],PARAMETER["scale_factor",'
 			projections_text +=str(k)
-			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["HCMGIS",'
+			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG",'
 			projections_text +=  '"'
 			projections_text +=  str(srid)
 			projections_text +=  '"'

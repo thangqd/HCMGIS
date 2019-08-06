@@ -265,11 +265,7 @@ class hcmgis_menu:
 		
 		# VN-2000 Projections
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_projections.png")
-<<<<<<< HEAD
 		self.projections_action = QAction(icon, u'Define VN-2000 Projections', self.iface.mainWindow())
-=======
-		self.projections_action = QAction(icon, u'VN-2000 Projections Define', self.iface.mainWindow())
->>>>>>> 10f807296945c81a952ff98e67d3bd728e4b7eda
 		self.projections_action.triggered.connect(self.projections)		
 		self.projections_menu.addAction(self.projections_action)
 
@@ -343,12 +339,12 @@ class hcmgis_menu:
 		self.tool_menu.addAction(self.fontconverter_action)	
 
 		# Bulk Import Submenu
-		self.bulk_import_menu = QMenu(u'Bulk Import')	
+		self.bulk_import_menu = QMenu(u'Bulk Convert')	
 		self.hcmgis_add_submenu(self.bulk_import_menu)
 
 		# CSV point to Shapefile
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.csv2shp_action = QAction(icon, u'Bulk Import from CSV', self.iface.mainWindow())
+		self.csv2shp_action = QAction(icon, u'CSV Points to Shapefile', self.iface.mainWindow())
 		self.csv2shp_action.triggered.connect(self.csv2shp)
 		self.bulk_import_menu.addAction(self.csv2shp_action)
 

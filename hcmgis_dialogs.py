@@ -640,56 +640,25 @@ class hcmgis_csv2shp_dialog(QDialog, Ui_hcmgis_csv2shp_form):
 		QDialog.__init__(self)
 		self.iface = iface
 		self.setupUi(self)	
-		#self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
-		#self.CboField.setLayer (self.CboInput.currentLayer () )
-		#self.CboInput.activated.connect(self.update_field) 
+		self.hcmgis_set_status_bar(self.status)
+
 		self.BtnInputFolder.clicked.connect(self.read_csv)	
+		#self.LinOutputFolder.setText(os.getcwd())   
+		self.lsCSV.clear() 
+		self.lsCSV.currentRowChanged.connect(self.set_field_names)                             
+		self.BtnOKCancel.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 
-		self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
-		self.LinOutputFolder.setText(os.getcwd())                                     
-		self.BtnOKCancel.accepted.connect(self.run)  
-		#self.browsefile.clicked.connect(self.read_csv_files)  
-
-		#self.hcmgis_set_status_bar(self.status)
-		#self.lsCSV.clear()
-		#self.geometry_type.currentIndexChanged.connect(self.set_field_names)
-
-		#self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name)
-
-
-	#def read_csv_files(self):
-
-	def update_fields(self):               
-		self.ListFields.clear()
-		layer = self.CboInput.currentLayer()
-		if layer != None and layer.type()  == QgsMapLayer.VectorLayer:                        
-			for field in layer.fields():
-				if field.type() in [QVariant.String]:
-					self.ListFields.addItem(field.name()) # lists layer fields
-		
 	def set_field_names(self):
-		header = self.hcmgis_read_csv_header(self.input_csv_name.filePath())
+		header = self.hcmgis_read_csv_header(self.lsCSV.currentItem().text())
 		if not header:
 			return
-
-		self.shape_id_field.clear()
-		self.part_id_field.clear()
 		self.longitude_field.clear()
-		self.latitude_field.clear()
-		
-		self.shape_id_field.addItems(header)
-		self.part_id_field.addItems(header)
+		self.latitude_field.clear()		
 		self.longitude_field.addItems(header)
 		self.latitude_field.addItems(header)
 
 		for index, field in enumerate(header):
-			if (field.lower() == "shapeid") or (field.lower() == 'shape_id'):
-				self.shape_id_field.setCurrentIndex(index)
-
-			elif (field.lower() == "partid") or (field.lower() == 'part_id'):
-				self.part_id_field.setCurrentIndex(index)
-
-			elif (field.lower().find("x") >= 0):
+			if (field.lower().find("x") >= 0):
 				self.longitude_field.setCurrentIndex(index)
 
 			elif (field.lower().find("y") >= 0):
@@ -701,31 +670,15 @@ class hcmgis_csv2shp_dialog(QDialog, Ui_hcmgis_csv2shp_form):
 			elif (field.lower().find('lat') >= 0):
 				self.latitude_field.setCurrentIndex(index)
 
-		self.part_id_field.setEnabled(self.geometry_type.currentText() in
-			["MultiPoint", "MultiLineString", "MultiPolygon"])
-
-		shapename = self.input_csv_name.filePath()
-		shapename = shapename.replace(".csv", ".shp")
-		shapename = shapename.replace(".CSV", ".shp")
-		shapename = shapename.replace(".txt", ".shp")
-		shapename = shapename.replace(".TXT", ".shp")
-		if shapename == self.input_csv_name.filePath():
-			shapename = str(shapename) + ".shp"
-		self.output_file_name.setFilePath(shapename)
-
-		def hcmgis_read_csv_header(self, input_csv_name):
-		# This may take awhile with large CSV files
-			input_csv = QgsVectorLayer(input_csv_name)
-
-			field_names = []
-
-			if (not input_csv) or (input_csv.featureCount() <= 0) or (len(input_csv.fields()) <= 0):
-				return field_names
-
-			for field in input_csv.fields():
-				field_names.append(field.name())
-
+	def hcmgis_read_csv_header(self, input_csv_name):
+	# This may take awhile with large CSV files
+		input_csv = QgsVectorLayer(input_csv_name)
+		field_names = []
+		if (not input_csv) or (input_csv.featureCount() <= 0) or (len(input_csv.fields()) <= 0):
 			return field_names
+		for field in input_csv.fields():
+			field_names.append(field.name())
+		return field_names
 
 	def hcmgis_direct_read_csv_header(self, filename):
 		try:
@@ -782,41 +735,50 @@ class hcmgis_csv2shp_dialog(QDialog, Ui_hcmgis_csv2shp_form):
 		return 0
 		
 	def read_csv(self):
-		newname = QFileDialog.getExistingDirectory(None, "Input CSV files",self.LinInputFolder.displayText())
+		newname = QFileDialog.getExistingDirectory(None, "Input Folder",self.LinInputFolder.displayText())
+		self.lsCSV.clear() 
 		if newname != None:
-			self.LinInputFolder.setText(newname)
-		
-		#entries = ['one','two', 'three']
-		#self.lsCSV.addItems(entries)
-
-		for i in range(10):
-			item = QListWidgetItem("Item %i" % i)
-			self.lsCSV.addItem(item)
-
-	def browse_outfile(self):
-		newname = QFileDialog.getExistingDirectory(None, "Output Shapefiles",self.LinOutputFolder.displayText())
-
-		if newname != None:
-			self.LinOutputFolder.setText(newname)            	
-			
-
-	
+			self.LinInputFolder.setText(newname)		
+		import os
+		from glob import glob
+		PATH = newname
+		EXT = "*.csv"
+		all_csv_files = [file
+                 for path, subdir, files in os.walk(PATH)
+                 for file in glob(os.path.join(path, EXT))]
+		self.lsCSV.addItems(all_csv_files)
+		self.lblCSV.setText (str(self.lsCSV.count()) + " files loaded")
+		self.lsCSV.setCurrentRow(0)
 				
+		
 	def run(self):             		
-		""" layer = self.CboInput.currentLayer()
-		if layer is None:
-			return u'No selected layers!'  
-		selectedfield = self.CboField.currentText()
-		density = self.spinBox.value()
-		if layer.selectedFeatureCount()>0 and layer.selectedFeatureCount() <= 100:		
-			message = hcmgis_medialaxis(self.iface,layer, selectedfield, density)
-			if message != None:
-				QMessageBox.critical(self.iface.mainWindow(), "Skeleton/ Media Axis", message)						               
-			else: return	
-		else:
-			#return u'Please select 1..100 features to create Skeleton/ Media Axis'		
-			QMessageBox.information(None,  "Skeleton/ Media Axis",u'Please select 1..100 features to create Skeleton/ Media Axis!')  """
-		return
+		item_count = 0
+		items = []
+		for index in range(self.lsCSV.count()):
+			items.append(self.lsCSV.item(index))
+
+		for item in items:
+			self.lsCSV.setCurrentRow(item_count);		
+			item_count +=1
+			input_csv_name = item.text()
+			longitude_field = str(self.longitude_field.currentText())
+			latitude_field = str(self.latitude_field.currentText())
+
+			temp_file_name = item.text()
+			output_file_name = temp_file_name.replace(".csv", ".shp", 1)
+
+			message = hcmgis_csv2shp(input_csv_name,  latitude_field, longitude_field, \
+				output_file_name, self.hcmgis_status_callback)
+			if message:
+				QMessageBox.critical(self.iface.mainWindow(), "CSV Point Convert", message)
+			
+			self.lblStatus.setText (str(item_count)+"/ "+ str(self.lsCSV.count()) + " files converted")	
+
+		#elif self.hcmgis_find_layer_by_data_source(output_file_name):
+		#	self.iface.mapCanvas().refreshAllLayers()
+
+		#else:
+		#	self.iface.addVectorLayer(output_file_name, "", "ogr")
 		
 def hcmgis_load_combo_box_with_vector_layers(qgis, combo_box, set_selected):
 	
@@ -826,14 +788,7 @@ def hcmgis_load_combo_box_with_vector_layers(qgis, combo_box, set_selected):
 		layer = QgsProject.instance().mapLayer(legend.layerId())
 		if layer.type() == QgsMapLayer.VectorLayer:
 			combo_box.addItem(layer.name())
-
-	#for name, layer in QgsProject.instance().mapLayers().items():
-	#	if layer.type() == QgsMapLayer.VectorLayer:
-	#		combo_box.addItem(layer.name())
-
-
-	# set_selected can be boolean "True" to use current selection in layer pane...
-
+	
 	if (type(set_selected) == bool):
 		# for index, layer in enumerate(qgis.legendInterface().selectedLayers()):
 		for index, layer in enumerate(qgis.layerTreeView().selectedLayers()):
@@ -859,10 +814,8 @@ def hcmgis_load_combo_box_with_vector_layers(qgis, combo_box, set_selected):
 			for item in combo_box.findItems(set_selected):
 				combo_box.setCurrentItem(item)
 
-	
-
 def hcmgis_temp_file_name(temp, suffix):
-	preferred = os.getcwd() +"\\" + temp + suffix
+	preferred = os.getcwd() +"/" + temp + suffix
 	if not os.path.isfile(preferred):
 		return preferred
 

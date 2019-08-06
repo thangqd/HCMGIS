@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>351</width>
-    <height>380</height>
+    <width>355</width>
+    <height>385</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -22,268 +22,182 @@
   <property name="windowTitle">
    <string>Vietnamese Font Converter</string>
   </property>
-  <widget class="QLabel" name="LblSourceFont">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>190</y>
-     <width>151</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Source Charset</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblDestFont">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>190</y>
-     <width>151</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Target Charset</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="CboSourceFont">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>207</y>
-     <width>151</width>
-     <height>21</height>
-    </rect>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <property name="text">
-     <string/>
-    </property>
+    <widget class="QLabel" name="LblInput">
+     <property name="text">
+      <string>Input Layer</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>TCVN3</string>
-    </property>
+    <widget class="QgsMapLayerComboBox" name="CboInput"/>
    </item>
    <item>
-    <property name="text">
-     <string>Unicode</string>
-    </property>
+    <widget class="QLabel" name="LblOutput_2">
+     <property name="text">
+      <string>Fields</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>VNI-Windows</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QComboBox" name="CboDestFont">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>206</y>
-     <width>151</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string/>
-    </property>
+    <widget class="QListWidget" name="ListFields">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::ExtendedSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>Unicode</string>
-    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="LblSourceFont">
+       <property name="text">
+        <string>Source Charset</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="2">
+      <widget class="QLabel" name="LblDestFont">
+       <property name="text">
+        <string>Target Charset</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QComboBox" name="CboSourceFont">
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>TCVN3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Unicode</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>VNI-Windows</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QComboBox" name="CboDestFont">
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Unicode</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>TCVN3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>VNI-Windows</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ANSI (Khong dau)</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="LblOption">
+       <property name="text">
+        <string>Options</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QComboBox" name="CboOption">
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>UPPER CASE (IN HOA)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>lower case (in thường)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Capitalize (Hoa đầu câu)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Title (Hoa Mỗi từ)</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="1" colspan="2">
+      <widget class="QCheckBox" name="ChkSelectedFeaturesOnly">
+       <property name="text">
+        <string>Selected features only</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QLabel" name="LblOutput">
+       <property name="text">
+        <string>Output Shapefile</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <widget class="QLineEdit" name="LinOutput"/>
+     </item>
+     <item row="5" column="2">
+      <widget class="QPushButton" name="BtnBrowseOutput">
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
-    <property name="text">
-     <string>TCVN3</string>
-    </property>
+    <widget class="QDialogButtonBox" name="BtnOKCancel">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
    </item>
-   <item>
-    <property name="text">
-     <string>VNI-Windows</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>ANSI (Khong dau)</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QLabel" name="LblOption">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>235</y>
-     <width>151</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Options</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="CboOption">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>251</y>
-     <width>151</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string/>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>UPPER CASE (IN HOA)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>lower case (in thường)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Capitalize (Hoa đầu câu)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Title (Hoa Mỗi từ)</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QDialogButtonBox" name="BtnOKCancel">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>339</y>
-     <width>156</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblInput">
-   <property name="geometry">
-    <rect>
-     <x>11</x>
-     <y>9</y>
-     <width>331</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Input Layer</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="BtnBrowseOutput">
-   <property name="geometry">
-    <rect>
-     <x>310</x>
-     <y>300</y>
-     <width>31</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>...</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="LinOutput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>300</y>
-     <width>291</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblOutput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>283</y>
-     <width>291</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Output Shapefile</string>
-   </property>
-  </widget>
-  <widget class="QgsMapLayerComboBox" name="CboInput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>24</y>
-     <width>331</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblOutput_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>55</y>
-     <width>331</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Fields</string>
-   </property>
-  </widget>
-  <widget class="QListWidget" name="ListFields">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>70</y>
-     <width>331</width>
-     <height>111</height>
-    </rect>
-   </property>
-   <property name="alternatingRowColors">
-    <bool>true</bool>
-   </property>
-   <property name="selectionMode">
-    <enum>QAbstractItemView::ExtendedSelection</enum>
-   </property>
-   <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="ChkSelectedFeaturesOnly">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>253</y>
-     <width>151</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Selected features only</string>
-   </property>
-  </widget>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgis.gui</header>
+   <header>qgsmaplayercombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

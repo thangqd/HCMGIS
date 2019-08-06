@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>265</height>
+    <height>287</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -22,486 +22,407 @@
   <property name="windowTitle">
    <string>Add Prefix/ Suffix</string>
   </property>
-  <widget class="QLabel" name="LblChar">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>109</y>
-     <width>151</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Prefix</string>
-   </property>
-  </widget>
-  <widget class="QDialogButtonBox" name="BtnOKCancel">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>220</y>
-     <width>156</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblInput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>11</y>
-     <width>321</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Imput Layer</string>
-   </property>
-  </widget>
-  <widget class="QgsMapLayerComboBox" name="CboInput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>27</y>
-     <width>321</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblOutput_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>60</y>
-     <width>321</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Field</string>
-   </property>
-  </widget>
-  <widget class="QgsFieldComboBox" name="CboField">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>77</y>
-     <width>321</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="LinPrefix">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>125</y>
-     <width>151</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblChar_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>155</y>
-     <width>41</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Suffix</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="LinSuffix">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>173</y>
-     <width>151</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="CboCharPrefix">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>125</y>
-     <width>151</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="editable">
-    <bool>true</bool>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <property name="text">
-     <string>Space</string>
-    </property>
+    <widget class="QLabel" name="LblInput">
+     <property name="text">
+      <string>Imput Layer</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>Tab</string>
-    </property>
+    <widget class="QgsMapLayerComboBox" name="CboInput"/>
    </item>
    <item>
-    <property name="text">
-     <string>,</string>
-    </property>
+    <widget class="QLabel" name="LblOutput_2">
+     <property name="text">
+      <string>Field</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>_</string>
-    </property>
+    <widget class="QgsFieldComboBox" name="CboField"/>
    </item>
    <item>
-    <property name="text">
-     <string>-</string>
-    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="LblChar">
+       <property name="text">
+        <string>Prefix</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="LblChar_3">
+       <property name="text">
+        <string>Linking Characters</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLineEdit" name="LinPrefix"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="CboCharPrefix">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>Space</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tab</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>,</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>_</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>-</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>/</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>|</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>\</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>.</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>:</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>~</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>`</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>!</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>@</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>#</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>$</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>%</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>&amp;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>*</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>(</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>{</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>}</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>[</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>]</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>'</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>&quot;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>&lt;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>&gt;</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="LblChar_2">
+       <property name="text">
+        <string>Suffix</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="LblChar_4">
+       <property name="text">
+        <string>Linking Characters</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLineEdit" name="LinSuffix"/>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="CboCharSuffix">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>Space</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tab</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>,</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>_</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>-</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>/</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>|</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>\</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>.</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>:</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>~</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>`</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>!</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>@</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>#</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>$</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>%</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>&amp;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>*</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>(</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>{</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>}</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>[</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>]</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>'</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>&quot;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>&lt;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>&gt;</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
-    <property name="text">
-     <string>/</string>
-    </property>
+    <widget class="QCheckBox" name="ChkSelectedFeaturesOnly">
+     <property name="text">
+      <string>Selected features only</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>|</string>
-    </property>
+    <widget class="QDialogButtonBox" name="BtnOKCancel">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
    </item>
-   <item>
-    <property name="text">
-     <string>\</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>.</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>:</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>~</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>`</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>!</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>@</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>#</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>$</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>%</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>&amp;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>*</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>(</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>{</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>}</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>[</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>]</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>'</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>&quot;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>&lt;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>&gt;</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QLabel" name="LblChar_3">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>109</y>
-     <width>151</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Linking Characters</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblChar_4">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>155</y>
-     <width>151</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Linking Characters</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="CboCharSuffix">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>173</y>
-     <width>151</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="editable">
-    <bool>true</bool>
-   </property>
-   <item>
-    <property name="text">
-     <string>Space</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Tab</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>,</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>_</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>-</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>/</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>|</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>\</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>.</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>:</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>~</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>`</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>!</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>@</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>#</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>$</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>%</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>&amp;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>*</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>(</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>{</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>}</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>[</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>]</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>'</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>&quot;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>&lt;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>&gt;</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QCheckBox" name="ChkSelectedFeaturesOnly">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>207</y>
-     <width>321</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Selected features only</string>
-   </property>
-  </widget>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>

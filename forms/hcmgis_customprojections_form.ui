@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>392</width>
-    <height>435</height>
+    <width>487</width>
+    <height>362</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -22,642 +22,593 @@
   <property name="windowTitle">
    <string>VN-2000 Projections</string>
   </property>
-  <widget class="QDialogButtonBox" name="BtnOKCancel">
-   <property name="geometry">
-    <rect>
-     <x>292</x>
-     <y>400</y>
-     <width>91</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Close</set>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="cboProvinces">
-   <property name="geometry">
-    <rect>
-     <x>240</x>
-     <y>10</y>
-     <width>141</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="currentText">
-    <string>Bà Rịa - Vũng Tàu</string>
-   </property>
-   <item>
-    <property name="text">
-     <string>Lai Châu</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Sơn La</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Kiên Giang</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Cà Mau</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Lào Cai</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Yên Bái</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Nghệ An</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Phú Thọ</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>An Giang</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Thanh Hoá</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Vĩnh Phúc</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hà Tây</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Đồng Tháp</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Cần Thơ</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bạc Liêu</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hà Nội</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Ninh Bình</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hà Nam</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hà Giang</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hải Dương</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hà Tĩnh</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bắc Ninh</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hưng Yên</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Thái Bình</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Nam Định</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Tây Ninh</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Vĩnh Long</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Sóc Trăng</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Trà Vinh</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Cao Bằng</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Long An</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Tiền Giang</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bến Tre</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hải Phòng</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>TP.HCM</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bình Dương</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Tuyên Quang</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Hoà Bình</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Quảng Bình</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Quảng Trị</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bình Phước</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bắc Kạn</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Thái Nguyên</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bắc Giang</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Thừa Thiên - Huế</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Lạng Sơn</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Kon Tum</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Quảng Ninh</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Đồng Nai</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bà Rịa - Vũng Tàu</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Quảng Nam</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Lâm Đồng</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Đà Nẵng</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Quảng Ngãi</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Ninh Thuận</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Khánh Hoà</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bình Định</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Đắc Lắc</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Phú Yên</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Gia Lai</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Bình Thuận</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QLabel" name="LblInput_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>60</y>
-     <width>171</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Múi chiếu</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="cboZone">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>80</y>
-     <width>171</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>3 độ</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>6 độ</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QComboBox" name="cboKTT">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>80</y>
-     <width>171</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="editable">
-    <bool>true</bool>
-   </property>
-   <item>
-    <property name="text">
-     <string>102</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>103</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>104</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>104.5</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>104.75</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>105</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>105.5</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>105.75</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>106</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>106.25</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>106.5</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>107</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>107.25</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>107.5</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>107.75</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>108</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>108.25</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>108.5</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>111</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>114</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>117</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QLabel" name="LblInput_3">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>60</y>
-     <width>171</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Kinh tuyến trục</string>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="txtProjections">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>230</y>
-     <width>371</width>
-     <height>161</height>
-    </rect>
-   </property>
-   <property name="html">
-    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QRadioButton" name="rad3do">
+       <property name="text">
+        <string>3 degree UTM zone for each Province in Vietnam</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="cboProvinces">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="currentText">
+        <string>Lai Châu</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>Lai Châu</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Sơn La</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Kiên Giang</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Cà Mau</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Lào Cai</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Yên Bái</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Nghệ An</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Phú Thọ</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>An Giang</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Thanh Hoá</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Vĩnh Phúc</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hà Tây</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Đồng Tháp</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Cần Thơ</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bạc Liêu</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hà Nội</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Ninh Bình</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hà Nam</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hà Giang</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hải Dương</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hà Tĩnh</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bắc Ninh</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hưng Yên</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Thái Bình</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Nam Định</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tây Ninh</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Vĩnh Long</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Sóc Trăng</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Trà Vinh</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Cao Bằng</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Long An</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tiền Giang</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bến Tre</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hải Phòng</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>TP.HCM</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bình Dương</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tuyên Quang</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hoà Bình</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quảng Bình</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quảng Trị</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bình Phước</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bắc Kạn</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Thái Nguyên</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bắc Giang</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Thừa Thiên - Huế</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Lạng Sơn</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Kon Tum</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quảng Ninh</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Đồng Nai</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bà Rịa - Vũng Tàu</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quảng Nam</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Lâm Đồng</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Đà Nẵng</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quảng Ngãi</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Ninh Thuận</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Khánh Hoà</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bình Định</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Đắc Lắc</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Phú Yên</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Gia Lai</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bình Thuận</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radcustom">
+     <property name="text">
+      <string>Create Custom Projections</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="horizontalSpacing">
+      <number>0</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="LblInput_2">
+       <property name="text">
+        <string>UTM Zone</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="LblInput_3">
+       <property name="text">
+        <string>Central Meridian</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QComboBox" name="cboZone">
+       <item>
+        <property name="text">
+         <string>3 degree</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6 degree</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="cboKTT">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>102</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>103</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>104</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>104.5</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>104.75</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>105</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>105.5</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>105.75</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>106</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>106.25</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>106.5</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>107</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>107.25</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>107.5</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>107.75</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>108</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>108.25</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>108.5</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>111</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>114</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>117</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QLabel" name="lbl_Format_2">
+       <property name="text">
+        <string>Choose parmater set to convert Datum VN-2000 &lt;--&gt; WGS84</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0" colspan="2">
+      <widget class="QComboBox" name="cboParameters">
+       <property name="maximumSize">
+        <size>
+         <width>470</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <item>
+        <property name="text">
+         <string>-191.9044129,-39.30318279,-111.45032835,-0.00928836, 0.01975479, -0.004274, 0.252906278</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QLabel" name="lbl_Format">
+       <property name="text">
+        <string>Format</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="cboFormat">
+       <item>
+        <property name="text">
+         <string>PROJ.4</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ESRI WKT</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>PostGIS</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GeoServer</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="LblInput_4">
+     <property name="text">
+      <string>(Copy &amp; paste PROJ.4 into QGIS Custom Projections)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="txtProjections">
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblInput_4">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>207</y>
-     <width>371</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>(Copy &amp; paste PROJ.4 into QGIS Custom Projections)</string>
-   </property>
-  </widget>
-  <widget class="QRadioButton" name="rad3do">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>231</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Múi chiếu 3 độ cho từng tỉnh/thành</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QRadioButton" name="radcustom">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>40</y>
-     <width>221</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Tạo Custom Projections</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="lbl_Format">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>160</y>
-     <width>171</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Format</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="cboFormat">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>180</y>
-     <width>171</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>PROJ.4</string>
-    </property>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>ESRI WKT</string>
-    </property>
+    <widget class="QDialogButtonBox" name="BtnOKCancel">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Close</set>
+     </property>
+    </widget>
    </item>
-   <item>
-    <property name="text">
-     <string>PostGIS</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>GeoServer</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QComboBox" name="cboParameters">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>131</y>
-     <width>371</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>-191.9044129,-39.30318279,-111.45032835,-0.00928836, 0.01975479, -0.004274, 0.252906278</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QLabel" name="lbl_Format_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>111</y>
-     <width>371</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Chọn bộ tham số chuyển đổi Datum VN-2000 &lt;--&gt; WGS84</string>
-   </property>
-  </widget>
+  </layout>
  </widget>
  <resources/>
  <connections>

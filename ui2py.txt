@@ -10,6 +10,7 @@ pyuic5 -x hcmgis_opendata_form.ui -o hcmgis_opendata_form.py
 pyuic5 -x hcmgis_closestpair_form.ui -o hcmgis_closestpair_form.py
 pyuic5 -x hcmgis_lec_form.ui -o hcmgis_lec_form.py
 pyuic5 -x hcmgis_customprojections_form.ui -o hcmgis_customprojections_form.py
+pyuic5 -x hcmgis_csv2shp_form.ui -o hcmgis_csv2shp_form.py
 
 
 =====================

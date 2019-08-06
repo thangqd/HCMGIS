@@ -38,8 +38,7 @@ from hcmgis_centerline_form import *
 from hcmgis_closestpair_form import *
 from hcmgis_lec_form import *
 from hcmgis_customprojections_form import *
-
-
+from hcmgis_csv2shp_form import *
 
 global _Unicode, _TCVN3, _VNIWin, _KhongDau
 # --------------------------------------------------------
@@ -453,7 +452,7 @@ class hcmgis_lec_dialog(QDialog, Ui_hcmgis_lec_form):
 	
 # --------------------------------------------------------
 #   hcmggis_merge - Merge layers to single shapefile
-#	Reference: mmqgis
+#	Reference: hcmgis
 # --------------------------------------------------------	
 class hcmgis_merge_dialog(QDialog, Ui_hcmgis_merge_form):
 	def __init__(self, iface):
@@ -635,6 +634,189 @@ class hcmgis_merge_field_dialog(QDialog, Ui_hcmgis_merge_field_form):
 		else: return
 		return
 
+# csv2shp
+class hcmgis_csv2shp_dialog(QDialog, Ui_hcmgis_csv2shp_form):		
+	def __init__(self, iface):
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)	
+		#self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
+		#self.CboField.setLayer (self.CboInput.currentLayer () )
+		#self.CboInput.activated.connect(self.update_field) 
+		self.BtnInputFolder.clicked.connect(self.read_csv)	
+
+		self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+		self.LinOutputFolder.setText(os.getcwd())                                     
+		self.BtnOKCancel.accepted.connect(self.run)  
+		#self.browsefile.clicked.connect(self.read_csv_files)  
+
+		#self.hcmgis_set_status_bar(self.status)
+		#self.lsCSV.clear()
+		#self.geometry_type.currentIndexChanged.connect(self.set_field_names)
+
+		#self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name)
+
+
+	#def read_csv_files(self):
+
+	def update_fields(self):               
+		self.ListFields.clear()
+		layer = self.CboInput.currentLayer()
+		if layer != None and layer.type()  == QgsMapLayer.VectorLayer:                        
+			for field in layer.fields():
+				if field.type() in [QVariant.String]:
+					self.ListFields.addItem(field.name()) # lists layer fields
+		
+	def set_field_names(self):
+		header = self.hcmgis_read_csv_header(self.input_csv_name.filePath())
+		if not header:
+			return
+
+		self.shape_id_field.clear()
+		self.part_id_field.clear()
+		self.longitude_field.clear()
+		self.latitude_field.clear()
+		
+		self.shape_id_field.addItems(header)
+		self.part_id_field.addItems(header)
+		self.longitude_field.addItems(header)
+		self.latitude_field.addItems(header)
+
+		for index, field in enumerate(header):
+			if (field.lower() == "shapeid") or (field.lower() == 'shape_id'):
+				self.shape_id_field.setCurrentIndex(index)
+
+			elif (field.lower() == "partid") or (field.lower() == 'part_id'):
+				self.part_id_field.setCurrentIndex(index)
+
+			elif (field.lower().find("x") >= 0):
+				self.longitude_field.setCurrentIndex(index)
+
+			elif (field.lower().find("y") >= 0):
+				self.latitude_field.setCurrentIndex(index)
+
+			elif (field.lower().find('lon') >= 0):
+				self.longitude_field.setCurrentIndex(index)
+
+			elif (field.lower().find('lat') >= 0):
+				self.latitude_field.setCurrentIndex(index)
+
+		self.part_id_field.setEnabled(self.geometry_type.currentText() in
+			["MultiPoint", "MultiLineString", "MultiPolygon"])
+
+		shapename = self.input_csv_name.filePath()
+		shapename = shapename.replace(".csv", ".shp")
+		shapename = shapename.replace(".CSV", ".shp")
+		shapename = shapename.replace(".txt", ".shp")
+		shapename = shapename.replace(".TXT", ".shp")
+		if shapename == self.input_csv_name.filePath():
+			shapename = str(shapename) + ".shp"
+		self.output_file_name.setFilePath(shapename)
+
+		def hcmgis_read_csv_header(self, input_csv_name):
+		# This may take awhile with large CSV files
+			input_csv = QgsVectorLayer(input_csv_name)
+
+			field_names = []
+
+			if (not input_csv) or (input_csv.featureCount() <= 0) or (len(input_csv.fields()) <= 0):
+				return field_names
+
+			for field in input_csv.fields():
+				field_names.append(field.name())
+
+			return field_names
+
+	def hcmgis_direct_read_csv_header(self, filename):
+		try:
+			infile = open(filename, 'r', encoding='utf-8')
+		except Exception as e:
+			return	"Failure opening " + filename + ": " + str(e)
+
+		try:
+			dialect = csv.Sniffer().sniff(infile.read(8192))
+		except Exception as e:
+			return "Bad CSV file " + filename + ": " + str(e) + "(verify that your delimiters are consistent)"
+
+		infile.seek(0)
+		reader = csv.reader(infile, dialect)
+		header = next(reader)
+			
+		del reader
+		infile.close()
+		del infile
+
+		if len(header) <= 0:
+			return filename + " does not appear to be a CSV file"
+
+		return header
+
+	def hcmgis_set_status_bar(self, status_bar):
+		status_bar.setMinimum(0)
+		status_bar.setMaximum(100)
+		status_bar.setValue(0)
+		status_bar.setFormat("Ready")
+		self.status_bar = status_bar
+
+	def hcmgis_status_callback(self, percent_complete, message):
+		try:
+			if not message:
+				message = str(int(percent_complete)) + "%"
+
+			self.status_bar.setFormat(message)
+
+			if percent_complete < 0:
+				self.status_bar.setValue(0)
+			elif percent_complete > 100:
+				self.status_bar.setValue(100)
+			else:
+				self.status_bar.setValue(percent_complete)
+
+			self.iface.statusBarIface().showMessage(message)
+
+			# print("status_callback(" + message + ")")
+		except:
+			print(message)
+
+		# add handling of "Close" button
+		return 0
+		
+	def read_csv(self):
+		newname = QFileDialog.getExistingDirectory(None, "Input CSV files",self.LinInputFolder.displayText())
+		if newname != None:
+			self.LinInputFolder.setText(newname)
+		
+		#entries = ['one','two', 'three']
+		#self.lsCSV.addItems(entries)
+
+		for i in range(10):
+			item = QListWidgetItem("Item %i" % i)
+			self.lsCSV.addItem(item)
+
+	def browse_outfile(self):
+		newname = QFileDialog.getExistingDirectory(None, "Output Shapefiles",self.LinOutputFolder.displayText())
+
+		if newname != None:
+			self.LinOutputFolder.setText(newname)            	
+			
+
+	
+				
+	def run(self):             		
+		""" layer = self.CboInput.currentLayer()
+		if layer is None:
+			return u'No selected layers!'  
+		selectedfield = self.CboField.currentText()
+		density = self.spinBox.value()
+		if layer.selectedFeatureCount()>0 and layer.selectedFeatureCount() <= 100:		
+			message = hcmgis_medialaxis(self.iface,layer, selectedfield, density)
+			if message != None:
+				QMessageBox.critical(self.iface.mainWindow(), "Skeleton/ Media Axis", message)						               
+			else: return	
+		else:
+			#return u'Please select 1..100 features to create Skeleton/ Media Axis'		
+			QMessageBox.information(None,  "Skeleton/ Media Axis",u'Please select 1..100 features to create Skeleton/ Media Axis!')  """
+		return
 		
 def hcmgis_load_combo_box_with_vector_layers(qgis, combo_box, set_selected):
 	

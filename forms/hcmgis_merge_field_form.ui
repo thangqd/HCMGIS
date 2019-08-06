@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>340</width>
-    <height>307</height>
+    <width>304</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -22,197 +22,150 @@
   <property name="windowTitle">
    <string>Merge Fields</string>
   </property>
-  <widget class="QDialogButtonBox" name="BtnOKCancel">
-   <property name="geometry">
-    <rect>
-     <x>174</x>
-     <y>259</y>
-     <width>156</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblInput">
-   <property name="geometry">
-    <rect>
-     <x>11</x>
-     <y>8</y>
-     <width>321</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Input Layer</string>
-   </property>
-  </widget>
-  <widget class="QgsMapLayerComboBox" name="CboInput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>24</y>
-     <width>321</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblOutput_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>54</y>
-     <width>321</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Fields (selected order = merged field order)</string>
-   </property>
-  </widget>
-  <widget class="QListWidget" name="ListFields">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>70</y>
-     <width>321</width>
-     <height>111</height>
-    </rect>
-   </property>
-   <property name="acceptDrops">
-    <bool>false</bool>
-   </property>
-   <property name="toolTip">
-    <string>Drad &amp; Drop để thay đổi thứ tự trường dữ liệu</string>
-   </property>
-   <property name="dragEnabled">
-    <bool>false</bool>
-   </property>
-   <property name="dragDropMode">
-    <enum>QAbstractItemView::InternalMove</enum>
-   </property>
-   <property name="alternatingRowColors">
-    <bool>true</bool>
-   </property>
-   <property name="selectionMode">
-    <enum>QAbstractItemView::ExtendedSelection</enum>
-   </property>
-   <property name="viewMode">
-    <enum>QListView::ListMode</enum>
-   </property>
-   <property name="selectionRectVisible">
-    <bool>true</bool>
-   </property>
-   <property name="sortingEnabled">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="CboChar">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>210</y>
-     <width>321</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="editable">
-    <bool>true</bool>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <property name="text">
-     <string>Space</string>
-    </property>
+    <widget class="QLabel" name="LblInput">
+     <property name="text">
+      <string>Input Layer</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>,</string>
-    </property>
+    <widget class="QgsMapLayerComboBox" name="CboInput"/>
    </item>
    <item>
-    <property name="text">
-     <string>_</string>
-    </property>
+    <widget class="QLabel" name="LblOutput_2">
+     <property name="text">
+      <string>Fields (selected order = merged field order)</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>-</string>
-    </property>
+    <widget class="QListWidget" name="ListFields">
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>Drad &amp; Drop để thay đổi thứ tự trường dữ liệu</string>
+     </property>
+     <property name="dragEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="dragDropMode">
+      <enum>QAbstractItemView::InternalMove</enum>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::ExtendedSelection</enum>
+     </property>
+     <property name="viewMode">
+      <enum>QListView::ListMode</enum>
+     </property>
+     <property name="selectionRectVisible">
+      <bool>true</bool>
+     </property>
+     <property name="sortingEnabled">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>/</string>
-    </property>
+    <widget class="QLabel" name="LblChar">
+     <property name="text">
+      <string>Linking characters</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>|</string>
-    </property>
+    <widget class="QComboBox" name="CboChar">
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>Space</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>,</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>_</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>-</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>/</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>|</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>\</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>.</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>:</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>;</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&amp;</string>
+      </property>
+     </item>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>\</string>
-    </property>
+    <widget class="QCheckBox" name="ChkSelectedFeaturesOnly">
+     <property name="text">
+      <string>Selected features only</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>.</string>
-    </property>
+    <widget class="QDialogButtonBox" name="BtnOKCancel">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
    </item>
-   <item>
-    <property name="text">
-     <string>:</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>&amp;</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QLabel" name="LblChar">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>192</y>
-     <width>321</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Linking characters</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="ChkSelectedFeaturesOnly">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>247</y>
-     <width>151</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Selected features only</string>
-   </property>
-  </widget>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgis.gui</header>
+   <header>qgsmaplayercombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

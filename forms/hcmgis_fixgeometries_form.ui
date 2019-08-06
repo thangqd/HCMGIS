@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>341</width>
-    <height>140</height>
+    <height>162</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -22,111 +22,80 @@
   <property name="windowTitle">
    <string>Fix Geometries</string>
   </property>
-  <widget class="QDialogButtonBox" name="BtnOKCancel">
-   <property name="geometry">
-    <rect>
-     <x>175</x>
-     <y>100</y>
-     <width>156</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblInput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>7</y>
-     <width>321</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Input Layer</string>
-   </property>
-  </widget>
-  <widget class="QgsMapLayerComboBox" name="CboInput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>24</y>
-     <width>321</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblOutput_3">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>50</y>
-     <width>321</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Output Shapefile</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="LinOutput">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>70</y>
-     <width>241</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="mouseTracking">
-    <bool>true</bool>
-   </property>
-   <property name="focusPolicy">
-    <enum>Qt::StrongFocus</enum>
-   </property>
-   <property name="acceptDrops">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="readOnly">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="BtnOutput">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>260</x>
-     <y>70</y>
-     <width>71</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Browse...</string>
-   </property>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="LblInput">
+     <property name="text">
+      <string>Input Layer</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QgsMapLayerComboBox" name="CboInput"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="LblOutput_3">
+     <property name="text">
+      <string>Output Shapefile</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLineEdit" name="LinOutput">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="mouseTracking">
+        <bool>true</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="BtnOutput">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="BtnOKCancel">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgis.gui</header>
+   <header>qgsmaplayercombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

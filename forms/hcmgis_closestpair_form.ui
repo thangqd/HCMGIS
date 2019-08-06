@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>352</width>
-    <height>136</height>
+    <height>157</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -22,65 +22,35 @@
   <property name="windowTitle">
    <string>Closest/farthest pair of Points</string>
   </property>
-  <widget class="QDialogButtonBox" name="BtnOKCancel">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>100</y>
-     <width>156</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblInput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>7</y>
-     <width>331</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Input Point Layer</string>
-   </property>
-  </widget>
-  <widget class="QgsMapLayerComboBox" name="CboInput">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>24</y>
-     <width>331</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="LblInput_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>56</y>
-     <width>331</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Unique Field</string>
-   </property>
-  </widget>
-  <widget class="QgsFieldComboBox" name="CboField">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>75</y>
-     <width>331</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="LblInput">
+     <property name="text">
+      <string>Input Point Layer</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QgsMapLayerComboBox" name="CboInput"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="LblInput_2">
+     <property name="text">
+      <string>Unique Field</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QgsFieldComboBox" name="CboField"/>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="BtnOKCancel">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>

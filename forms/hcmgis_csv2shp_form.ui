@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>hcmgis_csv2shp_form</class>
+ <widget class="QDialog" name="hcmgis_csv2shp_form">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>513</width>
+    <height>467</height>
+   </rect>
+  </property>
+  <property name="mouseTracking">
+   <bool>false</bool>
+  </property>
+  <property name="windowTitle">
+   <string>Bulk Convert CSV point to Shapefile</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Input CSV Point Folder</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="1">
+      <widget class="QPushButton" name="BtnInputFolder">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLineEdit" name="LinInputFolder">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="mouseTracking">
+        <bool>true</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QgsFileWidget" name="browsefile"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>File list</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListView" name="lsCSV">
+     <property name="dragEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="dragDropMode">
+      <enum>QAbstractItemView::DragDrop</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="2" column="3">
+      <widget class="QComboBox" name="shape_id_field"/>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Unique Field</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4">
+      <widget class="QComboBox" name="latitude_field"/>
+     </item>
+     <item row="0" column="4">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Latitude Field</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Longitude Field</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="5">
+      <widget class="QComboBox" name="longitude_field"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Output Folder</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <widget class="QLineEdit" name="LinOutputFolder">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="mouseTracking">
+        <bool>true</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="BtnOutputFolder">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="status">
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="BtnOKCancel">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsFileWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsfilewidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>BtnOKCancel</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>BtnOKCancel</sender>
+   <signal>accepted()</signal>
+   <receiver>hcmgis_csv2shp_form</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BtnOKCancel</sender>
+   <signal>rejected()</signal>
+   <receiver>hcmgis_csv2shp_form</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

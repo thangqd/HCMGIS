@@ -13,14 +13,20 @@
     <x>0</x>
     <y>0</y>
     <width>513</width>
-    <height>467</height>
+    <height>465</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <weight>50</weight>
+    <bold>false</bold>
+   </font>
   </property>
   <property name="mouseTracking">
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>Bulk Convert CSV point to Shapefile</string>
+   <string>Bulk Convert CSV Point to Shapefile</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -76,12 +82,15 @@
     </layout>
    </item>
    <item>
-    <widget class="QgsFileWidget" name="browsefile"/>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="lblCSV">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
      <property name="text">
-      <string>File list</string>
+      <string/>
      </property>
      <property name="alignment">
       <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -89,100 +98,47 @@
     </widget>
    </item>
    <item>
-    <widget class="QListView" name="lsCSV">
-     <property name="dragEnabled">
-      <bool>false</bool>
-     </property>
-     <property name="dragDropMode">
-      <enum>QAbstractItemView::DragDrop</enum>
-     </property>
-    </widget>
+    <widget class="QListWidget" name="lsCSV"/>
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="2" column="3">
-      <widget class="QComboBox" name="shape_id_field"/>
-     </item>
-     <item row="0" column="3">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Unique Field</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="4">
-      <widget class="QComboBox" name="latitude_field"/>
+      <widget class="QComboBox" name="longitude_field"/>
      </item>
      <item row="0" column="4">
-      <widget class="QLabel" name="label_8">
-       <property name="text">
-        <string>Latitude Field</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="5">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>Longitude Field</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="5">
-      <widget class="QComboBox" name="longitude_field"/>
+     <item row="2" column="3">
+      <widget class="QComboBox" name="latitude_field"/>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Latitude Field</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="label_10">
-     <property name="text">
-      <string>Output Folder</string>
+    <layout class="QGridLayout" name="gridLayout_4"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblStatus">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+     <property name="text">
+      <string/>
      </property>
     </widget>
-   </item>
-   <item>
-    <layout class="QGridLayout" name="gridLayout_4">
-     <item row="0" column="0">
-      <widget class="QLineEdit" name="LinOutputFolder">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="mouseTracking">
-        <bool>true</bool>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-       <property name="acceptDrops">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="readOnly">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="BtnOutputFolder">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Browse...</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </item>
    <item>
     <widget class="QProgressBar" name="status">
@@ -192,12 +148,22 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Errors Log</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="txtError"/>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="BtnOKCancel">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
      </property>
      <property name="centerButtons">
       <bool>false</bool>
@@ -206,13 +172,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QgsFileWidget</class>
-   <extends>QWidget</extends>
-   <header>qgsfilewidget.h</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>BtnOKCancel</tabstop>
  </tabstops>

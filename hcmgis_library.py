@@ -1345,4 +1345,83 @@ def hcmgis_buffers(qgis, layer, radius_attribute, radius, radius_unit, edge_attr
 
 	return None
 
+# ----------------------------------------------------------------
+#    hcmgis_point_import_from_csv - point import from CSV
+# ----------------------------------------------------------------
+
+def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
+		output_file_name, status_callback = None):
+
+	# Parameter error checks and conversions
+	input_csv = QgsVectorLayer(input_csv_name)
+	if input_csv.featureCount() <= 0:
+		return "Invalid CSV point file"
+
+	latitude_index = input_csv.fields().indexFromName(latitude_field)
+	if latitude_index < 0:
+		return "Invalid latitude field"
+
+	longitude_index = input_csv.fields().indexFromName(longitude_field)
+	if longitude_index < 0:
+		return "Invalid longitude field"
+
+	wkb_type = QgsWkbTypes.Point
+
+	# Create the output shapefile
+
+	fields = QgsFields()	
+	for field in input_csv.fields():
+		fields.append(field)
+
+	# Assume WGS 84?
+	crs = QgsCoordinateReferenceSystem()
+	crs.createFromSrid(4326) # WGS 84
+
+	if not output_file_name:
+		return "No output file name given"
+
+	file_formats = { ".shp":"ESRI Shapefile"}
+
+	if os.path.splitext(output_file_name)[1] not in file_formats:
+		return "Unsupported output file format: " + str(output_file_name)
+
+	output_file_format = file_formats[os.path.splitext(output_file_name)[1]]
+
+	outfile = QgsVectorFileWriter(output_file_name, "utf-8", fields, wkb_type, crs, output_file_format)
+
+	if (outfile.hasError() != QgsVectorFileWriter.NoError):
+		return "Failure creating output file: " + str(outfile.errorMessage())
+
+	shape_count = 0
+	current_shape_id = False
+
+	for row_number, row in enumerate(input_csv.getFeatures()):
+		if status_callback and ((row_number % 10) == 0):
+			if status_callback(100 * row_number / input_csv.featureCount(), 
+					"Point " + str(row_number) + " of " + str(input_csv.featureCount())):
+				return "Canceled at point " + str(row_number)
+
+		if (latitude_index >= len(row.attributes())) or (latitude_index >= len(row.attributes())):
+			return "Node file missing lat/long at row " + str(row_number + 1)
+	
+		point = QgsPointXY(float(row.attributes()[longitude_index]), float(row.attributes()[latitude_index]))
+
+		# Each node is a separate feature in a point file
+		
+		newfeature = QgsFeature()
+		newfeature.setAttributes(row.attributes())
+		geometry = QgsGeometry.fromPointXY(point)
+		newfeature.setGeometry(geometry)
+		outfile.addFeature(newfeature)
+		shape_count += 1
+		continue		
+		
+	del outfile
+
+	if status_callback:
+		#status_callback(100, str(shape_count) + " shapes, " + str(input_csv.featureCount()) + " nodes")
+		status_callback(100, str(shape_count) + " shapes")
+
+	return None
+
 

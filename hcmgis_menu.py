@@ -339,12 +339,12 @@ class hcmgis_menu:
 		self.tool_menu.addAction(self.fontconverter_action)	
 
 		# Bulk Import Submenu
-		self.bulk_import_menu = QMenu(u'Bulk Import')	
+		self.bulk_import_menu = QMenu(u'Bart Converter')	
 		self.hcmgis_add_submenu(self.bulk_import_menu)
 
 		# CSV point to Shapefile
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.csv2shp_action = QAction(icon, u'Bulk Import from CSV', self.iface.mainWindow())
+		self.csv2shp_action = QAction(icon, u'XY to Point', self.iface.mainWindow())
 		self.csv2shp_action.triggered.connect(self.csv2shp)
 		self.bulk_import_menu.addAction(self.csv2shp_action)
 

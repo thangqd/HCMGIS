@@ -259,7 +259,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 			projections_text +=str(ktt)
 			projections_text +='],PARAMETER["scale_factor",'
 			projections_text +=str(k)
-			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["HCMGIS",'
+			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG",'
 			projections_text += '"'
 			projections_text += str(srid)
 			projections_text += '"'
@@ -281,7 +281,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 			projections_text +=str(ktt)
 			projections_text +='],PARAMETER["scale_factor",'
 			projections_text +=str(k)
-			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["HCMGIS",'
+			projections_text +='],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG",'
 			projections_text +=  '"'
 			projections_text +=  str(srid)
 			projections_text +=  '"'

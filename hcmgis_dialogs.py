@@ -751,7 +751,9 @@ class hcmgis_csv2shp_dialog(QDialog, Ui_hcmgis_csv2shp_form):
 			self.lsCSV.addItems(all_csv_files)
 			self.lblCSV.setText (str(self.lsCSV.count()) + " files loaded")
 			self.lsCSV.setCurrentRow(0)
-				
+			self.lblStatus.clear()
+			self.hcmgis_set_status_bar(self.status)
+	
 		
 	def run(self):             		
 		item_count = 0
@@ -816,7 +818,7 @@ def hcmgis_load_combo_box_with_vector_layers(qgis, combo_box, set_selected):
 				combo_index = combo_box.findText(layer.name())
 				if combo_index >= 0:
 					combo_box.setCurrentIndex(combo_index)
-					break;
+					break
 
 			elif (type(combo_box) == QListWidget):
 				for item in combo_box.findItems(layer.name(), Qt.MatchExactly):
@@ -828,7 +830,7 @@ def hcmgis_load_combo_box_with_vector_layers(qgis, combo_box, set_selected):
 			combo_index = combo_box.findText(set_selected)
 			if combo_index >= 0:
 				combo_box.setCurrentIndex(combo_index)
-				return;
+				return
 
 		elif (type(combo_box) == QListWidget):
 			for item in combo_box.findItems(set_selected):

@@ -1420,7 +1420,7 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
 
 	if status_callback:
 		#status_callback(100, str(shape_count) + " shapes, " + str(input_csv.featureCount()) + " nodes")
-		status_callback(100, str(shape_count) + " shapes")
+		status_callback(100, None)
 
 	return None
 

@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'hcmgis_csv2shp_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_hcmgis_csv2shp_form(object):
     def setupUi(self, hcmgis_csv2shp_form):
@@ -84,7 +86,7 @@ class Ui_hcmgis_csv2shp_form(object):
         self.lblStatus.setObjectName("lblStatus")
         self.verticalLayout.addWidget(self.lblStatus)
         self.status = QtWidgets.QProgressBar(hcmgis_csv2shp_form)
-        self.status.setProperty("value", 0)
+        self.status.setProperty("value", 24)
         self.status.setObjectName("status")
         self.verticalLayout.addWidget(self.status)
         self.label = QtWidgets.QLabel(hcmgis_csv2shp_form)
@@ -123,4 +125,3 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_csv2shp_form)
     hcmgis_csv2shp_form.show()
     sys.exit(app.exec_())
-

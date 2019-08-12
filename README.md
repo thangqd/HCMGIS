@@ -20,7 +20,7 @@
 
 **- Attribute Calculation**: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case,...
 
-**- Batch Converter**: Batch convert XY to Point (CSV to Shapefile) in a folder and subfolders
+**- Batch Converter**: Batch convert XY to Point (CSV to Shapefile) in a folder and its subfolders
 
 # 
 

@@ -2,13 +2,14 @@
 name=HCMGIS
 qgisMinimumVersion=3.0
 qgisMaximumVersion=3.9
-description= HCMGIS - Basemap, VN-2000 Projections, Geometry Processing and Field Calculation Utilities
+description= HCMGIS - Basemap, VN-2000 Projections, Batch Converter, Geometry Processing and Field Calculation Utilities
 about=-Basemap: Add dozens of global basemaps from Carto, ESRI, Google, OSM Stamen, HCMGIS Aerial Images,...; Vn-2000 Projections: Define local UTM projections for each provinces of VietNam in Vn-2000 CRS;
-- HCMGIS OpenData: Download free and open geodata from http://opendata.hcmgis.vn; -Spatial Processing: Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures, create Centerline in Polygon's gaps (E.g building blocks) (layers must be in projected coordinate reference system), finding closest/ farthest pair of Points in a Point set, merge layers (with the same geometry type), split layer (based on unique field), 
+- HCMGIS OpenData: Download free and open geodata from http://opendata.hcmgis.vn; 
+-Spatial Processing: Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures, create Centerline in Polygon's gaps (E.g building blocks) (layers must be in projected coordinate reference system), finding closest/ farthest pair of Points in a Point set, merge layers (with the same geometry type), split layer (based on unique field), 
 - Attribute Calculation: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case,...,
 - Batch Converter: Batch convert XY to Point (CSV to Shapefile) in a folder and subfolders
 category=Vector
-version=19.8.7
+version=19.8.12
 author=Quach Dong Thang
 email=quachdongthang@gmai.com
 homepage=https://hcmgis.vn

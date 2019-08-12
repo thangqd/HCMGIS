@@ -339,7 +339,7 @@ class hcmgis_menu:
 		self.tool_menu.addAction(self.fontconverter_action)	
 
 		# Bulk Import Submenu
-		self.bulk_import_menu = QMenu(u'Bart Converter')	
+		self.bulk_import_menu = QMenu(u'Batch Converter')	
 		self.hcmgis_add_submenu(self.bulk_import_menu)
 
 		# CSV point to Shapefile

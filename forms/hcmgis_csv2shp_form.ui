@@ -26,7 +26,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>Bulk Convert CSV Point to Shapefile</string>
+   <string>Batch Convert CSV Point to Shapefile</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

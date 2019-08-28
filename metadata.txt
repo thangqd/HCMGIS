@@ -9,7 +9,7 @@ about=-Basemap: Add dozens of global basemaps from Carto, ESRI, Google, OSM Stam
 - Attribute Calculation: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case,...,
 - Batch Converter: Batch convert XY to Point (CSV to Shapefile) in a folder and subfolders
 category=Vector
-version=19.8.12
+version=19.8.28
 author=Quach Dong Thang
 email=quachdongthang@gmai.com
 homepage=https://hcmgis.vn

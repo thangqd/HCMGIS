@@ -12,7 +12,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>487</width>
+    <width>494</width>
     <height>362</height>
    </rect>
   </property>
@@ -49,6 +49,11 @@
        <item>
         <property name="text">
          <string>Lai Châu</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Điện Biên</string>
         </property>
        </item>
        <item>
@@ -103,17 +108,17 @@
        </item>
        <item>
         <property name="text">
-         <string>Hà Tây</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
          <string>Đồng Tháp</string>
         </property>
        </item>
        <item>
         <property name="text">
          <string>Cần Thơ</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hậu Giang</string>
         </property>
        </item>
        <item>
@@ -333,7 +338,12 @@
        </item>
        <item>
         <property name="text">
-         <string>Đắc Lắc</string>
+         <string>Đắk Lắk</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Đắk Nông</string>
         </property>
        </item>
        <item>

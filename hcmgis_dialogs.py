@@ -169,22 +169,22 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 
 	def update_proj(self):		
 		self.txtProjections.clear()
-		provinces = ['Lai Châu','Sơn La','Kiên Giang','Cà Mau','Lào Cai','Yên Bái','Nghệ An',
-				'Phú Thọ','An Giang', 'Thanh Hoá', 'Vĩnh Phúc', 'Hà Tây', 'Đồng Tháp','Cần Thơ',
+		provinces = ['Lai Châu','Điện Biên','Sơn La','Kiên Giang','Cà Mau','Lào Cai','Yên Bái','Nghệ An',
+				'Phú Thọ','An Giang', 'Thanh Hoá', 'Vĩnh Phúc', 'Đồng Tháp','Cần Thơ', 'Hậu Giang',
 				'Bạc Liêu','Hà Nội','Ninh Bình','Hà Nam','Hà Giang','Hải Dương','Hà Tĩnh','Bắc Ninh','Hưng Yên',
 				'Thái Bình','Nam Định','Tây Ninh','Vĩnh Long','Sóc Trăng','Trà Vinh',
 				'Cao Bằng','Long An','Tiền Giang','Bến Tre','Hải Phòng','TP.HCM','Bình Dương','Tuyên Quang','Hoà Bình',
 				'Quảng Bình','Quảng Trị','Bình Phước','Bắc Kạn','Thái Nguyên','Bắc Giang','Thừa Thiên - Huế','Lạng Sơn',
 				'Kon Tum','Quảng Ninh','Đồng Nai','Bà Rịa - Vũng Tàu', 'Quảng Nam','Lâm Đồng','Đà Nẵng',
-				'Quảng Ngãi','Ninh Thuận','Khánh Hoà','Bình Định','Đắc Lắc','Phú Yên','Gia Lai','Bình Thuận']		
-		ktt = [103,104,104.5, 104.5, 104.75, 104.75, 104.75,
-		104.75, 104.75, 105,  105, 105, 105, 105,
+				'Quảng Ngãi','Ninh Thuận','Khánh Hoà','Bình Định','Đắk Lắk', 'Đắk Nông', 'Phú Yên','Gia Lai','Bình Thuận']		
+		ktt = [103,103,104,104.5, 104.5, 104.75, 104.75, 104.75,
+		104.75, 104.75, 105,  105, 105, 105,105,
 		105,105,105, 105,105.5,105.5,105.5,105.5,105.5,
 		105.5,105.5,105.5,105.5,105.5,105.5,
 		105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 106, 106,
 		106, 106.25,106.25,106.5, 106.5, 107, 107,107.25,
 		107.5, 107.75, 107.75,107.75,107.75,107.75,107.75,
-		108, 108.25, 108.25,108.25,108.5,108.5,108.5,108.5]
+		108, 108.25, 108.25,108.25,108.5,108.5, 108.5, 108.5,108.5]
 		parameters = self.cboParameters.currentText()
 
 		if self.rad3do.isChecked():

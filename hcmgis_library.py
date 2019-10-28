@@ -1429,7 +1429,7 @@ def hcmgis_txt2csv(input_txt_name, 	output_file_name, status_callback = None):
 	import os
 	with open(input_txt_name, "r") as input_file:
 		in_txt = csv.reader(input_file)
-		with open(output_file_name, 'w') as output_file:
+		with open(output_file_name, 'w', newline='') as output_file:
 			out_csv = csv.writer(output_file)
 			out_csv.writerows(in_txt)
 	

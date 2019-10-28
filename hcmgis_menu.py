@@ -338,15 +338,21 @@ class hcmgis_menu:
 		#QObject.connect(self.fontconverter_action, SIGNAL("triggered()"), self.fontconverter)
 		self.tool_menu.addAction(self.fontconverter_action)	
 
-		# Bulk Import Submenu
-		self.bulk_import_menu = QMenu(u'Batch Converter')	
-		self.hcmgis_add_submenu(self.bulk_import_menu)
+		# Batch Converter Submenu
+		self.batch_converter_menu = QMenu(u'Batch Converter')	
+		self.hcmgis_add_submenu(self.batch_converter_menu)
 
 		# CSV point to Shapefile
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.csv2shp_action = QAction(icon, u'XY to Point', self.iface.mainWindow())
+		self.csv2shp_action = QAction(icon, u'CSV to Point', self.iface.mainWindow())
 		self.csv2shp_action.triggered.connect(self.csv2shp)
-		self.bulk_import_menu.addAction(self.csv2shp_action)
+		self.batch_converter_menu.addAction(self.csv2shp_action)
+
+		# TXT to CSV
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.txt2csv_action = QAction(icon, u'TXT to CSV', self.iface.mainWindow())
+		self.txt2csv_action.triggered.connect(self.txt2csv)
+		self.batch_converter_menu.addAction(self.txt2csv_action)
 
 		
 	def unload(self):
@@ -598,6 +604,10 @@ class hcmgis_menu:
 	
 	def csv2shp(self):
 		dialog = hcmgis_csv2shp_dialog(self.iface)
+		dialog.exec_()
+	
+	def txt2csv(self):
+		dialog = hcmgis_txt2csv_dialog(self.iface)
 		dialog.exec_()
 		
 

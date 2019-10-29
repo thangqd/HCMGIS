@@ -355,6 +355,13 @@ class hcmgis_menu:
 		self.batch_converter_menu.addAction(self.txt2csv_action)
 
 		
+		# XLS to CSV
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.xls2csv_action = QAction(icon, u'XLSX to CSV', self.iface.mainWindow())
+		self.xls2csv_action.triggered.connect(self.xls2csv)
+		self.batch_converter_menu.addAction(self.xls2csv_action)
+
+		
 	def unload(self):
 		if self.hcmgis_menu != None:
 			self.iface.mainWindow().menuBar().removeAction(self.hcmgis_menu.menuAction())
@@ -608,6 +615,10 @@ class hcmgis_menu:
 	
 	def txt2csv(self):
 		dialog = hcmgis_txt2csv_dialog(self.iface)
+		dialog.exec_()
+	
+	def xls2csv(self):
+		dialog = hcmgis_xls2csv_dialog(self.iface)
 		dialog.exec_()
 		
 

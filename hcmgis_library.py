@@ -1424,7 +1424,7 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
 
 	return None
 
-def hcmgis_txt2csv(input_txt_name, 	output_file_name, status_callback = None):
+def hcmgis_txt2csv(input_txt_name, output_file_name, status_callback = None):
 	import csv
 	import os
 	with open(input_txt_name, "r") as input_file:
@@ -1438,4 +1438,34 @@ def hcmgis_txt2csv(input_txt_name, 	output_file_name, status_callback = None):
 
 	return None
 
+def hcmgis_xls2csv(input_xls_name, 	output_file_name, status_callback = None):
+	import csv
+	import os
+	import xlrd
+	temp_outfile_name = output_file_name.replace(".csv","", 1)
+
+	#Non_empty sheets	
+	with xlrd.open_workbook(input_xls_name) as wb:
+		non_empty_sheets = []
+		for sheet_name in wb.sheet_names():
+			if (wb.sheet_by_name(sheet_name).nrows > 0 or wb.sheet_by_name(sheet_name).ncols > 0): # check none empty sheets
+				non_empty_sheets.append(sheet_name)
+		if (len(non_empty_sheets) == 1):
+			sh = wb.sheet_by_index(0)
+			with  open(output_file_name, 'w', newline="") as f:
+				c = csv.writer(f)
+				for r in range(sh.nrows):
+					c.writerow(sh.row_values(r))
+		else:
+			for sheet_name in non_empty_sheets:
+				if (wb.sheet_by_name(sheet_name).nrows > 0 or wb.sheet_by_name(sheet_name).ncols > 0): # check none empty sheets
+					sh  = wb.sheet_by_name(sheet_name) 
+					sheet_csv = temp_outfile_name + '_'+ sheet_name + '.csv'
+					with  open(sheet_csv, 'w', newline="") as f:
+						c = csv.writer(f)
+						for r in range(sh.nrows):
+							c.writerow(sh.row_values(r))
+	if status_callback:
+		status_callback(100, None)
+	return None
 

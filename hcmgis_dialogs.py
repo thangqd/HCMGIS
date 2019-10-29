@@ -40,6 +40,8 @@ from hcmgis_lec_form import *
 from hcmgis_customprojections_form import *
 from hcmgis_csv2shp_form import *
 from hcmgis_txt2csv_form import *
+from hcmgis_xls2csv_form import *
+
 
 
 global _Unicode, _TCVN3, _VNIWin, _KhongDau
@@ -898,7 +900,102 @@ class hcmgis_txt2csv_dialog(QDialog, Ui_hcmgis_txt2csv_form):
 		self.lsTXT.blockSignals(False)
 		self.LinInputFolder.setEnabled(True)
 		self.BtnInputFolder.setEnabled(True)	
+		self.status_bar.setEnabled(True)	
+
+# xls2csv
+class hcmgis_xls2csv_dialog(QDialog, Ui_hcmgis_xls2csv_form):		
+	def __init__(self, iface):
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)	
+		self.hcmgis_set_status_bar(self.status)
+		self.lsXLS.clear() 
+		self.txtError.clear()
+		self.BtnInputFolder.clicked.connect(self.read_xls)			
+		self.BtnOKCancel.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+
+	def hcmgis_set_status_bar(self, status_bar):
+		status_bar.setMinimum(0)
+		status_bar.setMaximum(100)
+		status_bar.setValue(0)
+		status_bar.setFormat("Ready")
+		self.status_bar = status_bar
+
+	def hcmgis_status_callback(self, percent_complete, message):
+		try:
+			if not message:
+				message = str(int(percent_complete)) + "%"
+
+			self.status_bar.setFormat(message)
+
+			if percent_complete < 0:
+				self.status_bar.setValue(0)
+			elif percent_complete > 100:
+				self.status_bar.setValue(100)
+			else:
+				self.status_bar.setValue(percent_complete)
+
+			self.iface.statusBarIface().showMessage(message)
+
+			# print("status_callback(" + message + ")")
+		except:
+			print(message)
+
+		# add handling of "Close" button
+		return 0
+		
+	def read_xls(self):
+		newname = QFileDialog.getExistingDirectory(None, "Input Folder",self.LinInputFolder.displayText())
+		if newname != None:
+			self.LinInputFolder.setText(newname)	
+			self.lsXLS.clear() 		
+			import os
+			from glob import glob
+			PATH = newname
+			EXT = "*.xlsx"
+			all_txt_files = [file
+						for path, subdir, files in os.walk(PATH)
+						for file in glob(os.path.join(path, EXT))]
+			self.lsXLS.addItems(all_txt_files)
+			self.LblXLS.setText(str(self.lsXLS.count()) + " files loaded")
+			self.lsXLS.setCurrentRow(0)
+			self.lblStatus.clear()
+			self.hcmgis_set_status_bar(self.status)
+	
+		
+	def run(self):             		
+		item_count = 0
+		error_count = 0
+		items = []
+		for index in range(self.lsXLS.count()):
+			items.append(self.lsXLS.item(index))
+		self.txtError.clear()
+		self.lsXLS.blockSignals(True)
+		self.LinInputFolder.setEnabled(False)
+		self.BtnInputFolder.setEnabled(False)
+	
+		self.status_bar.setEnabled(False)			
+	
+		for item in items:
+			self.lsXLS.setCurrentRow(item_count)		
+			input_xls_name = item.text()
+			temp_file_name = item.text()
+			output_file_name = temp_file_name.replace(".xlsx", ".csv", 1)
+			message = hcmgis_xls2csv(input_xls_name, output_file_name, self.hcmgis_status_callback)
+			if message:
+				#QMessageBox.critical(self.iface.mainWindow(), "CSV Point Convert", message)
+				error_count+=1
+				self.txtError.append(str(error_count)+ ". "+ input_xls_name + ": " + message)
+				continue
+			else:
+				item_count +=1
+				self.lblStatus.setText (str(item_count)+"/ "+ str(self.lsXLS.count()) + " files converted")	
+		
+		self.lsXLS.blockSignals(False)
+		self.LinInputFolder.setEnabled(True)
+		self.BtnInputFolder.setEnabled(True)	
 		self.status_bar.setEnabled(True)			
+		
 
 			
 def hcmgis_load_combo_box_with_vector_layers(qgis, combo_box, set_selected):

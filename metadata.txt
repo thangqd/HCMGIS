@@ -1,7 +1,6 @@
 [general]
 name=HCMGIS
 qgisMinimumVersion=3.0
-qgisMaximumVersion=3.9
 description= HCMGIS - Basemap, VN-2000 Projections, Batch Converter, Geometry Processing and Field Calculation Utilities
 about=-Basemap: Add dozens of global basemaps from Carto, ESRI, Google, OSM Stamen, HCMGIS Aerial Images,...; Vn-2000 Projections: Define local UTM projections for each provinces of VietNam in Vn-2000 CRS;
 - HCMGIS OpenData: Download free and open geodata from http://opendata.hcmgis.vn; 

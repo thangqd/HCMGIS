@@ -64,11 +64,46 @@ u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',
 
 def hcmgis_basemap(self, service_url, name):
 	import requests
-	import qgis.utils	
+	import qgis.utils
+	
 	service_uri = "type=xyz&zmin=0&zmax=22&url=http://"+requests.utils.quote(service_url)	
 	tms_layer = qgis.utils.iface.addRasterLayer(service_uri, name, "wms")
 	if not tms_layer.isValid():
   		print("Layer failed to load!")
+	sources = []
+	service_uri1 = "http://"+service_url
+	sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
+	for source in sources:
+		connectionType = source[0]
+		connectionName = source[1]
+		QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+		QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+		QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+		QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+		QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+		QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+		QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+	# Update GUI
+	qgis.utils.iface.reloadConnections()
+
+
+def hcmgis_vietbando(self, service_url, name):
+	import qgis.utils
+	sources = []
+	service_url = "http://"+service_url
+	sources.append(["connections-xyz",name,"","","",service_url,"","22","0"])
+	for source in sources:
+		connectionType = source[0]
+		connectionName = source[1]
+		QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+		QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+		QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+		QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+		QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+		QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+		QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+	# Update GUI
+	qgis.utils.iface.reloadConnections()	
 					
 #--------------------------------------------------------
 #    hcmgis_medialaxis - Create skeleton/ medial axis/ centerline of roads, rivers and similar linear structures

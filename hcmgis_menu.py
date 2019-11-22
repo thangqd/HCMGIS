@@ -67,13 +67,20 @@ class hcmgis_menu:
 		self.hcmgis_googleterrainhybrid_action.triggered.connect(self.googleterrainhybrid_call)		
 		self.basemap_menu.addAction(self.hcmgis_googleterrainhybrid_action)
 
+		#Viet Ban do
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vbd.png")
+		self.hcmgis_vbd_action = QAction(icon, u'Vietbando Maps', self.iface.mainWindow())
+		self.hcmgis_vbd_action.triggered.connect(self.vbd_call)		
+		self.basemap_menu.addAction(self.hcmgis_vbd_action)
+
 		
 		#############
 		#Bing Maps
-	#	icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_bing.png")
-	# 	self.bingaerial_action = QAction(icon, u'Bing Aerial', self.iface.mainWindow())
-	# 	self.bingaerial_action.triggered.connect(self.bingaerial_call)		
-	# 	self.basemap_menu.addAction(self.bingaerial_action) 
+		#############
+		# """ icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_bing.png")
+		# self.bingaerial_action = QAction(icon, u'Bing VirtualEarth', self.iface.mainWindow())
+		# self.bingaerial_action.triggered.connect(self.bingaerial_call)		
+		# self.basemap_menu.addAction(self.bingaerial_action)  """
 
 
 		#Carto Antique
@@ -100,6 +107,7 @@ class hcmgis_menu:
 		self.cartolight_action.triggered.connect(self.cartolight_call)		
 		self.basemap_menu.addAction(self.cartolight_action)
 
+		
 		#########################		
 		# ESRI https://gitlab.com/GIS-projects/Belgium-XYZ-tiles/tree/b538df2c2de0d16937641742f25e4709ca94e42e
 		#####################
@@ -175,12 +183,12 @@ class hcmgis_menu:
 		self.esritopo_action.triggered.connect(self.esritopo_call)		
 		self.basemap_menu.addAction(self.esritopo_action)
 
-		""" #Esri World Transportation
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
-		self.esritransport_action = QAction(icon, u'Esri Transport', self.iface.mainWindow())
-		self.esritransport_action.triggered.connect(self.esritransport_call)		
-		self.basemap_menu.addAction(self.esritransport_action)
-		 """
+		# """ #Esri World Transportation
+		# icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+		# self.esritransport_action = QAction(icon, u'Esri Transport', self.iface.mainWindow())
+		# self.esritransport_action.triggered.connect(self.esritransport_call)		
+		# self.basemap_menu.addAction(self.esritransport_action)
+		#  """
 		
 		##############################
 		# F4map - 2D
@@ -189,6 +197,14 @@ class hcmgis_menu:
 		self.f4map_action = QAction(icon, u'F4 Map - 2D', self.iface.mainWindow())
 		self.f4map_action.triggered.connect(self.f4map_call)		
 		self.basemap_menu.addAction(self.f4map_action)
+
+		##############################
+		# OpenTopoMap
+		#############################
+		# """ icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opentopomap.png")
+		# self.opentopomap_action = QAction(icon, u'OpenTopoMap', self.iface.mainWindow())
+		# self.opentopomap_action.triggered.connect(self.opentopomap_call)		
+		# self.basemap_menu.addAction(self.opentopomap_action) """
 		
 
 		
@@ -233,13 +249,31 @@ class hcmgis_menu:
 		self.stamenwatercolor_action = QAction(icon, u'Stamen Watercolor', self.iface.mainWindow())
 		self.stamenwatercolor_action.triggered.connect(self.stamenwatercolor_call)		
 		self.basemap_menu.addAction(self.stamenwatercolor_action)
-			
+				
 		# Wikimedia Maps
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_wikimedia.png")
 		self.wikimedia_action = QAction(icon, u'Wikimedia Maps', self.iface.mainWindow())
 		self.wikimedia_action.triggered.connect(self.wikimedia_call)		
 		self.basemap_menu.addAction(self.wikimedia_action)
-		
+	# """ 
+	# 	# Strava Run
+	# 	icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_strava.png")
+	# 	self.stravarun_action = QAction(icon, u'Strava Run', self.iface.mainWindow())
+	# 	self.stravarun_action.triggered.connect(self.stravarun_call)		
+	# 	self.basemap_menu.addAction(self.stravarun_action)
+
+	# 	# Strava All
+	# 	icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_strava.png")
+	# 	self.stravaall_action = QAction(icon, u'Strava All', self.iface.mainWindow())
+	# 	self.stravaall_action.triggered.connect(self.stravaall_call)		
+	# 	self.basemap_menu.addAction(self.stravaall_action) """	
+
+	# """ # Wikimedia Hike Bike
+	# 	icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_wikimedia.png")
+	# 	self.wikimediahikebike_action = QAction(icon, u'Wikimedia Hike Bike', self.iface.mainWindow())
+	# 	self.wikimediahikebike_action.triggered.connect(self.wikimediahikebike_call)		
+	# 	self.basemap_menu.addAction(self.wikimediahikebike_action)
+	# 	 """
 
 		#HCMGIS Aerial Image
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
@@ -403,12 +437,62 @@ class hcmgis_menu:
 		hcmgis_basemap(self.iface,service_url, name)
 
 	##############
+	# Vietbando Maps
+	############
+	def vbd_call(self):	
+		import requests
+		import qgis.utils
+		name = "Vietbando"	
+		urlWithParams = 'type=xyz&url=http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D'
+		rlayer = QgsRasterLayer(urlWithParams,name, 'wms') 
+		if rlayer.isValid():    
+			QgsProject.instance().addMapLayer(rlayer)
+		
+		sources = []
+		service_uri1 ="http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D"
+		sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
+		for source in sources:
+			connectionType = source[0]
+			connectionName = source[1]
+			QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+			QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+			QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+			QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+			QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+			QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+			QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+		# Update GUI
+		qgis.utils.iface.reloadConnections()
+		
+
+	##############
 	# Bing
 	############
-	""" def bingaerial_call(self):
-		service_url ="ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1"
-		name = "Bing Aerial"
-		hcmgis_basemap(self.iface,service_url, name) """
+	def bingaerial_call(self):
+		import requests
+		import qgis.utils
+		name = "Bing Virtual Earth"
+		urlWithParams = 'type=xyz&url=http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg%3Fg=1'
+		rlayer = QgsRasterLayer(urlWithParams, name, 'wms') 
+		if rlayer.isValid():    
+			QgsProject.instance().addMapLayer(rlayer)
+		
+		sources = []
+		service_uri1 ="http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg%3Fg=1"
+		sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
+		for source in sources:
+			connectionType = source[0]
+			connectionName = source[1]
+			QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+			QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+			QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+			QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+			QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+			QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+			QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+		# Update GUI
+		qgis.utils.iface.reloadConnections()
+		 
 
 	##############
 	# Carto
@@ -433,6 +517,7 @@ class hcmgis_menu:
 		name = "Carto Eco"
 		hcmgis_basemap(self.iface,service_url, name)
 	
+		
 	#########################		
 	# ESRI
 	#####################
@@ -508,6 +593,34 @@ class hcmgis_menu:
 		service_url ="tile1.f4map.com/tiles/f4_2d/{z}/{x}/{y}.png" 
 		name = "F4map"
 		hcmgis_basemap(self.iface,service_url, name)
+
+	#########################		
+	# OpenTopoMap
+	#####################
+	def opentopomap_call(self):
+		import requests
+		import qgis.utils
+		name = "OpenTopoMap"	
+		urlWithParams = 'type=xyz&url=tile.opentopomap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png'
+		rlayer = QgsRasterLayer(urlWithParams,name, 'wms') 
+		if rlayer.isValid():    
+			QgsProject.instance().addMapLayer(rlayer)
+		
+		sources = []
+		service_uri1 ="tile.opentopomap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png"
+		sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
+		for source in sources:
+			connectionType = source[0]
+			connectionName = source[1]
+			QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+			QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+			QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+			QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+			QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+			QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+			QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+		# Update GUI
+		qgis.utils.iface.reloadConnections()
 	
 	#########################		
 	# Stamen
@@ -549,6 +662,63 @@ class hcmgis_menu:
 		hcmgis_basemap(self.iface,service_url, name)
 
 	###################################
+	# Strava
+	#####################	
+
+	def stravarun_call(self):
+		import requests
+		import qgis.utils
+		name = "strava Run"
+		urlWithParams = 'type=xyz&url=heatmap-external-b.strava.com/tiles/run/bluered/%7Bz%7D/%7Bx%7D/%7By%7D.png?v=19'
+		rlayer = QgsRasterLayer(urlWithParams,name, 'wms') 
+		if rlayer.isValid():    
+			QgsProject.instance().addMapLayer(rlayer)
+		
+		sources = []
+		service_uri1 ="heatmap-external-b.strava.com/tiles/run/bluered/%7Bz%7D/%7Bx%7D/%7By%7D.png?v=19"
+		sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
+		for source in sources:
+			connectionType = source[0]
+			connectionName = source[1]
+			QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+			QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+			QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+			QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+			QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+			QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+			QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+		# Update GUI
+		qgis.utils.iface.reloadConnections()
+
+	
+	
+	def stravaall_call(self):	
+		import requests
+		import qgis.utils
+		name = "strava All"
+		urlWithParams = 'type=xyz&url=heatmap-external-b.strava.com/tiles/all/bluered/%7Bz%7D/%7Bx%7D/%7By%7D.png'
+		rlayer = QgsRasterLayer(urlWithParams, name, 'wms') 
+		if rlayer.isValid():    
+			QgsProject.instance().addMapLayer(rlayer)
+		
+		sources = []
+		service_uri1 ="heatmap-external-b.strava.com/tiles/all/bluered/%7Bz%7D/%7Bx%7D/%7By%7D.png"
+		sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
+		for source in sources:
+			connectionType = source[0]
+			connectionName = source[1]
+			QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+			QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+			QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+			QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+			QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+			QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+			QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+		# Update GUI
+		qgis.utils.iface.reloadConnections()
+
+
+	###################################
 	def hcmgisaerial_call(self):
 		service_url = "trueortho.hcmgis.vn/basemap/cache_lidar/{z}/{x}/{y}.jpg" 
 		name = "HCMGIS Aerial Images"
@@ -559,6 +729,32 @@ class hcmgis_menu:
 		service_url = "maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png" 
 		name = "Wikimedia Maps"
 		hcmgis_basemap(self.iface,service_url, name)
+	
+	def wikimediahikebike_call(self):
+		import requests
+		import qgis.utils
+		name = "Wikimedia Hike Bike"
+		urlWithParams = 'tiles.wmflabs.org/hikebike/%7Bz%7D/%7Bx%7D/%7By%7D.png'
+		rlayer = QgsRasterLayer(urlWithParams,name, 'wms') 
+		if rlayer.isValid():    
+			QgsProject.instance().addMapLayer(rlayer)
+		
+		sources = []
+		service_uri1 ="tiles.wmflabs.org/hikebike/%7Bz%7D/%7Bx%7D/%7By%7D.png"
+		sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
+		for source in sources:
+			connectionType = source[0]
+			connectionName = source[1]
+			QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+			QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+			QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+			QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+			QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+			QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+			QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+		# Update GUI
+		qgis.utils.iface.reloadConnections()
+			
 			
 
 	##########################	

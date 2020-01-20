@@ -13,7 +13,7 @@ class Ui_hcmgis_centerline_form(object):
         hcmgis_centerline_form.setObjectName("hcmgis_centerline_form")
         hcmgis_centerline_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_centerline_form.setEnabled(True)
-        hcmgis_centerline_form.resize(352, 264)
+        hcmgis_centerline_form.resize(467, 256)
         hcmgis_centerline_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_centerline_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -57,14 +57,14 @@ class Ui_hcmgis_centerline_form(object):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
-        self.BtnOKCancel = QtWidgets.QDialogButtonBox(hcmgis_centerline_form)
-        self.BtnOKCancel.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.BtnOKCancel.setObjectName("BtnOKCancel")
-        self.verticalLayout.addWidget(self.BtnOKCancel)
+        self.BtnApplyClose = QtWidgets.QDialogButtonBox(hcmgis_centerline_form)
+        self.BtnApplyClose.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Close)
+        self.BtnApplyClose.setObjectName("BtnApplyClose")
+        self.verticalLayout.addWidget(self.BtnApplyClose)
 
         self.retranslateUi(hcmgis_centerline_form)
-        self.BtnOKCancel.accepted.connect(hcmgis_centerline_form.accept)
-        self.BtnOKCancel.rejected.connect(hcmgis_centerline_form.reject)
+        self.BtnApplyClose.accepted.connect(hcmgis_centerline_form.accept)
+        self.BtnApplyClose.rejected.connect(hcmgis_centerline_form.reject)
         QtCore.QMetaObject.connectSlotsByName(hcmgis_centerline_form)
 
     def retranslateUi(self, hcmgis_centerline_form):
@@ -76,7 +76,7 @@ class Ui_hcmgis_centerline_form(object):
         self.lblsurround.setText(_translate("hcmgis_centerline_form", "Distance to the bounding box of polygon (m)"))
         self.label.setText(_translate("hcmgis_centerline_form", "(Notice: Output should be refined after running)"))
 
-from qgis.gui import QgsMapLayerComboBox
+from qgsmaplayercombobox import QgsMapLayerComboBox
 
 if __name__ == "__main__":
     import sys

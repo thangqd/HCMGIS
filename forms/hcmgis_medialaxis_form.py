@@ -13,7 +13,7 @@ class Ui_hcmgis_medialaxis_form(object):
         hcmgis_medialaxis_form.setObjectName("hcmgis_medialaxis_form")
         hcmgis_medialaxis_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_medialaxis_form.setEnabled(True)
-        hcmgis_medialaxis_form.resize(296, 229)
+        hcmgis_medialaxis_form.resize(461, 229)
         hcmgis_medialaxis_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_medialaxis_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -48,14 +48,14 @@ class Ui_hcmgis_medialaxis_form(object):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
-        self.BtnOKCancel = QtWidgets.QDialogButtonBox(hcmgis_medialaxis_form)
-        self.BtnOKCancel.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.BtnOKCancel.setObjectName("BtnOKCancel")
-        self.verticalLayout.addWidget(self.BtnOKCancel)
+        self.BtnApplyClose = QtWidgets.QDialogButtonBox(hcmgis_medialaxis_form)
+        self.BtnApplyClose.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Close)
+        self.BtnApplyClose.setObjectName("BtnApplyClose")
+        self.verticalLayout.addWidget(self.BtnApplyClose)
 
         self.retranslateUi(hcmgis_medialaxis_form)
-        self.BtnOKCancel.accepted.connect(hcmgis_medialaxis_form.accept)
-        self.BtnOKCancel.rejected.connect(hcmgis_medialaxis_form.reject)
+        self.BtnApplyClose.accepted.connect(hcmgis_medialaxis_form.accept)
+        self.BtnApplyClose.rejected.connect(hcmgis_medialaxis_form.reject)
         QtCore.QMetaObject.connectSlotsByName(hcmgis_medialaxis_form)
 
     def retranslateUi(self, hcmgis_medialaxis_form):
@@ -66,7 +66,8 @@ class Ui_hcmgis_medialaxis_form(object):
         self.LblInput_2.setText(_translate("hcmgis_medialaxis_form", "Density (m)"))
         self.label.setText(_translate("hcmgis_medialaxis_form", "(Notice: Output should be refined after running)"))
 
-from qgis.gui import QgsFieldComboBox, QgsMapLayerComboBox
+from qgsfieldcombobox import QgsFieldComboBox
+from qgsmaplayercombobox import QgsMapLayerComboBox
 
 if __name__ == "__main__":
     import sys

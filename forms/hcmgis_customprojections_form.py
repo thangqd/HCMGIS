@@ -2,20 +2,18 @@
 
 # Form implementation generated from reading ui file 'hcmgis_customprojections_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_customprojections_form(object):
     def setupUi(self, hcmgis_customprojections_form):
         hcmgis_customprojections_form.setObjectName("hcmgis_customprojections_form")
         hcmgis_customprojections_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_customprojections_form.setEnabled(True)
-        hcmgis_customprojections_form.resize(494, 362)
+        hcmgis_customprojections_form.resize(614, 362)
         hcmgis_customprojections_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_customprojections_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -104,17 +102,12 @@ class Ui_hcmgis_customprojections_form(object):
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setHorizontalSpacing(0)
         self.gridLayout.setObjectName("gridLayout")
-        self.LblInput_2 = QtWidgets.QLabel(hcmgis_customprojections_form)
-        self.LblInput_2.setObjectName("LblInput_2")
-        self.gridLayout.addWidget(self.LblInput_2, 0, 0, 1, 1)
         self.LblInput_3 = QtWidgets.QLabel(hcmgis_customprojections_form)
         self.LblInput_3.setObjectName("LblInput_3")
         self.gridLayout.addWidget(self.LblInput_3, 0, 1, 1, 1)
-        self.cboZone = QtWidgets.QComboBox(hcmgis_customprojections_form)
-        self.cboZone.setObjectName("cboZone")
-        self.cboZone.addItem("")
-        self.cboZone.addItem("")
-        self.gridLayout.addWidget(self.cboZone, 1, 0, 1, 1)
+        self.LblInput_2 = QtWidgets.QLabel(hcmgis_customprojections_form)
+        self.LblInput_2.setObjectName("LblInput_2")
+        self.gridLayout.addWidget(self.LblInput_2, 0, 0, 1, 1)
         self.cboKTT = QtWidgets.QComboBox(hcmgis_customprojections_form)
         self.cboKTT.setEditable(True)
         self.cboKTT.setObjectName("cboKTT")
@@ -140,16 +133,20 @@ class Ui_hcmgis_customprojections_form(object):
         self.cboKTT.addItem("")
         self.cboKTT.addItem("")
         self.gridLayout.addWidget(self.cboKTT, 1, 1, 1, 1)
+        self.cboZone = QtWidgets.QComboBox(hcmgis_customprojections_form)
+        self.cboZone.setObjectName("cboZone")
+        self.cboZone.addItem("")
+        self.cboZone.addItem("")
+        self.gridLayout.addWidget(self.cboZone, 1, 0, 1, 1)
         self.lbl_Format_2 = QtWidgets.QLabel(hcmgis_customprojections_form)
         self.lbl_Format_2.setObjectName("lbl_Format_2")
-        self.gridLayout.addWidget(self.lbl_Format_2, 2, 0, 1, 2)
+        self.gridLayout.addWidget(self.lbl_Format_2, 2, 0, 2, 2)
+        self.verticalLayout.addLayout(self.gridLayout)
         self.cboParameters = QtWidgets.QComboBox(hcmgis_customprojections_form)
-        self.cboParameters.setMaximumSize(QtCore.QSize(470, 16777215))
         self.cboParameters.setObjectName("cboParameters")
         self.cboParameters.addItem("")
         self.cboParameters.addItem("")
-        self.gridLayout.addWidget(self.cboParameters, 3, 0, 1, 2)
-        self.verticalLayout.addLayout(self.gridLayout)
+        self.verticalLayout.addWidget(self.cboParameters)
         self.gridLayout_3 = QtWidgets.QGridLayout()
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.lbl_Format = QtWidgets.QLabel(hcmgis_customprojections_form)
@@ -248,10 +245,8 @@ class Ui_hcmgis_customprojections_form(object):
         self.cboProvinces.setItemText(61, _translate("hcmgis_customprojections_form", "Gia Lai"))
         self.cboProvinces.setItemText(62, _translate("hcmgis_customprojections_form", "Bình Thuận"))
         self.radcustom.setText(_translate("hcmgis_customprojections_form", "Create Custom Projections"))
-        self.LblInput_2.setText(_translate("hcmgis_customprojections_form", "UTM Zone"))
         self.LblInput_3.setText(_translate("hcmgis_customprojections_form", "Central Meridian"))
-        self.cboZone.setItemText(0, _translate("hcmgis_customprojections_form", "3 degree"))
-        self.cboZone.setItemText(1, _translate("hcmgis_customprojections_form", "6 degree"))
+        self.LblInput_2.setText(_translate("hcmgis_customprojections_form", "UTM Zone"))
         self.cboKTT.setItemText(0, _translate("hcmgis_customprojections_form", "102"))
         self.cboKTT.setItemText(1, _translate("hcmgis_customprojections_form", "103"))
         self.cboKTT.setItemText(2, _translate("hcmgis_customprojections_form", "104"))
@@ -273,8 +268,10 @@ class Ui_hcmgis_customprojections_form(object):
         self.cboKTT.setItemText(18, _translate("hcmgis_customprojections_form", "111"))
         self.cboKTT.setItemText(19, _translate("hcmgis_customprojections_form", "114"))
         self.cboKTT.setItemText(20, _translate("hcmgis_customprojections_form", "117"))
+        self.cboZone.setItemText(0, _translate("hcmgis_customprojections_form", "3 degree"))
+        self.cboZone.setItemText(1, _translate("hcmgis_customprojections_form", "6 degree"))
         self.lbl_Format_2.setText(_translate("hcmgis_customprojections_form", "Choose parmater set to convert Datum VN-2000 <--> WGS84"))
-        self.cboParameters.setItemText(0, _translate("hcmgis_customprojections_form", "-191.9044129,-39.30318279,-111.45032835,-0.00928836, 0.01975479, -0.004274, 0.252906278"))
+        self.cboParameters.setItemText(0, _translate("hcmgis_customprojections_form", "-191.9044129,-39.30318279,-111.45032835, 0.00928836, -0.01975479, 0.004274, 0.252906278"))
         self.cboParameters.setItemText(1, _translate("hcmgis_customprojections_form", "-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188"))
         self.lbl_Format.setText(_translate("hcmgis_customprojections_form", "Format"))
         self.cboFormat.setItemText(0, _translate("hcmgis_customprojections_form", "PROJ.4"))
@@ -297,3 +294,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_customprojections_form)
     hcmgis_customprojections_form.show()
     sys.exit(app.exec_())
+

@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>352</width>
-    <height>264</height>
+    <width>467</width>
+    <height>256</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -108,9 +108,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="BtnOKCancel">
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>
@@ -120,13 +120,13 @@
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgis.gui</header>
+   <header>qgsmaplayercombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>accepted()</signal>
    <receiver>hcmgis_centerline_form</receiver>
    <slot>accept()</slot>
@@ -142,7 +142,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>rejected()</signal>
    <receiver>hcmgis_centerline_form</receiver>
    <slot>reject()</slot>

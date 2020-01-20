@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>415</width>
-    <height>388</height>
+    <width>557</width>
+    <height>464</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -93,12 +93,12 @@
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>
@@ -106,12 +106,12 @@
  </widget>
  <tabstops>
   <tabstop>sourcelayers</tabstop>
-  <tabstop>buttonBox</tabstop>
+  <tabstop>BtnApplyClose</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>BtnApplyClose</sender>
    <signal>accepted()</signal>
    <receiver>hcmgis_opendata_form</receiver>
    <slot>accept()</slot>
@@ -127,7 +127,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>BtnApplyClose</sender>
    <signal>rejected()</signal>
    <receiver>hcmgis_opendata_form</receiver>
    <slot>reject()</slot>

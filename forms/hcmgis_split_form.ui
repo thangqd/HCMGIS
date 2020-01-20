@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>341</width>
-    <height>219</height>
+    <width>522</width>
+    <height>214</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -93,9 +93,9 @@
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="BtnOKCancel">
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>
@@ -105,18 +105,18 @@
   <customwidget>
    <class>QgsFieldComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgis.gui</header>
+   <header>qgsfieldcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgis.gui</header>
+   <header>qgsmaplayercombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>accepted()</signal>
    <receiver>hcmgis_split_form</receiver>
    <slot>accept()</slot>
@@ -132,7 +132,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>rejected()</signal>
    <receiver>hcmgis_split_form</receiver>
    <slot>reject()</slot>

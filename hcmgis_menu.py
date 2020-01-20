@@ -288,7 +288,7 @@ class hcmgis_menu:
 		
 		#HCMGIS OpenData
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.opendata_action = QAction(icon, u'Download Free and Open GeoData', self.iface.mainWindow())
+		self.opendata_action = QAction(icon, u'Download HCMGIS OpenData', self.iface.mainWindow())
 		self.opendata_action.triggered.connect(self.opendata)		
 		self.opendata_menu.addAction(self.opendata_action)
 

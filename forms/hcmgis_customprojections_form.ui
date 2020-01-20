@@ -12,7 +12,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>494</width>
+    <width>614</width>
     <height>362</height>
    </rect>
   </property>
@@ -389,13 +389,6 @@
      <property name="horizontalSpacing">
       <number>0</number>
      </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="LblInput_2">
-       <property name="text">
-        <string>UTM Zone</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
       <widget class="QLabel" name="LblInput_3">
        <property name="text">
@@ -403,18 +396,11 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QComboBox" name="cboZone">
-       <item>
-        <property name="text">
-         <string>3 degree</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>6 degree</string>
-        </property>
-       </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="LblInput_2">
+       <property name="text">
+        <string>UTM Zone</string>
+       </property>
       </widget>
      </item>
      <item row="1" column="1">
@@ -529,34 +515,42 @@
        </item>
       </widget>
      </item>
-     <item row="2" column="0" colspan="2">
+     <item row="1" column="0">
+      <widget class="QComboBox" name="cboZone">
+       <item>
+        <property name="text">
+         <string>3 degree</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6 degree</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="0" rowspan="2" colspan="2">
       <widget class="QLabel" name="lbl_Format_2">
        <property name="text">
         <string>Choose parmater set to convert Datum VN-2000 &lt;--&gt; WGS84</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0" colspan="2">
-      <widget class="QComboBox" name="cboParameters">
-       <property name="maximumSize">
-        <size>
-         <width>470</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <item>
-        <property name="text">
-         <string>-191.9044129,-39.30318279,-111.45032835,-0.00928836, 0.01975479, -0.004274, 0.252906278</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188</string>
-        </property>
-       </item>
-      </widget>
-     </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QComboBox" name="cboParameters">
+     <item>
+      <property name="text">
+       <string>-191.9044129,-39.30318279,-111.45032835, 0.00928836, -0.01975479, 0.004274, 0.252906278</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188</string>
+      </property>
+     </item>
+    </widget>
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_3">

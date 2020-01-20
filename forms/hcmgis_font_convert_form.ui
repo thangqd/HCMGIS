@@ -12,7 +12,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>355</width>
+    <width>413</width>
     <height>385</height>
    </rect>
   </property>
@@ -55,17 +55,13 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="LblSourceFont">
        <property name="text">
         <string>Source Charset</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QLabel" name="LblDestFont">
-       <property name="text">
-        <string>Target Charset</string>
        </property>
       </widget>
      </item>
@@ -122,13 +118,6 @@
        </item>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="LblOption">
-       <property name="text">
-        <string>Options</string>
-       </property>
-      </widget>
-     </item>
      <item row="3" column="0">
       <widget class="QComboBox" name="CboOption">
        <item>
@@ -165,13 +154,6 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0" colspan="2">
-      <widget class="QLabel" name="LblOutput">
-       <property name="text">
-        <string>Output Shapefile</string>
-       </property>
-      </widget>
-     </item>
      <item row="5" column="0" colspan="2">
       <widget class="QLineEdit" name="LinOutput"/>
      </item>
@@ -182,12 +164,33 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="1" colspan="2">
+      <widget class="QLabel" name="LblDestFont">
+       <property name="text">
+        <string>Target Charset</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="3">
+      <widget class="QLabel" name="LblOption">
+       <property name="text">
+        <string>Options</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="3">
+      <widget class="QLabel" name="LblOutput">
+       <property name="text">
+        <string>Output Shapefile</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="BtnOKCancel">
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>
@@ -203,7 +206,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>accepted()</signal>
    <receiver>hcmgis_font_convert_form</receiver>
    <slot>accept()</slot>
@@ -219,7 +222,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>rejected()</signal>
    <receiver>hcmgis_font_convert_form</receiver>
    <slot>reject()</slot>

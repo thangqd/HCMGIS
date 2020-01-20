@@ -50,11 +50,11 @@ global _Unicode, _TCVN3, _VNIWin, _KhongDau
 # --------------------------------------------------------
 class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):	
 	def __init__(self, iface):		
-		from owslib.wfs import WebFeatureService                
+		from owslib.wfs import WebFeatureService
 		QDialog.__init__(self)
 		self.iface = iface
 		self.setupUi(self)
-		self.buttonBox.accepted.connect(self.run)
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 		self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
 		self.LinOutputFolder.setText(os.getcwd())                                             
 		self.ChkSaveShapefile.stateChanged.connect(self.toggleCheckBox)
@@ -102,6 +102,7 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 		except Exception:
 			QMessageBox.warning(None, "WFS ERROR",u'OpenData Reading Error')			
 		qgis.utils.iface.messageBar().clearWidgets()  
+
 	
 	def run(self):
 		#from qgis.core import *
@@ -341,7 +342,8 @@ class hcmgis_medialaxis_dialog(QDialog, Ui_hcmgis_medialaxis_form):
 		self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
 		self.CboField.setLayer (self.CboInput.currentLayer () )
 		self.CboInput.activated.connect(self.update_field) 
-		self.BtnOKCancel.accepted.connect(self.run)    
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+
 				
 	def update_field(self):
 		self.CboField.setLayer (self.CboInput.currentLayer () )
@@ -369,7 +371,7 @@ class hcmgis_centerline_dialog(QDialog, Ui_hcmgis_centerline_form):
 		self.iface = iface
 		self.setupUi(self)	
 		self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
-		self.BtnOKCancel.accepted.connect(self.run) 
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 		self.chksurround.checked = False
 		self.lblsurround.setEnabled(False)
 		self.distance.setEnabled(False)			
@@ -411,8 +413,7 @@ class hcmgis_closestpair_dialog(QDialog, Ui_hcmgis_closestpair_form):
 		self.CboInput.setFilters(QgsMapLayerProxyModel.PointLayer)
 		self.CboField.setLayer (self.CboInput.currentLayer () )		
 		self.CboInput.activated.connect(self.update_field)
-		self.BtnOKCancel.accepted.connect(self.run) 
-           
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)           
 	def update_field(self):
 		self.CboField.setLayer (self.CboInput.currentLayer () )	
 		
@@ -436,7 +437,7 @@ class hcmgis_lec_dialog(QDialog, Ui_hcmgis_lec_form):
 		self.CboInput.setFilters(QgsMapLayerProxyModel.PointLayer)
 		self.CboField.setLayer (self.CboInput.currentLayer () )	
 		self.CboInput.activated.connect(self.update_field)         
-		self.BtnOKCancel.accepted.connect(self.run) 
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
           
 	
 	def update_field(self):
@@ -464,8 +465,8 @@ class hcmgis_merge_dialog(QDialog, Ui_hcmgis_merge_form):
 		self.iface = iface
 		self.setupUi(self)
 
-		self.browseoutfile.clicked.connect(self.browse_outfiles)
-		self.buttonBox.accepted.connect(self.run)
+		self.browseoutfile.clicked.connect(self.browse_outfiles)		
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 		hcmgis_load_combo_box_with_vector_layers(self.iface, self.sourcelayers, True)
 		self.sourcelayers.setDragDropMode(QAbstractItemView.InternalMove)
 		self.outfilename.setText(hcmgis_temp_file_name("merge",".shp"))	
@@ -500,7 +501,7 @@ class hcmgis_split_dialog(QDialog, Ui_hcmgis_split_form):
 		self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)	
 		self.CboField.setLayer (self.CboInput.currentLayer () )
 		self.CboInput.activated.connect(self.update_field)                
-		self.BtnOKCancel.accepted.connect(self.run)
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 		self.LinOutputFolder.setText(os.getcwd())                                             
 		self.BtnOutputFolder.clicked.connect(self.browse_outfiles)
 	
@@ -540,7 +541,7 @@ class hcmgis_font_convert_dialog(QDialog, Ui_hcmgis_font_convert_form):
 		self.update_fields()
 		self.BtnBrowseOutput.clicked.connect(self.browse_outfiles)
 		
-		self.BtnOKCancel.accepted.connect(self.run)
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 		self.LinOutput.setText(hcmgis_temp_file_name("convert_font",".shp"))	
 	
 		self.CboInput.activated.connect(self.update_fields)
@@ -588,7 +589,8 @@ class hcmgis_split_field_dialog(QDialog, Ui_hcmgis_split_field_form):
 		self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)			
 		self.CboField.setLayer (self.CboInput.currentLayer () )
 		self.CboInput.activated.connect(self.update_field)                
-		self.BtnOKCancel.accepted.connect(self.run)    
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+    
 				
 	def update_field(self):
 		self.CboField.setLayer (self.CboInput.currentLayer () )
@@ -614,7 +616,7 @@ class hcmgis_merge_field_dialog(QDialog, Ui_hcmgis_merge_field_form):
 		self.setupUi(self)
 		self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)
 		self.update_fields()
-		self.BtnOKCancel.accepted.connect(self.run)	
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)	
 		self.CboInput.activated.connect(self.update_fields)
 
 	def update_fields(self):

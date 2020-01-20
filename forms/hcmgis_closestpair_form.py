@@ -13,7 +13,7 @@ class Ui_hcmgis_closestpair_form(object):
         hcmgis_closestpair_form.setObjectName("hcmgis_closestpair_form")
         hcmgis_closestpair_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_closestpair_form.setEnabled(True)
-        hcmgis_closestpair_form.resize(352, 157)
+        hcmgis_closestpair_form.resize(450, 154)
         hcmgis_closestpair_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_closestpair_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -29,14 +29,14 @@ class Ui_hcmgis_closestpair_form(object):
         self.CboField = QgsFieldComboBox(hcmgis_closestpair_form)
         self.CboField.setObjectName("CboField")
         self.verticalLayout.addWidget(self.CboField)
-        self.BtnOKCancel = QtWidgets.QDialogButtonBox(hcmgis_closestpair_form)
-        self.BtnOKCancel.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.BtnOKCancel.setObjectName("BtnOKCancel")
-        self.verticalLayout.addWidget(self.BtnOKCancel)
+        self.BtnApplyClose = QtWidgets.QDialogButtonBox(hcmgis_closestpair_form)
+        self.BtnApplyClose.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Close)
+        self.BtnApplyClose.setObjectName("BtnApplyClose")
+        self.verticalLayout.addWidget(self.BtnApplyClose)
 
         self.retranslateUi(hcmgis_closestpair_form)
-        self.BtnOKCancel.accepted.connect(hcmgis_closestpair_form.accept)
-        self.BtnOKCancel.rejected.connect(hcmgis_closestpair_form.reject)
+        self.BtnApplyClose.accepted.connect(hcmgis_closestpair_form.accept)
+        self.BtnApplyClose.rejected.connect(hcmgis_closestpair_form.reject)
         QtCore.QMetaObject.connectSlotsByName(hcmgis_closestpair_form)
 
     def retranslateUi(self, hcmgis_closestpair_form):
@@ -45,7 +45,8 @@ class Ui_hcmgis_closestpair_form(object):
         self.LblInput.setText(_translate("hcmgis_closestpair_form", "Input Point Layer"))
         self.LblInput_2.setText(_translate("hcmgis_closestpair_form", "Unique Field"))
 
-from qgis.gui import QgsFieldComboBox, QgsMapLayerComboBox
+from qgsfieldcombobox import QgsFieldComboBox
+from qgsmaplayercombobox import QgsMapLayerComboBox
 
 if __name__ == "__main__":
     import sys

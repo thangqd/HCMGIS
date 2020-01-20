@@ -2,20 +2,18 @@
 
 # Form implementation generated from reading ui file 'hcmgis_csv2shp_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_csv2shp_form(object):
     def setupUi(self, hcmgis_csv2shp_form):
         hcmgis_csv2shp_form.setObjectName("hcmgis_csv2shp_form")
         hcmgis_csv2shp_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_csv2shp_form.setEnabled(True)
-        hcmgis_csv2shp_form.resize(513, 465)
+        hcmgis_csv2shp_form.resize(513, 463)
         font = QtGui.QFont()
         font.setBold(False)
         font.setWeight(50)
@@ -74,9 +72,6 @@ class Ui_hcmgis_csv2shp_form(object):
         self.label_8.setObjectName("label_8")
         self.gridLayout_2.addWidget(self.label_8, 0, 3, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_2)
-        self.gridLayout_4 = QtWidgets.QGridLayout()
-        self.gridLayout_4.setObjectName("gridLayout_4")
-        self.verticalLayout.addLayout(self.gridLayout_4)
         self.lblStatus = QtWidgets.QLabel(hcmgis_csv2shp_form)
         font = QtGui.QFont()
         font.setBold(True)
@@ -125,3 +120,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_csv2shp_form)
     hcmgis_csv2shp_form.show()
     sys.exit(app.exec_())
+

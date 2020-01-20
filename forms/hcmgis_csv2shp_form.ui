@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>513</width>
-    <height>465</height>
+    <height>463</height>
    </rect>
   </property>
   <property name="font">
@@ -123,9 +123,6 @@
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <layout class="QGridLayout" name="gridLayout_4"/>
    </item>
    <item>
     <widget class="QLabel" name="lblStatus">

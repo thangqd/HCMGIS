@@ -12,7 +12,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>304</width>
+    <width>523</width>
     <height>300</height>
    </rect>
   </property>
@@ -153,9 +153,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="BtnOKCancel">
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>
@@ -171,7 +171,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>accepted()</signal>
    <receiver>hcmgis_merge_field_form</receiver>
    <slot>accept()</slot>
@@ -187,7 +187,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>rejected()</signal>
    <receiver>hcmgis_merge_field_form</receiver>
    <slot>reject()</slot>

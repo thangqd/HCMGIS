@@ -13,7 +13,7 @@ class Ui_hcmgis_lec_form(object):
         hcmgis_lec_form.setObjectName("hcmgis_lec_form")
         hcmgis_lec_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_lec_form.setEnabled(True)
-        hcmgis_lec_form.resize(338, 154)
+        hcmgis_lec_form.resize(450, 154)
         hcmgis_lec_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_lec_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -29,14 +29,14 @@ class Ui_hcmgis_lec_form(object):
         self.CboField = QgsFieldComboBox(hcmgis_lec_form)
         self.CboField.setObjectName("CboField")
         self.verticalLayout.addWidget(self.CboField)
-        self.BtnOKCancel = QtWidgets.QDialogButtonBox(hcmgis_lec_form)
-        self.BtnOKCancel.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.BtnOKCancel.setObjectName("BtnOKCancel")
-        self.verticalLayout.addWidget(self.BtnOKCancel)
+        self.BtnApplyClose = QtWidgets.QDialogButtonBox(hcmgis_lec_form)
+        self.BtnApplyClose.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Close)
+        self.BtnApplyClose.setObjectName("BtnApplyClose")
+        self.verticalLayout.addWidget(self.BtnApplyClose)
 
         self.retranslateUi(hcmgis_lec_form)
-        self.BtnOKCancel.accepted.connect(hcmgis_lec_form.accept)
-        self.BtnOKCancel.rejected.connect(hcmgis_lec_form.reject)
+        self.BtnApplyClose.accepted.connect(hcmgis_lec_form.accept)
+        self.BtnApplyClose.rejected.connect(hcmgis_lec_form.reject)
         QtCore.QMetaObject.connectSlotsByName(hcmgis_lec_form)
 
     def retranslateUi(self, hcmgis_lec_form):
@@ -45,7 +45,8 @@ class Ui_hcmgis_lec_form(object):
         self.LblInput.setText(_translate("hcmgis_lec_form", "Input Point Layer"))
         self.LblOutput_2.setText(_translate("hcmgis_lec_form", "Unique field"))
 
-from qgis.gui import QgsFieldComboBox, QgsMapLayerComboBox
+from qgsfieldcombobox import QgsFieldComboBox
+from qgsmaplayercombobox import QgsMapLayerComboBox
 
 if __name__ == "__main__":
     import sys

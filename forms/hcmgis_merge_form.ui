@@ -12,7 +12,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
+    <width>522</width>
     <height>229</height>
    </rect>
   </property>
@@ -66,12 +66,12 @@
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>
@@ -81,12 +81,12 @@
   <tabstop>sourcelayers</tabstop>
   <tabstop>outfilename</tabstop>
   <tabstop>browseoutfile</tabstop>
-  <tabstop>buttonBox</tabstop>
+  <tabstop>BtnApplyClose</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>BtnApplyClose</sender>
    <signal>accepted()</signal>
    <receiver>hcmgis_merge_form</receiver>
    <slot>accept()</slot>
@@ -102,7 +102,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>BtnApplyClose</sender>
    <signal>rejected()</signal>
    <receiver>hcmgis_merge_form</receiver>
    <slot>reject()</slot>

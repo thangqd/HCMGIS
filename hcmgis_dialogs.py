@@ -41,10 +41,6 @@ from hcmgis_customprojections_form import *
 from hcmgis_csv2shp_form import *
 from hcmgis_txt2csv_form import *
 from hcmgis_xls2csv_form import *
-
-
-
-global _Unicode, _TCVN3, _VNIWin, _KhongDau
 # --------------------------------------------------------
 #    HCMGIS Opendata
 # --------------------------------------------------------
@@ -149,6 +145,100 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 #    VN-2000 Projections
 # --------------------------------------------------------
 class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form):		
+	provinces = ['Lai Châu', 'Điện Biên',
+				'Sơn La',
+				'Kiên Giang', 'Cà Mau',
+				'Lào Cai', 'Yên Bái', 'Nghệ An', 'Phú Thọ', 'An Giang',
+				'Thanh Hoá', 'Vĩnh Phúc', 'Đồng Tháp','Cần Thơ', 'Hậu Giang', 'Bạc Liêu', 'Hà Nội', 'Ninh Bình', 'Hà Nam',
+				'Hà Giang', 'Hải Dương', 'Hà Tĩnh', 'Bắc Ninh', 'Hưng Yên', 'Thái Bình', 'Nam Định', 'Tây Ninh', 'Vĩnh Long', 'Sóc Trăng', 'Trà Vinh', 
+				'Cao Bằng','Long An','Tiền Giang','Bến Tre','Hải Phòng','TP.HCM','Bình Dương',
+				'Tuyên Quang', 'Hoà Bình', 'Quảng Bình',
+				'Quảng Trị', 'Bình Phước',
+				'Bắc Kạn','Thái Nguyên',
+				'Bắc Giang','Thừa Thiên - Huế',
+				'Lạng Sơn',
+				'Kon Tum',
+				'Quảng Ninh','Đồng Nai','Bà Rịa - Vũng Tàu', 'Quảng Nam','Lâm Đồng','Đà Nẵng',
+				'Quảng Ngãi',
+				'Ninh Thuận','Khánh Hoà','Bình Định',
+				'Đắk Lắk', 'Đắk Nông', 'Phú Yên','Gia Lai','Bình Thuận']
+	ktt = [	103,103,
+			104,
+			104.5, 104.5, 
+			104.75, 104.75, 104.75, 104.75, 104.75, 
+			105, 105, 105, 105, 105, 105, 105, 105, 105,  
+			105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5,
+			105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 
+			106, 106, 106, 
+			106.25,106.25,
+			106.5, 106.5, 
+			107, 107,
+			107.25,
+			107.5, 		
+			107.75, 107.75, 107.75, 107.75, 107.75, 107.75,	
+			108, 
+			108.25, 108.25, 108.25, 
+			108.5, 108.5, 108.5, 108.5,108.5]
+	epsg_code = [9205, 9205, 
+				9206, 
+				9207, 9207, 
+				9208, 9208, 9208, 9208, 9208, 
+				5897, 5897, 5897, 5897, 5897, 5897, 5897, 5897, 5897, 
+				9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 	
+				9210, 9210, 9210, 9210, 9210, 9210, 9210,			
+				9211, 9211, 9211, 
+				9212, 9212, 
+				9213, 9213, 
+				9214, 9214, 
+				9215,
+				9216,
+				5899, 5899, 5899, 5899, 5899, 5899,
+				5898, 
+				9217, 9217, 9217,			
+				9218, 9218, 9218, 9218, 9218
+				]
+	def run(self):
+		import sqlite3
+		from qgis.core import QgsApplication
+		import random
+		db = sqlite3.connect(QgsApplication.qgisUserDatabaseFilePath())		
+		i = self.cboProvinces.currentIndex()
+		if ((self.rad3do.isChecked()) and (self.cboProvinces.currentIndex() != -1)):			
+			cursor = db.cursor()
+			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:parameters,NULL,NULL,NULL,0,NULL)"
+			srs_id = 20000 + self.cboProvinces.currentIndex()
+			desc = "VN_2000_" +  self.provinces[i].replace(" ", "_")+ "_3deg"			
+			parameters = "+proj=tmerc +lat_0=0 +lon_0="
+			parameters += str(self.ktt[i]) 
+			parameters += " +k=0.9999 +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84="
+			parameters +=  str(self.cboParameters.currentText())
+			parameters += " +units=m +no_defs"
+			#parameters = self.txtProjections.toPlainText()
+			cursor.execute(sql, {'srs_id': srs_id, 'desciprtion': desc, 'parameters': parameters })
+			# Commit changes
+			db.commit()
+     		
+		elif ((self.radcustom.isChecked()) and (self.cboZone.currentIndex() != -1) and (self.cboKTT.currentText() is not None)):
+			cursor = db.cursor()
+			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:parameters,NULL,NULL,NULL,0,NULL)"
+			srs_id = 30000 + random.randint(0,1000)
+			desc = "VN_2000_" + self.cboKTT.currentText() + "_"+self.cboZone.currentText()		
+			parameters = "+proj=tmerc +lat_0=0 +lon_0="
+			parameters += str(self.cboKTT.currentText()) 
+			k = 0
+			if (self.cboZone.currentIndex() == 1): #"6 degree"
+				k = 0.9996
+			elif(self.cboZone.currentIndex() == 0): 	k = 0.9999
+			parameters += " +k=" + str(k)
+			parameters += " +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84="
+			parameters +=  str(self.cboParameters.currentText())
+			parameters += " +units=m +no_defs"
+			#parameters = self.txtProjections.toPlainText()
+			cursor.execute(sql, {'srs_id': srs_id, 'desciprtion': desc, 'parameters': parameters })     	
+			# Commit changes
+			db.commit()
+		db.close() 
+		return
 
 	def __init__(self, iface):		
 		QDialog.__init__(self)
@@ -169,37 +259,21 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 		self.cboFormat.currentIndexChanged.connect(self.update_proj)
 		self.cboParameters.currentIndexChanged.connect(self.update_proj)
 		self.cboKTT.currentTextChanged.connect(self.update_proj)
-
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 
 
 	def update_proj(self):		
-		self.txtProjections.clear()
-		provinces = ['Lai Châu','Điện Biên','Sơn La','Kiên Giang','Cà Mau','Lào Cai','Yên Bái','Nghệ An',
-				'Phú Thọ','An Giang', 'Thanh Hoá', 'Vĩnh Phúc', 'Đồng Tháp','Cần Thơ', 'Hậu Giang',
-				'Bạc Liêu','Hà Nội','Ninh Bình','Hà Nam','Hà Giang','Hải Dương','Hà Tĩnh','Bắc Ninh','Hưng Yên',
-				'Thái Bình','Nam Định','Tây Ninh','Vĩnh Long','Sóc Trăng','Trà Vinh',
-				'Cao Bằng','Long An','Tiền Giang','Bến Tre','Hải Phòng','TP.HCM','Bình Dương','Tuyên Quang','Hoà Bình',
-				'Quảng Bình','Quảng Trị','Bình Phước','Bắc Kạn','Thái Nguyên','Bắc Giang','Thừa Thiên - Huế','Lạng Sơn',
-				'Kon Tum','Quảng Ninh','Đồng Nai','Bà Rịa - Vũng Tàu', 'Quảng Nam','Lâm Đồng','Đà Nẵng',
-				'Quảng Ngãi','Ninh Thuận','Khánh Hoà','Bình Định','Đắk Lắk', 'Đắk Nông', 'Phú Yên','Gia Lai','Bình Thuận']		
-		ktt = [103,103,104,104.5, 104.5, 104.75, 104.75, 104.75,
-		104.75, 104.75, 105,  105, 105, 105,105,
-		105,105,105, 105,105.5,105.5,105.5,105.5,105.5,
-		105.5,105.5,105.5,105.5,105.5,105.5,
-		105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 106, 106,
-		106, 106.25,106.25,106.5, 106.5, 107, 107,107.25,
-		107.5, 107.75, 107.75,107.75,107.75,107.75,107.75,
-		108, 108.25, 108.25,108.25,108.5,108.5, 108.5, 108.5,108.5]
+		self.txtProjections.clear()		
 		parameters = self.cboParameters.currentText()
 
 		if self.rad3do.isChecked():
 			i = self.cboProvinces.currentIndex()
-			self.cboKTT.setCurrentText(str(ktt[i]))
+			self.cboKTT.setCurrentText(str(self.ktt[i]))
 			self.cboZone.setCurrentIndex(0)
 			self.cboZone.setEnabled(False)
 			self.cboKTT.setEnabled(False)
 			k = 0.9999
-			self.txtProjections.setText(self.hcmgis_projections_generate(parameters, ktt[i],k))
+			self.txtProjections.setText(self.hcmgis_projections_generate(parameters, self.ktt[i],k))
 		
 		elif self.radcustom.isChecked():
 			if ((self.cboKTT.currentText() is not None) and  (self.cboKTT.currentText().strip() != '') and (self.cboKTT.currentIndex() != -1)):
@@ -332,7 +406,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 			self.cboProvinces.setEnabled(False)
 			self.cboKTT.setEnabled(True)
 			self.cboZone.setEnabled(True)
-
+	
 			
 class hcmgis_medialaxis_dialog(QDialog, Ui_hcmgis_medialaxis_form):		
 	def __init__(self, iface):

@@ -405,6 +405,9 @@
      </item>
      <item row="1" column="1">
       <widget class="QComboBox" name="cboKTT">
+       <property name="inputMethodHints">
+        <set>Qt::ImhDigitsOnly</set>
+       </property>
        <property name="editable">
         <bool>true</bool>
        </property>
@@ -542,7 +545,7 @@
     <widget class="QComboBox" name="cboParameters">
      <item>
       <property name="text">
-       <string>-191.9044129,-39.30318279,-111.45032835, 0.00928836, -0.01975479, 0.004274, 0.252906278</string>
+       <string>191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278</string>
       </property>
      </item>
      <item>
@@ -606,9 +609,9 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="BtnOKCancel">
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Close</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>
@@ -617,7 +620,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>accepted()</signal>
    <receiver>hcmgis_customprojections_form</receiver>
    <slot>accept()</slot>
@@ -633,7 +636,7 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>rejected()</signal>
    <receiver>hcmgis_customprojections_form</receiver>
    <slot>reject()</slot>

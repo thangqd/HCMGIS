@@ -376,6 +376,12 @@ class hcmgis_menu:
 		self.batch_converter_menu = QMenu(u'Batch Converter')	
 		self.hcmgis_add_submenu(self.batch_converter_menu)
 
+		# Vector Format Converter
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.formatconvert_action = QAction(icon, u'Vector Format Converter', self.iface.mainWindow())
+		self.formatconvert_action.triggered.connect(self.formatconvert)
+		self.batch_converter_menu.addAction(self.formatconvert_action)
+
 		# CSV point to Shapefile
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
 		self.csv2shp_action = QAction(icon, u'CSV to Point', self.iface.mainWindow())
@@ -805,6 +811,10 @@ class hcmgis_menu:
 		dialog = hcmgis_font_convert_dialog(self.iface)
 		dialog.exec_()	
 	
+	def formatconvert(self):
+		dialog = hcmgis_format_convert_dialog(self.iface)
+		dialog.exec_()
+
 	def csv2shp(self):
 		dialog = hcmgis_csv2shp_dialog(self.iface)
 		dialog.exec_()

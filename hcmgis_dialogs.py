@@ -38,6 +38,7 @@ from hcmgis_centerline_form import *
 from hcmgis_closestpair_form import *
 from hcmgis_lec_form import *
 from hcmgis_customprojections_form import *
+from hcmgis_format_convert_form import *
 from hcmgis_csv2shp_form import *
 from hcmgis_txt2csv_form import *
 from hcmgis_xls2csv_form import *
@@ -714,6 +715,117 @@ class hcmgis_merge_field_dialog(QDialog, Ui_hcmgis_merge_field_form):
 		else: return
 		return
 
+# Format Convert
+class hcmgis_format_convert_dialog(QDialog, Ui_hcmgis_format_convert_form):		
+	def __init__(self, iface):
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)	
+		self.hcmgis_set_status_bar(self.status)
+		self.lsFiles.clear() 
+		self.txtError.clear()
+		self.BtnInputFolder.clicked.connect(self.read_files)		                           
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+
+	def hcmgis_set_status_bar(self, status_bar):
+		status_bar.setMinimum(0)
+		status_bar.setMaximum(100)
+		status_bar.setValue(0)
+		status_bar.setFormat("Ready")
+		self.status_bar = status_bar
+
+	def hcmgis_status_callback(self, percent_complete, message):
+		try:
+			if not message:
+				message = str(int(percent_complete)) + "%"
+
+			self.status_bar.setFormat(message)
+
+			if percent_complete < 0:
+				self.status_bar.setValue(0)
+			elif percent_complete > 100:
+				self.status_bar.setValue(100)
+			else:
+				self.status_bar.setValue(percent_complete)
+
+			self.iface.statusBarIface().showMessage(message)
+
+			# print("status_callback(" + message + ")")
+		except:
+			print(message)
+
+		# add handling of "Close" button
+		return 0
+		
+	def read_files(self):
+		newname = QFileDialog.getExistingDirectory(None, "Input Folder",self.LinInputFolder.displayText())
+		if newname != None:
+			self.LinInputFolder.setText(newname)	
+			self.lsFiles.clear() 		
+			import os
+			from glob import glob
+			PATH = newname
+			if (self.cboInputFormat.currentText()== "Esri Shapefile"):
+				EXT = "*.shp"
+			elif  (self.cboInputFormat.currentText()== "GeoJSON"):
+				EXT = "*.json"
+			else: EXT = "*." + self.cboInputFormat.currentText()
+			all_files = [file
+						for path, subdir, files in os.walk(PATH)
+						for file in glob(os.path.join(path, EXT))]
+			self.lsFiles.addItems(all_files)
+			self.lblFiles.setText (str(self.lsFiles.count()) + " files loaded")
+			self.lsFiles.setCurrentRow(0)
+			self.lblStatus.clear()
+			self.hcmgis_set_status_bar(self.status)
+	
+		
+	def run(self):             		
+		item_count = 0
+		error_count = 0
+		items = []
+		for index in range(self.lsFiles.count()):
+			items.append(self.lsFiles.item(index))
+		self.txtError.clear()
+		self.lsFiles.blockSignals(True)
+		self.LinInputFolder.setEnabled(False)
+		self.BtnInputFolder.setEnabled(False)
+		self.cboInputFormat.setEnabled(False)
+		self.cboOutputFormat.setEnabled(False)		
+		self.status_bar.setEnabled(False)			
+	
+		for item in items:
+			self.lsFiles.setCurrentRow(item_count)	
+			ogr_driver_name = str(self.cboOutputFormat.currentText())	
+			input_file_name = item.text()
+			temp_file_name = item.text()	
+			
+
+			if (self.cboInputFormat.currentText()== "Esri Shapefile"):
+				input_ext = ".shp"
+			elif  (self.cboInputFormat.currentText()== "GeoJSON"):
+				input_ext = ".json"
+			else: input_ext = "." + str(self.cboInputFormat.currentText())	
+	
+			output_file_name = temp_file_name.replace(input_ext, "", 1)			
+			message = hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name,self.hcmgis_status_callback)
+			if message:
+				#QMessageBox.critical(self.iface.mainWindow(), "Vector Format Convert", message)
+				error_count+=1
+				self.txtError.append(str(error_count)+ ". "+ input_file_name + ": " + message)
+				continue
+			else:
+				item_count +=1
+				self.lblStatus.setText (str(item_count)+"/ "+ str(self.lsFiles.count()) + " files converted")	
+		
+		self.lsFiles.blockSignals(False)
+		self.LinInputFolder.setEnabled(True)
+		self.BtnInputFolder.setEnabled(True)
+		self.cboInputFormat.setEnabled(True)
+		self.cboOutputFormat.setEnabled(True)	
+		self.status_bar.setEnabled(True)	
+	
+
 # csv2shp
 class hcmgis_csv2shp_dialog(QDialog, Ui_hcmgis_csv2shp_form):		
 	def __init__(self, iface):
@@ -850,7 +962,7 @@ class hcmgis_csv2shp_dialog(QDialog, Ui_hcmgis_csv2shp_form):
 		self.status_bar.setEnabled(False)			
 	
 		for item in items:
-			self.lsCSV.setCurrentRow(item_count);		
+			self.lsCSV.setCurrentRow(item_count)		
 			input_csv_name = item.text()
 			longitude_field = str(self.longitude_field.currentText())
 			latitude_field = str(self.latitude_field.currentText())

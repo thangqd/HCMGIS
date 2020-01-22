@@ -1380,6 +1380,24 @@ def hcmgis_buffers(qgis, layer, radius_attribute, radius, radius_unit, edge_attr
 
 	return None
 
+#hcmgis_format_convert
+def hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name, status_callback = None):
+	# Parameter error checks and conversions
+	input_file = QgsVectorLayer(input_file_name)
+	if input_file.featureCount() <= 0:
+		return "Invalid Vector file"
+
+	#outfile = QgsVectorFileWriter.writeAsVectorFormat(input_file, output_file_name, input_file.dataProvider().encoding(), input_file.crs(),outputformat)
+	QgsVectorFileWriter.writeAsVectorFormat(input_file, output_file_name, input_file.dataProvider().encoding(), input_file.crs(),ogr_driver_name, False)
+	#if (outfile.hasError() != QgsVectorFileWriter.NoError):
+		#return "Failure creating output file: " + str(outfile.errorMessage())
+	
+	#del outfile
+	if status_callback:
+		#status_callback(100, str(shape_count) + " shapes, " + str(input_csv.featureCount()) + " nodes")
+		status_callback(100, None)
+
+	return None
 # ----------------------------------------------------------------
 #    hcmgis_point_import_from_csv - point import from CSV
 # ----------------------------------------------------------------

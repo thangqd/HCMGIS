@@ -1,9 +1,9 @@
-# HCMGIS - Basemap, Vn-2000 Projections, Geometry Processing and Field Calculation plugin for QGIS3
+# HCMGIS - Basemap, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
-**HCMGIS** is a set of useful geometry processing and field calculation utilities:
+**- Basemap**: Add dozens of global basemaps from Google, Carto, ESRI, OSM Stamen,...
 
+**- Batch Converter**: Batch convert CSV to Point Shapefile, TXT to CSV, XLSX to CSV and other GIS formats in a folder and its subfolders
 
-**- Basemap**: Add dozens of global basemaps from Carto, ESRI, Google, OSM Stamen, HCMGIS Aerial Images,...
 
 **- HCMGIS OpenData**:  Download free and open geodata from https://opendata.hcmgis.vn
 
@@ -20,14 +20,14 @@
 
 **- Attribute Calculation**: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case,...
 
-**- Batch Converter**: Batch convert CSV to Point Shapefile, TXT to CSV, XLSX to CSV in a folder and its subfolders
 
 # 
 
-**HCMGIS** là QGIS3 plugin cung cấp một số công cụ xử lý hình học và thuộc tính:
+**HCMGIS** - Basemap, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
+**- Batch Converter**: Chuyển đổi tất cả các file XY (CSV) sang dạng điểm (shapefile); TXT --> CSV; XLSX --> CSV, và các định dạng GIS khác cho toàn bộ các file trong thư mục và các thư mục con
 
-**- Basemap**: Thêm bản đồ nền Carto, ESRI, Google, OSM Stamen, HCMGIS Aerial Images,...trong QGIS
+**- Basemap**: Thêm bản đồ nền Google, Carto, ESRI, OSM Stamen,...trong QGIS
 
 **- HCMGIS OpenData**:  Download miễn phí dữ liệu GIS từ https://opendata.hcmgis.vn
 
@@ -43,4 +43,3 @@
 
 **-Xử lý thuộc tính**: Gộp/ tách trường dữ liệu, chuyển đổi font chữ tiếng Việt Unicode <--> TCVN3 <--> Vni-Windows, với các tiện ích IN HOA, Hoa Mỗi Từ, Hoa đầu câu, in thường, khong dau.
 
-**- Batch Converter**: Chuyển đổi tất cả các file XY (CSV) sang dạng điểm (shapefile); TXT --> CSV; XLSX --> CSV cho thư mục và các thư mục con

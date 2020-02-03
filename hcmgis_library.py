@@ -1381,21 +1381,29 @@ def hcmgis_buffers(qgis, layer, radius_attribute, radius, radius_unit, edge_attr
 	return None
 
 #hcmgis_format_convert
-def hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name, status_callback = None):
+def hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name):
 	# Parameter error checks and conversions
 	input_file = QgsVectorLayer(input_file_name)
+	import processing
 	if input_file.featureCount() <= 0:
 		return "Invalid Vector file"
-
-	#outfile = QgsVectorFileWriter.writeAsVectorFormat(input_file, output_file_name, input_file.dataProvider().encoding(), input_file.crs(),outputformat)
-	QgsVectorFileWriter.writeAsVectorFormat(input_file, output_file_name, input_file.dataProvider().encoding(), input_file.crs(),ogr_driver_name, False)
-	#if (outfile.hasError() != QgsVectorFileWriter.NoError):
-		#return "Failure creating output file: " + str(outfile.errorMessage())
+	if (".shp" in str (input_file_name)):
+		error, error_string = QgsVectorFileWriter.writeAsVectorFormat(input_file, output_file_name, input_file.dataProvider().encoding(), input_file.crs(),ogr_driver_name, False)
+		if error != QgsVectorFileWriter.NoError:
+			return "Failure creating output file: " + str(error_string)
+	else:				
+		parameters = {'INPUT': input_file,
+					'FORMAT': ogr_driver_name,
+					'OUTPUT':  "memory:format_convert"}
+		error = processing.run('gdal:convertformat', parameters)	
+		if error is not None:
+			return "GDAL Converter Error: " + str(error)	
 	
-	#del outfile
-	if status_callback:
-		#status_callback(100, str(shape_count) + " shapes, " + str(input_csv.featureCount()) + " nodes")
-		status_callback(100, None)
+	#QgsVectorFileWriter.writeAsVectorFormat(input_file, output_file_name, input_file.dataProvider().encoding(), input_file.crs(),ogr_driver_name, False)
+
+	# if status_callback:
+	# 	#status_callback(100, str(shape_count) + " shapes, " + str(input_csv.featureCount()) + " nodes")
+	# 	status_callback(100, None)
 
 	return None
 # ----------------------------------------------------------------

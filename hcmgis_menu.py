@@ -281,7 +281,35 @@ class hcmgis_menu:
 		self.hcmgisaerial_action.triggered.connect(self.hcmgisaerial_call)		
 		self.basemap_menu.addAction(self.hcmgisaerial_action)
 		
+		# Batch Converter Submenu
+		self.batch_converter_menu = QMenu(u'Batch Converter')	
+		self.hcmgis_add_submenu(self.batch_converter_menu)
+
+		# Vector Format Converter
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.formatconvert_action = QAction(icon, u'Vector Format Converter', self.iface.mainWindow())
+		self.formatconvert_action.triggered.connect(self.formatconvert)
+		self.batch_converter_menu.addAction(self.formatconvert_action)
+
+		# CSV point to Shapefile
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.csv2shp_action = QAction(icon, u'CSV to Point', self.iface.mainWindow())
+		self.csv2shp_action.triggered.connect(self.csv2shp)
+		self.batch_converter_menu.addAction(self.csv2shp_action)
+
+		# TXT to CSV
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.txt2csv_action = QAction(icon, u'TXT to CSV', self.iface.mainWindow())
+		self.txt2csv_action.triggered.connect(self.txt2csv)
+		self.batch_converter_menu.addAction(self.txt2csv_action)
+
 		
+		# XLS to CSV
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.xls2csv_action = QAction(icon, u'XLSX to CSV', self.iface.mainWindow())
+		self.xls2csv_action.triggered.connect(self.xls2csv)
+		self.batch_converter_menu.addAction(self.xls2csv_action)
+
 		#HCMGIS OpenData submenu
 		self.opendata_menu = QMenu(u'HCMGIS OpenData')		
 		self.hcmgis_add_submenu(self.opendata_menu)
@@ -372,35 +400,7 @@ class hcmgis_menu:
 		#QObject.connect(self.fontconverter_action, SIGNAL("triggered()"), self.fontconverter)
 		self.tool_menu.addAction(self.fontconverter_action)	
 
-		# Batch Converter Submenu
-		self.batch_converter_menu = QMenu(u'Batch Converter')	
-		self.hcmgis_add_submenu(self.batch_converter_menu)
-
-		# Vector Format Converter
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.formatconvert_action = QAction(icon, u'Vector Format Converter', self.iface.mainWindow())
-		self.formatconvert_action.triggered.connect(self.formatconvert)
-		self.batch_converter_menu.addAction(self.formatconvert_action)
-
-		# CSV point to Shapefile
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.csv2shp_action = QAction(icon, u'CSV to Point', self.iface.mainWindow())
-		self.csv2shp_action.triggered.connect(self.csv2shp)
-		self.batch_converter_menu.addAction(self.csv2shp_action)
-
-		# TXT to CSV
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.txt2csv_action = QAction(icon, u'TXT to CSV', self.iface.mainWindow())
-		self.txt2csv_action.triggered.connect(self.txt2csv)
-		self.batch_converter_menu.addAction(self.txt2csv_action)
-
 		
-		# XLS to CSV
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.xls2csv_action = QAction(icon, u'XLSX to CSV', self.iface.mainWindow())
-		self.xls2csv_action.triggered.connect(self.xls2csv)
-		self.batch_converter_menu.addAction(self.xls2csv_action)
-
 		
 	def unload(self):
 		if self.hcmgis_menu != None:

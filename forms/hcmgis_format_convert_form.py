@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'hcmgis_format_convert_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_hcmgis_format_convert_form(object):
     def setupUi(self, hcmgis_format_convert_form):
@@ -32,6 +34,7 @@ class Ui_hcmgis_format_convert_form(object):
         self.cboOutputFormat.addItem("")
         self.cboOutputFormat.addItem("")
         self.cboOutputFormat.addItem("")
+        self.cboOutputFormat.addItem("")
         self.gridLayout_2.addWidget(self.cboOutputFormat, 2, 4, 1, 1)
         self.label_7 = QtWidgets.QLabel(hcmgis_format_convert_form)
         self.label_7.setObjectName("label_7")
@@ -41,6 +44,7 @@ class Ui_hcmgis_format_convert_form(object):
         self.gridLayout_2.addWidget(self.label_8, 0, 0, 1, 1)
         self.cboInputFormat = QtWidgets.QComboBox(hcmgis_format_convert_form)
         self.cboInputFormat.setObjectName("cboInputFormat")
+        self.cboInputFormat.addItem("")
         self.cboInputFormat.addItem("")
         self.cboInputFormat.addItem("")
         self.cboInputFormat.addItem("")
@@ -67,7 +71,7 @@ class Ui_hcmgis_format_convert_form(object):
         self.LinInputFolder = QtWidgets.QLineEdit(hcmgis_format_convert_form)
         self.LinInputFolder.setEnabled(True)
         self.LinInputFolder.setMouseTracking(True)
-        self.LinInputFolder.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.LinInputFolder.setFocusPolicy(QtCore.Qt.NoFocus)
         self.LinInputFolder.setAcceptDrops(False)
         self.LinInputFolder.setText("")
         self.LinInputFolder.setReadOnly(False)
@@ -118,7 +122,7 @@ class Ui_hcmgis_format_convert_form(object):
 
     def retranslateUi(self, hcmgis_format_convert_form):
         _translate = QtCore.QCoreApplication.translate
-        hcmgis_format_convert_form.setWindowTitle(_translate("hcmgis_format_convert_form", "Vector Format Batch Convert"))
+        hcmgis_format_convert_form.setWindowTitle(_translate("hcmgis_format_convert_form", "Vector Format Batch Converter"))
         self.cboOutputFormat.setItemText(0, _translate("hcmgis_format_convert_form", "GeoJSON"))
         self.cboOutputFormat.setItemText(1, _translate("hcmgis_format_convert_form", "Esri Shapefile"))
         self.cboOutputFormat.setItemText(2, _translate("hcmgis_format_convert_form", "DXF"))
@@ -126,6 +130,7 @@ class Ui_hcmgis_format_convert_form(object):
         self.cboOutputFormat.setItemText(4, _translate("hcmgis_format_convert_form", "GPKG"))
         self.cboOutputFormat.setItemText(5, _translate("hcmgis_format_convert_form", "GML"))
         self.cboOutputFormat.setItemText(6, _translate("hcmgis_format_convert_form", "KML"))
+        self.cboOutputFormat.setItemText(7, _translate("hcmgis_format_convert_form", "GPX"))
         self.label_7.setText(_translate("hcmgis_format_convert_form", "Output Format"))
         self.label_8.setText(_translate("hcmgis_format_convert_form", "Input Format"))
         self.cboInputFormat.setItemText(0, _translate("hcmgis_format_convert_form", "Esri Shapefile"))
@@ -135,6 +140,7 @@ class Ui_hcmgis_format_convert_form(object):
         self.cboInputFormat.setItemText(4, _translate("hcmgis_format_convert_form", "GeoJSON"))
         self.cboInputFormat.setItemText(5, _translate("hcmgis_format_convert_form", "GML"))
         self.cboInputFormat.setItemText(6, _translate("hcmgis_format_convert_form", "KML"))
+        self.cboInputFormat.setItemText(7, _translate("hcmgis_format_convert_form", "GPX"))
         self.label_2.setText(_translate("hcmgis_format_convert_form", "Input Folder"))
         self.BtnInputFolder.setText(_translate("hcmgis_format_convert_form", "Browse..."))
         self.label.setText(_translate("hcmgis_format_convert_form", "Errors Log"))
@@ -148,4 +154,3 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_format_convert_form)
     hcmgis_format_convert_form.show()
     sys.exit(app.exec_())
-

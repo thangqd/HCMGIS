@@ -206,7 +206,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 		i = self.cboProvinces.currentIndex()
 		if ((self.rad3do.isChecked()) and (self.cboProvinces.currentIndex() != -1)):			
 			cursor = db.cursor()
-			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:parameters,NULL,NULL,NULL,0,NULL)"
+			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:parameters,NULL,NULL,NULL,0,0,NULL)"
 			srs_id = 20000 + self.cboProvinces.currentIndex()
 			desc = "VN_2000_" +  self.provinces[i].replace(" ", "_")+ "_3deg"			
 			parameters = "+proj=tmerc +lat_0=0 +lon_0="
@@ -221,7 +221,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
      		
 		elif ((self.radcustom.isChecked()) and (self.cboZone.currentIndex() != -1) and (self.cboKTT.currentText() is not None)):
 			cursor = db.cursor()
-			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:parameters,NULL,NULL,NULL,0,NULL)"
+			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:parameters,NULL,NULL,NULL,0,0,NULL)"
 			srs_id = 30000 + random.randint(0,1000)
 			desc = "VN_2000_" + self.cboKTT.currentText() + "_"+self.cboZone.currentText()		
 			parameters = "+proj=tmerc +lat_0=0 +lon_0="
@@ -297,8 +297,19 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 			k = 0.9999
 		else: k = 0.9996	
 		
+		#QGIS WKT		
+		if self.cboFormat.currentIndex() == 0:	
+			projections_text = 'BOUNDCRS[SOURCECRS[PROJCS['
+			projections_text += '"VN-2000 / '+  str(srid) +'",'
+			projections_text += 'BASEGEOGCRS["VN-2000",DATUM["Vietnam 2000",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4756]],CONVERSION["unnamed",METHOD["Transverse Mercator",ID["EPSG",9807]],'
+			projections_text += 'PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",'
+			projections_text +=  ktt
+			projections_text += ',ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9999,SCALEUNIT["unity",1],ID["EPSG",8805]],'
+			projections_text += 'PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],'
+			projections_text += 'AXIS["easting",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing",north,ORDER[2],LENGTHUNIT["metre",1]],ID["EPSG",10545]]],TARGETCRS[GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]]],ABRIDGEDTRANSFORMATION["Transformation from VN-2000 to WGS84",METHOD["Position Vector transformation (geog2D domain)",ID["EPSG",9606]],PARAMETER["X-axis translation",-191.90441429,ID["EPSG",8605]],PARAMETER["Y-axis translation",-39.30318279,ID["EPSG",8606]],PARAMETER["Z-axis translation",-111.45032835,ID["EPSG",8607]],PARAMETER["X-axis rotation",0.00928836,ID["EPSG",8608]],PARAMETER["Y-axis rotation",0.01975479,ID["EPSG",8609]],PARAMETER["Z-axis rotation",-0.00427372,ID["EPSG",8610]],PARAMETER["Scale difference",1.00000025290628,ID["EPSG",8611]]]]'
+
 		#Proj.4
-		if self.cboFormat.currentIndex() == 0: 
+		elif self.cboFormat.currentIndex() == 1: 
 			projections_text = '+proj=tmerc +lat_0=0 +lon_0='
 			projections_text+= str(ktt)
 			projections_text+=' +k='
@@ -306,10 +317,10 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 			projections_text+= ' +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84='
 			projections_text+= parameters
 			projections_text+= ' +units=m +no_defs'
-		
+	
 		#ESRI WKT
 		#PROJCS["VN_2000_UTM_zone_48N",GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1]]
-		elif self.cboFormat.currentIndex() == 1:			
+		elif self.cboFormat.currentIndex() == 2:			
 			projections_text = 'PROJCS['
 			projections_text += '"VN-2000 / '+  str(srid) +'"'
 			projections_text += ',GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
@@ -320,7 +331,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 		
 		#PostGIS
 		#INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 3405, 'EPSG', 3405, '+proj=utm +zone=48 +ellps=WGS84 +towgs84=-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188 +units=m +no_defs ', 'PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3405"]]');
-		elif self.cboFormat.currentIndex() == 2:		
+		elif self.cboFormat.currentIndex() == 3:		
 			projections_text = 'INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values('
 			projections_text += str(srid) 
 			projections_text += ',\'' 
@@ -349,7 +360,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 
 		#GeoServer:
 		#3405=PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3405"]]
-		elif self.cboFormat.currentIndex() == 3:			
+		elif self.cboFormat.currentIndex() == 4:			
 			projections_text = str(srid)
 			projections_text += '=PROJCS['
 			projections_text +='"'
@@ -749,9 +760,7 @@ class hcmgis_format_convert_dialog(QDialog, Ui_hcmgis_format_convert_form):
 			import os
 			from glob import glob
 			PATH = self.LinInputFolder.displayText()
-			if (self.cboInputFormat.currentText()== "Esri Shapefile"):
-				EXT = "*.shp"			
-			else: EXT = "*." + self.cboInputFormat.currentText()
+			EXT = "*." + self.cboInputFormat.currentText()
 			all_files = [file
 						for path, subdir, files in os.walk(PATH)
 						for file in glob(os.path.join(path, EXT))]
@@ -771,11 +780,7 @@ class hcmgis_format_convert_dialog(QDialog, Ui_hcmgis_format_convert_form):
 			import os
 			from glob import glob
 			PATH = newname
-			if (self.cboInputFormat.currentText()== "Esri Shapefile"):
-				EXT = "*.shp"
-			#elif  (self.cboInputFormat.currentText()== "GeoJSON"):
-				#EXT = "*.json"
-			else: EXT = "*." + self.cboInputFormat.currentText()
+			EXT = "*." + self.cboInputFormat.currentText()
 			all_files = [file
 						for path, subdir, files in os.walk(PATH)
 						for file in glob(os.path.join(path, EXT))]
@@ -805,12 +810,8 @@ class hcmgis_format_convert_dialog(QDialog, Ui_hcmgis_format_convert_form):
 			self.lsFiles.setCurrentRow(item_count)	
 			ogr_driver_name = str(self.cboOutputFormat.currentText())	
 			input_file_name = item.text()
-			temp_file_name = item.text()				
-
-			if (self.cboInputFormat.currentText()== "Esri Shapefile"):
-				input_ext = ".shp"			
-			else: input_ext = "." + str(self.cboInputFormat.currentText())	
-	
+			temp_file_name = item.text()
+			input_ext = "." + str(self.cboInputFormat.currentText()).lower()
 			output_file_name = temp_file_name.replace(input_ext, "", 1)			
 			message = hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name)
 			if message:

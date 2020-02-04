@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'hcmgis_format_convert_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_format_convert_form(object):
     def setupUi(self, hcmgis_format_convert_form):
@@ -27,8 +25,6 @@ class Ui_hcmgis_format_convert_form(object):
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.cboOutputFormat = QtWidgets.QComboBox(hcmgis_format_convert_form)
         self.cboOutputFormat.setObjectName("cboOutputFormat")
-        self.cboOutputFormat.addItem("")
-        self.cboOutputFormat.addItem("")
         self.cboOutputFormat.addItem("")
         self.cboOutputFormat.addItem("")
         self.cboOutputFormat.addItem("")
@@ -125,15 +121,13 @@ class Ui_hcmgis_format_convert_form(object):
         hcmgis_format_convert_form.setWindowTitle(_translate("hcmgis_format_convert_form", "Vector Format Batch Converter"))
         self.cboOutputFormat.setItemText(0, _translate("hcmgis_format_convert_form", "GeoJSON"))
         self.cboOutputFormat.setItemText(1, _translate("hcmgis_format_convert_form", "Esri Shapefile"))
-        self.cboOutputFormat.setItemText(2, _translate("hcmgis_format_convert_form", "DXF"))
-        self.cboOutputFormat.setItemText(3, _translate("hcmgis_format_convert_form", "DGN"))
-        self.cboOutputFormat.setItemText(4, _translate("hcmgis_format_convert_form", "GPKG"))
-        self.cboOutputFormat.setItemText(5, _translate("hcmgis_format_convert_form", "GML"))
-        self.cboOutputFormat.setItemText(6, _translate("hcmgis_format_convert_form", "KML"))
-        self.cboOutputFormat.setItemText(7, _translate("hcmgis_format_convert_form", "GPX"))
+        self.cboOutputFormat.setItemText(2, _translate("hcmgis_format_convert_form", "GPKG"))
+        self.cboOutputFormat.setItemText(3, _translate("hcmgis_format_convert_form", "GML"))
+        self.cboOutputFormat.setItemText(4, _translate("hcmgis_format_convert_form", "KML"))
+        self.cboOutputFormat.setItemText(5, _translate("hcmgis_format_convert_form", "CSV"))
         self.label_7.setText(_translate("hcmgis_format_convert_form", "Output Format"))
         self.label_8.setText(_translate("hcmgis_format_convert_form", "Input Format"))
-        self.cboInputFormat.setItemText(0, _translate("hcmgis_format_convert_form", "Esri Shapefile"))
+        self.cboInputFormat.setItemText(0, _translate("hcmgis_format_convert_form", "SHP"))
         self.cboInputFormat.setItemText(1, _translate("hcmgis_format_convert_form", "DXF"))
         self.cboInputFormat.setItemText(2, _translate("hcmgis_format_convert_form", "DGN"))
         self.cboInputFormat.setItemText(3, _translate("hcmgis_format_convert_form", "GPKG"))
@@ -154,3 +148,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_format_convert_form)
     hcmgis_format_convert_form.show()
     sys.exit(app.exec_())
+

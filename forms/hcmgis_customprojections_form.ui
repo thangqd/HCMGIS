@@ -568,6 +568,11 @@
       <widget class="QComboBox" name="cboFormat">
        <item>
         <property name="text">
+         <string>QGIS WKT</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>PROJ.4</string>
         </property>
        </item>

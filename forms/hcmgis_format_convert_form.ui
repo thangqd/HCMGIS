@@ -45,16 +45,6 @@
        </item>
        <item>
         <property name="text">
-         <string>DXF</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>DGN</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
          <string>GPKG</string>
         </property>
        </item>
@@ -70,7 +60,7 @@
        </item>
        <item>
         <property name="text">
-         <string>GPX</string>
+         <string>CSV</string>
         </property>
        </item>
       </widget>
@@ -93,7 +83,7 @@
       <widget class="QComboBox" name="cboInputFormat">
        <item>
         <property name="text">
-         <string>Esri Shapefile</string>
+         <string>SHP</string>
         </property>
        </item>
        <item>

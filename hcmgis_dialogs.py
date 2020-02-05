@@ -199,6 +199,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 				9218, 9218, 9218, 9218, 9218
 				]
 	def run(self):
+		#test
 		import sqlite3
 		from qgis.core import QgsApplication
 		import random

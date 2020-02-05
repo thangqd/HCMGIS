@@ -273,7 +273,7 @@ class Ui_hcmgis_customprojections_form(object):
         self.cboZone.setItemText(0, _translate("hcmgis_customprojections_form", "3 degree"))
         self.cboZone.setItemText(1, _translate("hcmgis_customprojections_form", "6 degree"))
         self.lbl_Format_2.setText(_translate("hcmgis_customprojections_form", "Choose parmater set to convert Datum VN-2000 <--> WGS84"))
-        self.cboParameters.setItemText(0, _translate("hcmgis_customprojections_form", "-191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278"))
+        self.cboParameters.setItemText(0, _translate("hcmgis_customprojections_form", "191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278"))
         self.cboParameters.setItemText(1, _translate("hcmgis_customprojections_form", "-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188"))
         self.lbl_Format.setText(_translate("hcmgis_customprojections_form", "Format"))
         self.cboFormat.setItemText(0, _translate("hcmgis_customprojections_form", "QGIS WKT"))

@@ -545,7 +545,7 @@
     <widget class="QComboBox" name="cboParameters">
      <item>
       <property name="text">
-       <string>-191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278</string>
+       <string>191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278</string>
       </property>
      </item>
      <item>

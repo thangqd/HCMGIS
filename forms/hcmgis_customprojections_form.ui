@@ -545,7 +545,7 @@
     <widget class="QComboBox" name="cboParameters">
      <item>
       <property name="text">
-       <string>191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278</string>
+       <string>-191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278</string>
       </property>
      </item>
      <item>
@@ -598,7 +598,7 @@
    <item>
     <widget class="QLabel" name="LblInput_4">
      <property name="text">
-      <string>(Copy &amp; paste PROJ.4 into QGIS Custom Projections)</string>
+      <string>(Copy &amp; paste QGIS WKT (recommended) or PROJ.4 text into QGIS Custom Projections)</string>
      </property>
     </widget>
    </item>

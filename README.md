@@ -4,8 +4,7 @@
 
 **- Batch Converter**: Batch convert CSV to Point Shapefile, TXT/ XLSX to CSV and other GIS formats in a folder and its subfolders
 
-
-**- HCMGIS OpenData**:  Download free and open geodata from https://opendata.hcmgis.vn
+**- Download OpenData**:   Download OpenData: Download free and open geodata from various sources
 
 **- Vn-2000 Projections**:  Define local UTM projections for each provinces of VietNam in Vn-2000 Coordinate Reference System
 
@@ -29,7 +28,7 @@
 
 **- Basemap**: Thêm bản đồ nền Google, Carto, ESRI, OSM Stamen,...trong QGIS
 
-**- HCMGIS OpenData**:  Download miễn phí dữ liệu GIS từ https://opendata.hcmgis.vn
+**- Download OpenData**:  Download dữ liệu mở, miễn phí từ nhiều nguồn khác nhau
 
 **- Vn-2000 Projections**:  Định nghĩa hệ tọa độ địa phương cho các tỉnh/ thành ở Việt Nam
 

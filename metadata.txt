@@ -2,9 +2,9 @@
 name=HCMGIS
 qgisMinimumVersion=3.0
 description= HCMGIS - Basemap, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities
-about=-Basemap: Add dozens of global basemaps from Google, Carto, ESRI, OSM Stamen,...; - Batch Converter: Batch convert CSV to Point Shapefile, TXT to CSV, XLSX to CSV and other GIS formats in a folder and its subfolders; - Vn-2000 Projections: Define local UTM projections for each provinces of VietNam in Vn-2000 CRS; - HCMGIS OpenData: Download free and open geodata from http://opendata.hcmgis.vn;  -Spatial Processing: Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures, create Centerline in Polygon's gaps (E.g building blocks) (layers must be in projected coordinate reference system), finding closest/ farthest pair of Points in a Point set, merge layers (with the same geometry type), split layer (based on unique field),  - Attribute Calculation: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case,..., 
+about=-Basemap: Add dozens of global basemaps from Google, Carto, ESRI, OSM Stamen,...; - Batch Converter: Batch convert CSV to Point Shapefile, TXT/ XLSX to CSV and other GIS formats in a folder and its subfolders; - Vn-2000 Projections: Define local UTM projections for each provinces of VietNam in Vn-2000 CRS; - HCMGIS OpenData: Download free and open geodata from http://opendata.hcmgis.vn;  -Spatial Processing: Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures, create Centerline in Polygon's gaps (E.g building blocks) (layers must be in projected coordinate reference system), finding closest/ farthest pair of Points in a Point set, merge layers (with the same geometry type), split layer (based on unique field),  - Attribute Calculation: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case,..., 
 category=Vector
-version=20.02.02
+version=20.3.3
 author=Quach Dong Thang
 email=quachdongthang@gmai.com
 homepage=https://hcmgis.vn

@@ -311,14 +311,22 @@ class hcmgis_menu:
 		self.batch_converter_menu.addAction(self.xls2csv_action)
 
 		#HCMGIS OpenData submenu
-		self.opendata_menu = QMenu(u'HCMGIS OpenData')		
+		self.opendata_menu = QMenu(u'Download OpenData')		
+		self.hcmgis_add_submenu(self.opendata_menu)		
+	
+		#Open Development Mekong
 		self.hcmgis_add_submenu(self.opendata_menu)
-		
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.opendevelopmentmekong_action = QAction(icon, u'Open Development Mekong', self.iface.mainWindow())
+		self.opendevelopmentmekong_action.triggered.connect(self.opendevelopmentmekong)		
+		self.opendata_menu.addAction(self.opendevelopmentmekong_action)
+
 		#HCMGIS OpenData
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.opendata_action = QAction(icon, u'Download HCMGIS OpenData', self.iface.mainWindow())
+		self.opendata_action = QAction(icon, u'HCMGIS OpenData', self.iface.mainWindow())
 		self.opendata_action.triggered.connect(self.opendata)		
 		self.opendata_menu.addAction(self.opendata_action)
+
 
 		
 		# VN-2000 Projections submenu
@@ -766,6 +774,10 @@ class hcmgis_menu:
 	##########################	
 	def opendata(self):
 		dialog = hcmgis_opendata_dialog(self.iface)
+		dialog.exec_()
+	
+	def opendevelopmentmekong(self):
+		dialog = hcmgis_opendevelopmentmekong_dialog(self.iface)
 		dialog.exec_()
 	
 	def projections(self):

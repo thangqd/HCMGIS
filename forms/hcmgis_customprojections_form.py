@@ -159,6 +159,7 @@ class Ui_hcmgis_customprojections_form(object):
         self.cboFormat.addItem("")
         self.cboFormat.addItem("")
         self.cboFormat.addItem("")
+        self.cboFormat.addItem("")
         self.gridLayout_3.addWidget(self.cboFormat, 0, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_3)
         self.LblInput_4 = QtWidgets.QLabel(hcmgis_customprojections_form)
@@ -275,11 +276,12 @@ class Ui_hcmgis_customprojections_form(object):
         self.cboParameters.setItemText(0, _translate("hcmgis_customprojections_form", "191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278"))
         self.cboParameters.setItemText(1, _translate("hcmgis_customprojections_form", "-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188"))
         self.lbl_Format.setText(_translate("hcmgis_customprojections_form", "Format"))
-        self.cboFormat.setItemText(0, _translate("hcmgis_customprojections_form", "PROJ.4"))
-        self.cboFormat.setItemText(1, _translate("hcmgis_customprojections_form", "ESRI WKT"))
-        self.cboFormat.setItemText(2, _translate("hcmgis_customprojections_form", "PostGIS"))
-        self.cboFormat.setItemText(3, _translate("hcmgis_customprojections_form", "GeoServer"))
-        self.LblInput_4.setText(_translate("hcmgis_customprojections_form", "(Copy & paste PROJ.4 into QGIS Custom Projections)"))
+        self.cboFormat.setItemText(0, _translate("hcmgis_customprojections_form", "QGIS WKT"))
+        self.cboFormat.setItemText(1, _translate("hcmgis_customprojections_form", "PROJ.4"))
+        self.cboFormat.setItemText(2, _translate("hcmgis_customprojections_form", "ESRI WKT"))
+        self.cboFormat.setItemText(3, _translate("hcmgis_customprojections_form", "PostGIS"))
+        self.cboFormat.setItemText(4, _translate("hcmgis_customprojections_form", "GeoServer"))
+        self.LblInput_4.setText(_translate("hcmgis_customprojections_form", "(Copy & paste QGIS WKT (recommended) or PROJ.4 text into QGIS Custom Projections)"))
         self.txtProjections.setHtml(_translate("hcmgis_customprojections_form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

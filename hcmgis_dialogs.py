@@ -97,8 +97,8 @@ class hcmgis_opendata_dialog(QDialog, Ui_hcmgis_opendata_form):
 					percent = (ii/float(count)) * 100
 					progress.setValue(percent)      
 			else: return				
-		except Exception:
-			QMessageBox.warning(None, "WFS ERROR",u'OpenData Reading Error')			
+		except Exception as e:
+			QMessageBox.warning(None, "WFS ERROR",str(e))			
 		qgis.utils.iface.messageBar().clearWidgets()  
 
 	

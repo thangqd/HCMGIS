@@ -4,7 +4,8 @@
 
 **- Batch Converter**: Batch convert CSV to Point Shapefile, TXT/ XLSX to CSV and other GIS formats in a folder and its subfolders
 
-**- Download OpenData**:   Download OpenData: Download free and open geodata from various sources
+
+**- Download OpenData**:  Download data from Open GeoData Sources
 
 **- Vn-2000 Projections**:  Define local UTM projections for each provinces of VietNam in Vn-2000 Coordinate Reference System
 
@@ -12,7 +13,7 @@
 **- Spatial Processing**: 
 
 + Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures
-+ Create Centerline in Polygon's gaps (E.g building blocks) (layers must be in projected coordinate reference system)
++ Create Centerline in Polygon's gaps (E.g building blocks)
 + Finding closest/ farthest pair of Points in a Point set based on Voronoi Diagram
 + Finding Largest Empty Circle of a Point set.
 + Merging layers (with the same geometry type), split Layer (based on unique field),...
@@ -28,7 +29,7 @@
 
 **- Basemap**: Thêm bản đồ nền Google, Carto, ESRI, OSM Stamen,...trong QGIS
 
-**- Download OpenData**:  Download dữ liệu mở, miễn phí từ nhiều nguồn khác nhau
+**- Download OpenData**:  Download dữ liệu GIS mở
 
 **- Vn-2000 Projections**:  Định nghĩa hệ tọa độ địa phương cho các tỉnh/ thành ở Việt Nam
 

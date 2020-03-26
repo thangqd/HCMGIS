@@ -667,6 +667,7 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 		self.lnEPSG.setText(str(self.epsg_code[i]))
 		
 
+<<<<<<< HEAD
 	def EPSGChange(self):
 		self.LblEPSGInfo.clear()
 		EPSGCode = int(self.cboEPSG.currentText().strip())
@@ -677,6 +678,236 @@ class hcmgis_customprojections_dialog(QDialog, Ui_hcmgis_customprojections_form)
 		provinces_list = ''
 		for indice in indices:
 			provinces_list+= str(self.provinces[indice]) + ', '
+=======
+	def update_proj(self):		
+		self.txtProjections.clear()		
+		parameters = self.cboParameters.currentText()
+		format_id = self.cboFormat.currentIndex()
+
+		if self.rad3do.isChecked():
+			i = self.cboProvinces.currentIndex()
+			self.cboKTT.setCurrentText(str(self.ktt[i]))
+			self.cboZone.setCurrentIndex(0)
+			self.cboZone.setEnabled(False)
+			self.cboKTT.setEnabled(False)
+			k = 0.9999
+			self.txtProjections.setText(self.hcmgis_projections_generate(parameters, self.ktt[i],k,format_id))
+		
+		elif self.radcustom.isChecked():
+			if ((self.cboKTT.currentText() is not None) and  (self.cboKTT.currentText().strip() != '') and (self.cboKTT.currentIndex() != -1)):
+				ktt = self.cboKTT.currentText().strip()
+				if self.cboZone.currentIndex() == 0 :
+					k = 0.9999
+				else: k = 0.9996
+				self.txtProjections.setText(self.hcmgis_projections_generate(parameters,ktt,k,format_id))
+	
+	def QGIS_WKT(self):		
+		parameters = self.cboParameters.currentText()
+		QGIS_WKT_text = ''
+		if self.rad3do.isChecked():
+			i = self.cboProvinces.currentIndex()
+			self.cboKTT.setCurrentText(str(self.ktt[i]))
+			self.cboZone.setCurrentIndex(0)
+			self.cboZone.setEnabled(False)
+			self.cboKTT.setEnabled(False)
+			k = 0.9999
+			QGIS_WKT_text = self.hcmgis_projections_generate(parameters, self.ktt[i],k,0)
+		
+		elif self.radcustom.isChecked():
+			if ((self.cboKTT.currentText() is not None) and  (self.cboKTT.currentText().strip() != '') and (self.cboKTT.currentIndex() != -1)):
+				ktt = self.cboKTT.currentText().strip()
+				if self.cboZone.currentIndex() == 0 :
+					k = 0.9999
+				else: k = 0.9996
+				QGIS_WKT_text = self.hcmgis_projections_generate(parameters,ktt,k,0)
+		return QGIS_WKT_text
+
+	def ProJ_4(self):		
+		parameters = self.cboParameters.currentText()
+		ProJ_4_text = ''
+		if self.rad3do.isChecked():
+			i = self.cboProvinces.currentIndex()
+			self.cboKTT.setCurrentText(str(self.ktt[i]))
+			self.cboZone.setCurrentIndex(0)
+			self.cboZone.setEnabled(False)
+			self.cboKTT.setEnabled(False)
+			k = 0.9999
+			ProJ_4_text = self.hcmgis_projections_generate(parameters, self.ktt[i],k,1)
+		
+		elif self.radcustom.isChecked():
+			if ((self.cboKTT.currentText() is not None) and  (self.cboKTT.currentText().strip() != '') and (self.cboKTT.currentIndex() != -1)):
+				ktt = self.cboKTT.currentText().strip()
+				if self.cboZone.currentIndex() == 0 :
+					k = 0.9999
+				else: k = 0.9996
+				ProJ_4_text = self.hcmgis_projections_generate(parameters,ktt,k,1)
+		return ProJ_4_text
+	
+	def run(self):
+		import sqlite3
+		from qgis.core import QgsApplication
+		import random
+		db = sqlite3.connect(QgsApplication.qgisUserDatabaseFilePath())		
+		i = self.cboProvinces.currentIndex()
+		ProJ_4_text = self.ProJ_4()
+		QGIS_WKT_text = self.QGIS_WKT()
+
+		if ((self.rad3do.isChecked()) and (self.cboProvinces.currentIndex() != -1)):			
+			cursor = db.cursor()
+			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:ProJ_4_text,NULL,NULL,NULL,0,0,NULL)"
+			srs_id = 20000 + self.cboProvinces.currentIndex()
+			desc = "VN_2000_" +  self.provinces[i].replace(" ", "_")+ "_3deg"				
+			# parameters = "+proj=tmerc +lat_0=0 +lon_0="
+			# parameters += str(self.ktt[i]) 
+			# parameters += " +k=0.9999 +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84="
+			# parameters +=  str(self.cboParameters.currentText())
+			# parameters += " +units=m +no_defs"
+			# #parameters = self.txtProjections.toPlainText()
+			cursor.execute(sql, {'srs_id': srs_id, 'desciprtion': desc, 'ProJ_4_text': ProJ_4_text, })
+			# Commit changes
+			db.commit()
+     		
+		elif ((self.radcustom.isChecked()) and (self.cboZone.currentIndex() != -1) and (self.cboKTT.currentText() is not None)):
+			cursor = db.cursor()
+			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:ProJ_4_text,NULL,NULL,NULL,0,0,:QGIS_WKT_text)"
+			srs_id = 30000 + random.randint(0,1000)
+			desc = "VN_2000_" + self.cboKTT.currentText() + "_"+self.cboZone.currentText()		
+			# parameters = "+proj=tmerc +lat_0=0 +lon_0="
+			# parameters += str(self.cboKTT.currentText()) 
+			# k = 0
+			# if (self.cboZone.currentIndex() == 1): #"6 degree"
+			# 	k = 0.9996
+			# elif(self.cboZone.currentIndex() == 0): 	k = 0.9999
+			# parameters += " +k=" + str(k)
+			# parameters += " +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84="
+			# parameters +=  str(self.cboParameters.currentText())
+			# parameters += " +units=m +no_defs"
+			#parameters = self.txtProjections.toPlainText()
+			#cursor.execute(sql, {'srs_id': srs_id, 'desciprtion': desc, 'parameters': parameters })					
+			cursor.execute(sql, {'srs_id': srs_id, 'desciprtion': desc, 'ProJ_4_text': ProJ_4_text, 'QGIS_WKT_text': QGIS_WKT_text })
+			# Commit changes
+			db.commit()
+		db.close() 
+		return
+
+	def hcmgis_projections_generate(self,parameters,ktt,scale_factor, format_id):	
+		projections_text =''
+		parameters_list = parameters.split(",")		
+		ktt = self.cboKTT.currentText().strip()
+		try:
+			srid = int(float(self.cboKTT.currentText().strip())*100)
+		except:
+			srid = 10500
+		
+		if self.cboZone.currentIndex() == 0 :
+			k = 0.9999
+		else: k = 0.9996	
+		
+		#QGIS WKT		
+		#self.cboFormat.currentIndex()
+		if  format_id == 0:	
+			projections_text += 'BOUNDCRS[SOURCECRS[PROJCS["VN-2000 / '+  str(srid) +'",'
+			projections_text += 'BASEGEOGCRS["VN-2000",DATUM["Vietnam 2000",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4756]],CONVERSION["unnamed",METHOD["Transverse Mercator",ID["EPSG",9807]],'
+			projections_text += 'PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",'
+			projections_text +=  ktt
+			projections_text += ',ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9999,SCALEUNIT["unity",1],ID["EPSG",8805]],'
+			projections_text += 'PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],'
+			projections_text += 'AXIS["easting",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing",north,ORDER[2],LENGTHUNIT["metre",1]],ID["EPSG",10545]]],'
+			projections_text += 'TARGETCRS[GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],'
+			projections_text += 'ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]]],'
+			projections_text += 'ABRIDGEDTRANSFORMATION["Transformation from VN-2000 to WGS84",METHOD["Position Vector transformation (geog2D domain)",ID["EPSG",9606]]'
+			projections_text += ',PARAMETER["X-axis translation",'
+			projections_text += str(parameters_list[0]) + ',ID["EPSG",8605]],'
+			projections_text += 'PARAMETER["Y-axis translation",'
+			projections_text += str(parameters_list[1]) + ',ID["EPSG",8606]],'
+			projections_text += 'PARAMETER["Z-axis translation",'
+			projections_text += str(parameters_list[2]) +',ID["EPSG",8607]],'
+			projections_text += 'PARAMETER["X-axis rotation",'
+			projections_text += str(parameters_list[3]) +',ID["EPSG",8608]],'
+			projections_text += 'PARAMETER["Y-axis rotation",'
+			projections_text += str(parameters_list[4]) +',ID["EPSG",8609]],'
+			projections_text += 'PARAMETER["Z-axis rotation",'
+			projections_text += str(parameters_list[5]) +',ID["EPSG",8610]],'
+			projections_text += 'PARAMETER["Scale difference",'
+			#projections_text += str(parameters_list[6])+ ',ID["EPSG",8611]]]]'
+			projections_text += str(1.00000025290628)+ ',ID["EPSG",8611]]]]'
+
+
+		#Proj.4
+		elif format_id == 1: 
+			projections_text = '+proj=tmerc +lat_0=0 +lon_0='
+			projections_text+= str(ktt)
+			projections_text+=' +k='
+			projections_text+= str(k)
+			projections_text+= ' +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84='
+			projections_text+= parameters
+			projections_text+= ' +units=m +no_defs'
+	
+		#ESRI WKT
+		#PROJCS["VN_2000_UTM_zone_48N",GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1]]
+		elif format_id == 2:			
+			projections_text = 'PROJCS['
+			projections_text += '"VN-2000 / '+  str(srid) +'"'
+			projections_text += ',GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
+			projections_text += ktt + ']'
+			projections_text +=',PARAMETER["scale_factor",'
+			projections_text += str(k) +']'
+			projections_text +=',PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1]]'			
+		
+		#PostGIS
+		#INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 3405, 'EPSG', 3405, '+proj=utm +zone=48 +ellps=WGS84 +towgs84=-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188 +units=m +no_defs ', 'PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3405"]]');
+		elif format_id == 3:		
+			projections_text = 'INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values('
+			projections_text += str(srid) 
+			projections_text += ',\'' 
+			projections_text +=	'HCMGIS'
+			projections_text += '\',' 
+			projections_text += str(srid)
+			projections_text += ',\''
+			projections_text += '+proj=utm +ellps=WGS84 +towgs84='
+			projections_text +=	parameters 
+			projections_text += ' +units=m +no_defs'
+			projections_text += '\''
+			projections_text += ',\''
+			projections_text += 'PROJCS["'
+			projections_text += 'VN-2000 / ' + str(srid) + '"'
+			projections_text += ',GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],'
+			projections_text += 'TOWGS84['
+			projections_text += parameters
+			projections_text += '],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
+			projections_text += str(ktt)
+			projections_text += '],PARAMETER["scale_factor",'
+			projections_text += str(k)
+			projections_text += '],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG",'
+			projections_text += '"'
+			projections_text += str(srid)
+			projections_text += '"'
+			projections_text += ']]'
+			projections_text += '\''
+			projections_text += ');'
+
+		#GeoServer:
+		#3405=PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3405"]]
+		elif format_id == 4:			
+			projections_text = str(srid)
+			projections_text += '=PROJCS['
+			projections_text += '"'
+			projections_text += 'VN-2000 / '+str(srid)
+			projections_text += '"'
+			projections_text += ',GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84['
+			projections_text += parameters
+			projections_text += '],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
+			projections_text += str(ktt)
+			projections_text += '],PARAMETER["scale_factor",'
+			projections_text += str(k)
+			projections_text += '],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG",'
+			projections_text +=  '"'
+			projections_text += str(srid)
+			projections_text += '"'
+			projections_text += ']]'
+		
+		return projections_text
+>>>>>>> ef3f4effe63e9a81ed7d4c33842bde7228aae330
 
 		ProvincesText = '. Provinces: ' + provinces_list 
 		self.TxtEPSGInfo.setText(EPSGInfoText + ProvincesText)

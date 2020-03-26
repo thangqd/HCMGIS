@@ -516,10 +516,64 @@
        </property>
       </widget>
      </item>
+<<<<<<< HEAD
     </layout>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="BtnClose">
+=======
+     <item row="0" column="1">
+      <widget class="QComboBox" name="cboFormat">
+       <item>
+        <property name="text">
+         <string>QGIS WKT</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>PROJ.4</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ESRI WKT</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>PostGIS</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GeoServer</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="LblInput_4">
+     <property name="text">
+      <string>(Copy &amp; paste QGIS WKT (recommended) or PROJ.4 text into QGIS Custom Projections)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="txtProjections">
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
+>>>>>>> ef3f4effe63e9a81ed7d4c33842bde7228aae330
      <property name="standardButtons">
       <set>QDialogButtonBox::Close</set>
      </property>

@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>557</width>
-    <height>464</height>
+    <height>430</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -86,7 +86,7 @@
         <string/>
        </property>
        <property name="readOnly">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
       </widget>
      </item>

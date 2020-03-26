@@ -14,7 +14,6 @@ pyuic5 -x hcmgis_csv2shp_form.ui -o hcmgis_csv2shp_form.py
 pyuic5 -x hcmgis_txt2csv_form.ui -o hcmgis_txt2csv_form.py
 pyuic5 -x hcmgis_xls2csv_form.ui -o hcmgis_xls2csv_form.py
 pyuic5 -x hcmgis_format_convert_form.ui -o hcmgis_format_convert_form.py
-pyuic5 -x hcmgis_opendevelopmentmekong_form.ui -o hcmgis_opendevelopmentmekong_form.py
 
 =====================
 http://leaflet-extras.github.io/leaflet-providers/preview/

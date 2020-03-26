@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
-    <height>344</height>
+    <width>614</width>
+    <height>362</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -24,72 +24,18 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <property name="verticalSpacing">
-      <number>20</number>
-     </property>
-     <item row="0" column="0" colspan="3">
-      <widget class="QLabel" name="label">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QRadioButton" name="rad3do">
        <property name="text">
-        <string>VN-200/ TM-3</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QRadioButton" name="radEPSG">
-       <property name="text">
-        <string>Search by EPSG Code</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QRadioButton" name="radProvinces">
-       <property name="text">
-        <string>Search by Province</string>
+        <string>3 degree UTM zone for each Province in Vietnam</string>
        </property>
        <property name="checked">
         <bool>true</bool>
        </property>
       </widget>
      </item>
-     <item row="9" column="0" colspan="3">
-      <widget class="QLabel" name="LblEPSGInfo">
-       <property name="text">
-        <string>EPSG Info:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="LblZone">
-       <property name="text">
-        <string>Zone Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="lnZone"/>
-     </item>
-     <item row="4" column="2">
-      <widget class="QLabel" name="lblEPSGCode">
-       <property name="text">
-        <string>EPSG Code:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="3">
-      <widget class="QLineEdit" name="lnEPSG">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1" colspan="3">
+     <item row="0" column="1">
       <widget class="QComboBox" name="cboProvinces">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -97,15 +43,12 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="editable">
-        <bool>false</bool>
-       </property>
        <property name="currentText">
-        <string>Lai Châu         </string>
+        <string>Lai Châu</string>
        </property>
        <item>
         <property name="text">
-         <string>Lai Châu         </string>
+         <string>Lai Châu</string>
         </property>
        </item>
        <item>
@@ -420,108 +363,255 @@
        </item>
       </widget>
      </item>
-     <item row="7" column="1">
-      <widget class="QComboBox" name="cboEPSG">
+    </layout>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radcustom">
+     <property name="text">
+      <string>Create Custom Projections</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="horizontalSpacing">
+      <number>0</number>
+     </property>
+     <item row="0" column="1">
+      <widget class="QLabel" name="LblInput_3">
+       <property name="text">
+        <string>Central Meridian</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="LblInput_2">
+       <property name="text">
+        <string>UTM Zone</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="cboKTT">
+       <property name="inputMethodHints">
+        <set>Qt::ImhDigitsOnly</set>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
        <item>
         <property name="text">
-         <string>9205</string>
+         <string>102</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9206</string>
+         <string>103</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9207</string>
+         <string>104</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9208</string>
+         <string>104.5</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>5897</string>
+         <string>104.75</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9209</string>
+         <string>105</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9210</string>
+         <string>105.5</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9211</string>
+         <string>105.75</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9212</string>
+         <string>106</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9213</string>
+         <string>106.25</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9214</string>
+         <string>106.5</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9215</string>
+         <string>107</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9216</string>
+         <string>107.25</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>5899</string>
+         <string>107.5</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>5898</string>
+         <string>107.75</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9217</string>
+         <string>108</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>9218</string>
+         <string>108.25</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>108.5</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>111</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>114</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>117</string>
         </property>
        </item>
       </widget>
      </item>
-     <item row="10" column="0" colspan="4">
-      <widget class="QTextEdit" name="TxtEPSGInfo">
-       <property name="readOnly">
-        <bool>true</bool>
+     <item row="1" column="0">
+      <widget class="QComboBox" name="cboZone">
+       <item>
+        <property name="text">
+         <string>3 degree</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6 degree</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="0" rowspan="2" colspan="2">
+      <widget class="QLabel" name="lbl_Format_2">
+       <property name="text">
+        <string>Choose parmater set to convert Datum VN-2000 &lt;--&gt; WGS84</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="BtnClose">
+    <widget class="QComboBox" name="cboParameters">
+     <item>
+      <property name="text">
+       <string>191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QLabel" name="lbl_Format">
+       <property name="text">
+        <string>Format</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="cboFormat">
+       <item>
+        <property name="text">
+         <string>PROJ.4</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ESRI WKT</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>PostGIS</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GeoServer</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="LblInput_4">
+     <property name="text">
+      <string>(Copy &amp; paste PROJ.4 into QGIS Custom Projections)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="txtProjections">
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Close</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>
@@ -530,7 +620,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>BtnClose</sender>
+   <sender>BtnApplyClose</sender>
    <signal>accepted()</signal>
    <receiver>hcmgis_customprojections_form</receiver>
    <slot>accept()</slot>
@@ -546,7 +636,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>BtnClose</sender>
+   <sender>BtnApplyClose</sender>
    <signal>rejected()</signal>
    <receiver>hcmgis_customprojections_form</receiver>
    <slot>reject()</slot>

@@ -568,6 +568,11 @@
       <widget class="QComboBox" name="cboFormat">
        <item>
         <property name="text">
+         <string>QGIS WKT</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>PROJ.4</string>
         </property>
        </item>
@@ -593,7 +598,7 @@
    <item>
     <widget class="QLabel" name="LblInput_4">
      <property name="text">
-      <string>(Copy &amp; paste PROJ.4 into QGIS Custom Projections)</string>
+      <string>(Copy &amp; paste QGIS WKT (recommended) or PROJ.4 text into QGIS Custom Projections)</string>
      </property>
     </widget>
    </item>

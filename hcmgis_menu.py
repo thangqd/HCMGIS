@@ -67,12 +67,6 @@ class hcmgis_menu:
 		self.hcmgis_googleterrainhybrid_action.triggered.connect(self.googleterrainhybrid_call)		
 		self.basemap_menu.addAction(self.hcmgis_googleterrainhybrid_action)
 
-		#Viet Ban do
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vbd.png")
-		self.hcmgis_vbd_action = QAction(icon, u'Vietbando Maps', self.iface.mainWindow())
-		self.hcmgis_vbd_action.triggered.connect(self.vbd_call)		
-		self.basemap_menu.addAction(self.hcmgis_vbd_action)
-
 		
 		#############
 		#Bing Maps
@@ -275,6 +269,12 @@ class hcmgis_menu:
 	# 	self.basemap_menu.addAction(self.wikimediahikebike_action)
 	# 	 """
 
+		#Viet Ban do
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vbd.png")
+		self.hcmgis_vbd_action = QAction(icon, u'Vietbando Maps', self.iface.mainWindow())
+		self.hcmgis_vbd_action.triggered.connect(self.vbd_call)		
+		self.basemap_menu.addAction(self.hcmgis_vbd_action)
+
 		#HCMGIS Aerial Image
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
 		self.hcmgisaerial_action = QAction(icon, u'HCMGIS Aerial Images', self.iface.mainWindow())
@@ -311,14 +311,22 @@ class hcmgis_menu:
 		self.batch_converter_menu.addAction(self.xls2csv_action)
 
 		#HCMGIS OpenData submenu
-		self.opendata_menu = QMenu(u'HCMGIS OpenData')		
+		self.opendata_menu = QMenu(u'Download OpenData')		
+		self.hcmgis_add_submenu(self.opendata_menu)		
+	
+		#Open Development Mekong
 		self.hcmgis_add_submenu(self.opendata_menu)
-		
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_odmekong.png")
+		self.opendevelopmentmekong_action = QAction(icon, u'Open Development Mekong', self.iface.mainWindow())
+		self.opendevelopmentmekong_action.triggered.connect(self.opendevelopmentmekong)		
+		self.opendata_menu.addAction(self.opendevelopmentmekong_action)
+
 		#HCMGIS OpenData
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.opendata_action = QAction(icon, u'Download HCMGIS OpenData', self.iface.mainWindow())
+		self.opendata_action = QAction(icon, u'HCMGIS OpenData', self.iface.mainWindow())
 		self.opendata_action.triggered.connect(self.opendata)		
 		self.opendata_menu.addAction(self.opendata_action)
+
 
 		
 		# VN-2000 Projections submenu
@@ -441,35 +449,6 @@ class hcmgis_menu:
 		service_url ="mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}"
 		name = "Google Terrain Hybrid"
 		hcmgis_basemap(self.iface,service_url, name)
-
-	##############
-	# Vietbando Maps
-	############
-	def vbd_call(self):	
-		import requests
-		import qgis.utils
-		name = "Vietbando"	
-		urlWithParams = 'type=xyz&url=http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D'
-		rlayer = QgsRasterLayer(urlWithParams,name, 'wms') 
-		if rlayer.isValid():    
-			QgsProject.instance().addMapLayer(rlayer)
-		
-		sources = []
-		service_uri1 ="http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D"
-		sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
-		for source in sources:
-			connectionType = source[0]
-			connectionName = source[1]
-			QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
-			QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
-			QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
-			QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
-			QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
-			QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
-			QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
-		# Update GUI
-		qgis.utils.iface.reloadConnections()
-		
 
 	##############
 	# Bing
@@ -724,6 +703,34 @@ class hcmgis_menu:
 		qgis.utils.iface.reloadConnections()
 
 
+	##############
+	# Vietbando Maps
+	############
+	def vbd_call(self):	
+		import requests
+		import qgis.utils
+		name = "Vietbando"	
+		urlWithParams = 'type=xyz&url=http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D'
+		rlayer = QgsRasterLayer(urlWithParams,name, 'wms') 
+		if rlayer.isValid():    
+			QgsProject.instance().addMapLayer(rlayer)
+		
+		sources = []
+		service_uri1 ="http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D"
+		sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
+		for source in sources:
+			connectionType = source[0]
+			connectionName = source[1]
+			QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+			QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+			QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+			QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+			QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+			QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+			QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+		# Update GUI
+		qgis.utils.iface.reloadConnections()
+		
 	###################################
 	def hcmgisaerial_call(self):
 		service_url = "trueortho.hcmgis.vn/basemap/cache_lidar/{z}/{x}/{y}.jpg" 
@@ -766,6 +773,10 @@ class hcmgis_menu:
 	##########################	
 	def opendata(self):
 		dialog = hcmgis_opendata_dialog(self.iface)
+		dialog.exec_()
+	
+	def opendevelopmentmekong(self):
+		dialog = hcmgis_opendevelopmentmekong_dialog(self.iface)
 		dialog.exec_()
 	
 	def projections(self):

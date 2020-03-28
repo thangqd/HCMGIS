@@ -10,6 +10,7 @@ from PyQt5.QtGui import *
 from qgis.core import *
 from .hcmgis_dialogs import *
 from .hcmgis_library import *
+
 # ---------------------------------------------
 
 class hcmgis_menu:
@@ -69,13 +70,13 @@ class hcmgis_menu:
 
 		
 		#############
-		#Bing Maps
+		#Bing Virtual Earth
 		#############
-		# """ icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_bing.png")
-		# self.bingaerial_action = QAction(icon, u'Bing VirtualEarth', self.iface.mainWindow())
-		# self.bingaerial_action.triggered.connect(self.bingaerial_call)		
-		# self.basemap_menu.addAction(self.bingaerial_action)  """
-
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_bing.png")
+		self.bingaerial_action = QAction(icon, u'Bing VirtualEarth', self.iface.mainWindow())
+		self.bingaerial_action.triggered.connect(self.bingaerial_call)		
+		self.basemap_menu.addAction(self.bingaerial_action)
+ 
 
 		#Carto Antique
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")
@@ -311,9 +312,36 @@ class hcmgis_menu:
 		self.batch_converter_menu.addAction(self.xls2csv_action)
 
 		#HCMGIS OpenData submenu
+		self.covid19_menu = QMenu(u'Download COVID-19 Data')		
+		self.hcmgis_add_submenu(self.covid19_menu)	
+		
+		#Global CoVID-19 live update
+		self.hcmgis_add_submenu(self.covid19_menu)
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_covid19.png")
+		self.covid19_action = QAction(icon, u'Global COVID-19 Live Update - Johns Hopkins CSSE', self.iface.mainWindow())
+		self.covid19_action.triggered.connect(self.covid19)		
+		self.covid19_menu.addAction(self.covid19_action)
+
+		
+		#Global CoVID-19 Timeseries 
+		self.hcmgis_add_submenu(self.covid19_menu)
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_covid19.png")
+		self.covid19_timeseries_action = QAction(icon, u'Global COVID-19 Time Series - Johns Hopkins CSSE', self.iface.mainWindow())
+		self.covid19_timeseries_action.triggered.connect(self.covid19_timeseries)		
+		self.covid19_menu.addAction(self.covid19_timeseries_action)
+
+		#Vietnam CoVID-19 live update 
+		self.hcmgis_add_submenu(self.covid19_menu)
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+		self.covid19_vietnam_action = QAction(icon, u'Vietnam COVID-19 Live Update - HCMGIS OpenData', self.iface.mainWindow())
+		self.covid19_vietnam_action.triggered.connect(self.covid19_vietnam)		
+		self.covid19_menu.addAction(self.covid19_vietnam_action)
+
+
+		#HCMGIS OpenData submenu
 		self.opendata_menu = QMenu(u'Download OpenData')		
-		self.hcmgis_add_submenu(self.opendata_menu)		
-	
+		self.hcmgis_add_submenu(self.opendata_menu)	
+
 		#Open Development Mekong
 		self.hcmgis_add_submenu(self.opendata_menu)
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_odmekong.png")
@@ -457,13 +485,13 @@ class hcmgis_menu:
 		import requests
 		import qgis.utils
 		name = "Bing Virtual Earth"
-		urlWithParams = 'type=xyz&url=http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg%3Fg=1'
+		urlWithParams = 'type=xyz&url=http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1'
 		rlayer = QgsRasterLayer(urlWithParams, name, 'wms') 
 		if rlayer.isValid():    
 			QgsProject.instance().addMapLayer(rlayer)
 		
 		sources = []
-		service_uri1 ="http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg%3Fg=1"
+		service_uri1 ="http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1"
 		sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
 		for source in sources:
 			connectionType = source[0]
@@ -779,6 +807,74 @@ class hcmgis_menu:
 		dialog = hcmgis_opendevelopmentmekong_dialog(self.iface)
 		dialog.exec_()
 	
+		
+	def covid19(self):
+		import urllib.request
+		import json
+		import os 
+		import qgis.utils
+		from PyQt5.QtWidgets import QMessageBox
+		uri_live_update = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Coronavirus_2019_nCoV_Cases/FeatureServer/2/query?where=1%3D1&outFields=*&outSR=4326&f=geojson'
+		layer_name= 'global_covid19_live_update'
+		json_name_live_update = os.path.join(os.getcwd(), layer_name + '.json')
+
+		urllib.request.urlretrieve(uri_live_update, json_name_live_update)
+		json_file_live_update  = QgsVectorLayer(json_name_live_update,layer_name,"ogr")
+
+		if not json_file_live_update.isValid:
+			QMessageBox.warning(None, "Invalid Layer", "Global COVID-19 Live Update Download failed!")
+			return
+		else:	
+			QgsProject.instance().addMapLayer(json_file_live_update)					
+	
+	
+	def covid19_timeseries(self):
+		import urllib.request
+		import os 
+		import qgis.utils
+		from PyQt5.QtWidgets import QMessageBox
+
+		uri = ['https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
+        'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
+        'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
+        ]
+		layername = [
+			'global_time_series_covid19_confirmed',
+			'global_time_series_covid19_recovered',
+			'global_time_series_covid19_deaths'
+			]
+		length = len(uri)
+	
+		from osgeo import ogr
+		driver = ogr.GetDriverByName('ESRI Shapefile')
+		driver.DeleteDataSource('path_to_your_shape.shp')
+
+		for i in range(length):
+			csv_name = os.path.join(os.getcwd(), layername[i] + '.csv')
+			shapefile_name = os.path.join(os.getcwd(), layername[i] + '.shp')
+			
+			urllib.request.urlretrieve(uri[i], csv_name)
+			hcmgis_csv2shp(csv_name, 'Lat', 'Long', shapefile_name)			
+			covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
+			if not covidlayer.isValid():
+				QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')			
+			else:
+				QgsProject.instance().addMapLayer(covidlayer)		
+			#qgis.utils.iface.addVectorLayer(shapefile_name, layername[i],"ogr")
+			
+
+	def covid19_vietnam(self):
+		uri_vietnam = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam'
+		
+		vietnam = QgsVectorLayer(uri_vietnam, "Vietnam COVID-19 Live Update", "WFS")
+
+		if not vietnam.isValid():
+			QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed or Please remove Layers from Layers Panel before redownload!")	
+			return		
+		else:	
+			QgsProject.instance().addMapLayer(vietnam)		
+		
+		
 	def projections(self):
 		dialog = hcmgis_customprojections_dialog(self.iface)
 		dialog.exec_()

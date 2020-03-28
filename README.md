@@ -1,4 +1,4 @@
-# HCMGIS - Basemap, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
+# HCMGIS - Basemap, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
 **- Basemap**: Add dozens of global basemaps from Google, Carto, ESRI, OSM Stamen,...
 
@@ -23,7 +23,7 @@
 
 # 
 
-**HCMGIS** - Basemap, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
+**HCMGIS** - Basemap, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
 **- Batch Converter**: Chuyển đổi tất cả các file XY (CSV) sang dạng điểm (shapefile), TXT/ XLSX --> CSV, và các định dạng GIS khác cho toàn bộ các file trong thư mục và các thư mục con
 

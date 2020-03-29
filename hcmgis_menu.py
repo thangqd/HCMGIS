@@ -342,6 +342,21 @@ class hcmgis_menu:
 		self.opendata_menu = QMenu(u'Download OpenData')		
 		self.hcmgis_add_submenu(self.opendata_menu)	
 
+		#OSM Data from Geofabrik 
+		self.hcmgis_add_submenu(self.opendata_menu)
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_geofabrik.png")
+		self.geofabrik_action = QAction(icon, u'OSM Data by Country from Geofabrik', self.iface.mainWindow())
+		self.geofabrik_action.triggered.connect(self.geofabrik)		
+		self.opendata_menu.addAction(self.geofabrik_action)
+
+		#OSM Data from Geofabrik 
+		self.hcmgis_add_submenu(self.opendata_menu)
+		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_gadm.png")
+		self.gadm_action = QAction(icon, u'Global Administrative Areas by Country from GADM', self.iface.mainWindow())
+		self.gadm_action.triggered.connect(self.gadm)		
+		self.opendata_menu.addAction(self.gadm_action)
+
+
 		#Open Development Mekong
 		self.hcmgis_add_submenu(self.opendata_menu)
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_odmekong.png")
@@ -805,6 +820,14 @@ class hcmgis_menu:
 	
 	def opendevelopmentmekong(self):
 		dialog = hcmgis_opendevelopmentmekong_dialog(self.iface)
+		dialog.exec_()
+	
+	def geofabrik(self):
+		dialog = hcmgis_geofabrik_dialog(self.iface)
+		dialog.exec_()
+	
+	def gadm(self):
+		dialog = hcmgis_gadm_dialog(self.iface)
 		dialog.exec_()
 	
 		

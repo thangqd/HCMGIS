@@ -28,6 +28,10 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/forms")
 
 from hcmgis_opendata_form import *
 from hcmgis_opendevelopmentmekong_form import *
+from hcmgis_geofabrik_form import *
+from hcmgis_gadm_form import *
+
+
 from hcmgis_merge_form import *
 from hcmgis_split_form import *
 
@@ -242,6 +246,221 @@ class hcmgis_opendevelopmentmekong_dialog(QDialog, Ui_hcmgis_opendevelopmentmeko
 					#MessageBar = qgis.utils.iface.messageBar()
 					#MessageBar.pushMessage(u"Adding " + str(iii) + u" Layers", 0, 1)		
 		#self.ChkAddtoMap.setEnabled(True)
+		return		
+
+class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):	
+	region = ['Africa','Antarctica','Asia','Australia and Oceania','Central America','Europe','North America','South America']
+	region_name = []
+	for reg in region:
+		reg_name = reg.replace(' and ','-').replace(' ','-').lower()
+		region_name.append(reg_name)
+	
+	asia = ['Afghanistan','Armenia','Azerbaijan','Bangladesh','Bhutan','Cambodia','China','GCC States','India','Indonesia',\
+				'Iran','Iraq','Israel and Palestine','Japan','Jordan','Kazakhstan','Kyrgyzstan','Laos','Lebanon','Malaysia, Singapore, and Brunei',\
+				'Maldives','Mongolia','Myanmar','Nepal','North Korea','Pakistan','Philippines','Russian Federation','South Korea','Sri Lanka',\
+				'Syria','Taiwan','Tajikistan','Thailand','Turkmenistan','Uzbekistan','Vietnam','Yemen']
+	asia_name= []
+
+	for country in asia:
+		country_name = country.replace(' and ','_').replace(' ','_').lower()
+		asia_name.append(country_name)
+	
+	africa =['Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cameroon','Canary Islands','Cape Verde','Central African Republic',\
+			'Chad','Comores','Congo (Republic/Brazzaville)','Congo (Democratic Republic/Kinshasa)','Djibouti','Egypt','Equatorial Guinea','Eritrea','Ethiopia','Gabon',\
+			'Ghana','Guinea','Guinea-Bissau','Ivory Coast','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi',\
+			'Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria,','Rwanda','Saint Helena',\
+			'Ascension, and Tristan da Cunha','Sao Tome and Principe','Senegal and Gambia','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Swaziland',\
+			'Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe']
+	afica_name = []
+	for country in africa:
+		country_name = country.replace('Congo (Republic/Brazzaville)','congo-brazzaville').replace('Congo (Democratic Republic/Kinshasa)','congo-democratic-republic').replace(' ','-').lower()
+		afica_name.append(country_name)
+
+	australia = ['Australia','Cook Islands','Fiji','Kiribati','Marshall Islands','Micronesia','Nauru','New Caledonia','New Zealand','Niue',\
+				'Palau','Papua New Guinea','Samoa','Solomon Islands','Tonga','Tuvalu','Vanuatu']
+	australia_name = []
+	for country in australia:
+		country_name = country.replace(' ','-').lower()
+		australia_name.append(country_name)
+
+	centralamerica= ['bahamas','Belize','Cuba','Guatemala','Haiti and Dominican Republic','Jamaica','Nicaragua']
+	centralamerica_name = []
+	for country in centralamerica:
+		country_name = country.replace(' ','-').lower()
+		centralamerica_name.append(country_name)
+	
+	europe= ['Albania','Andorra','Austria','Azores','Belarus','Belgium','Bosnia-Herzegovina','Bulgaria','Croatia','Cyprus',\
+			'Czech Republic','Denmark','Estonia','Faroe Islands','Finland','France','Georgia (Eastern Europe)','Germany','Great Britain','Greece',\
+			'Hungary','Iceland','Ireland and Northern Ireland','Isle of Man','Italy','Kosovo','Latvia','Liechtenstein','Lithuania','Luxembourg',\
+			'Macedonia','Malta','Moldova','Monaco','Montenegro','Netherlands','Norway','Poland','Portugal','Romania',\
+			'Russian Federation','Serbia','Slovakia','Slovenia','Spain','Sweden','Switzerland','Turkey','Ukraine (with Crimea)']
+	europe_name = []
+	for country in europe:
+		country_name = country.replace('Georgia (Eastern Europe)','georgia').replace('Ukraine (with Crimea)','ukraine').replace(' ','-').lower()
+		europe_name.append(country_name)
+
+	northamerica= ['Canada','Greenland','Mexico','United States of America','US Midwest','US Northeast','US Pacific','US South','US West']
+	northamerica_name = []
+	for country in northamerica:
+		country_name = country.replace(' ','-').lower()
+		northamerica_name.append(country_name)
+	
+	southamerica= ['Argentina','Bolivia','Brazil','Chile','Colombia','Ecuador','Paraguay','Peru','Suriname','Uruguay','Venezuela']
+	southamerica_name = []
+	for country in southamerica:
+		country_name = country.replace(' ','-').lower()
+		southamerica_name.append(country_name)
+
+	def __init__(self, iface):		
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+		self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+		self.LinOutputFolder.setText(os.getcwd())    
+		self.cboRegion.addItems(self.region)
+		self.cboRegion.currentIndexChanged.connect(self.loadcountry)   
+		self.cboRegion.setCurrentIndex(-1) 
+		self.cboCountry.setCurrentIndex(-1) 
+		self.cboCountry.setEnabled(False)
+	
+	def browse_outfile(self):
+		newname = QFileDialog.getExistingDirectory(None, "Output Folder",self.LinOutputFolder.displayText())
+
+		if newname != None:
+			self.LinOutputFolder.setText(newname)
+                	
+	def loadcountry(self):
+		self.cboCountry.clear()
+		self.cboCountry.setEnabled(True)
+		if 	(self.cboRegion.currentText() == 'Asia'):
+			self.cboCountry.addItems(self.asia)
+		elif (self.cboRegion.currentText() == 'Africa'):
+			self.cboCountry.addItems(self.africa)
+		elif (self.cboRegion.currentText() == 'Antarctica'):
+			self.cboCountry.addItem('Antarctica')
+		elif (self.cboRegion.currentText() == 'Australia and Oceania'):
+			self.cboCountry.addItems(self.australia)
+		elif (self.cboRegion.currentText() == 'Central America'):
+			self.cboCountry.addItems(self.centralamerica)
+		elif (self.cboRegion.currentText() == 'Europe'):
+			self.cboCountry.addItems(self.europe)
+		elif (self.cboRegion.currentText() == 'North America'):
+			self.cboCountry.addItems(self.northamerica)
+		elif (self.cboRegion.currentText() == 'South America'):
+			self.cboCountry.addItems(self.southamerica)
+	
+	def run(self):
+		outdir = unicode(self.LinOutputFolder.displayText())
+		if (self.cboRegion.currentText() == 'Asia'):
+			country_idx = self.asia.index(self.cboCountry.currentText())
+			hcmgis_geofabrik('asia',self.asia_name[country_idx], outdir)
+		elif (self.cboRegion.currentText() == 'Africa'):
+			country_idx = self.asia.index(self.cboCountry.currentText())
+			hcmgis_geofabrik('afica',self.africa_name[country_idx], outdir)	
+		elif (self.cboRegion.currentText() == 'Antarctica'):
+			hcmgis_geofabrik('','antarctica', outdir)	
+		elif (self.cboRegion.currentText() == 'Australia and Oceania'):
+			country_idx = self.australia.index(self.cboCountry.currentText())
+			hcmgis_geofabrik('australia-oceania',self.australia_name[country_idx], outdir)
+		elif (self.cboRegion.currentText() == 'Central America'):
+			country_idx = self.centralamerica.index(self.cboCountry.currentText())
+			hcmgis_geofabrik('central-america',self.centralamerica_name[country_idx], outdir)
+		elif (self.cboRegion.currentText() == 'Europe'):
+			country_idx = self.europe.index(self.cboCountry.currentText())
+			hcmgis_geofabrik('europe',self.europe_name[country_idx], outdir)	
+		elif (self.cboRegion.currentText() == 'North America'):
+			country_idx = self.northamerica.index(self.cboCountry.currentText())
+			hcmgis_geofabrik('north-america',self.northamerica_name[country_idx], outdir)
+		elif (self.cboRegion.currentText() == 'South America'):
+			country_idx = self.southamerica.index(self.cboCountry.currentText())
+			hcmgis_geofabrik('south-america',self.southamerica_name[country_idx], outdir)				
+		return		
+
+class hcmgis_gadm_dialog(QDialog, Ui_hcmgis_gadm_form):	
+	country = ['Afghanistan','Akrotiri and Dhekelia','Åland','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica',\
+			'Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh',\
+			'Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia','Bonaire, Saint Eustatius and Saba','Bosnia and Herzegovina',\
+			'Botswana','Bouvet Island','Brazil','British Indian Ocean Territory','British Virgin Islands','Brunei','Bulgaria','Burkina Faso','Burundi','Cambodia',\
+			'Cameroon','Canada','Cape Verde','Caspian Sea','Cayman Islands','Central African Republic','Chad','Chile','China','Christmas Island',\
+			'Clipperton Island','Cocos Islands','Colombia','Comoros','Cook Islands','Costa Rica','Côte d''Ivoire','Croatia','Cuba','Curaçao',\
+			'Cyprus','Czech Republic','Democratic Republic of the Congo','Denmark','Djibouti','Dominica','Dominican Republic','East Timor','Ecuador','Egypt',\
+			'El Salvador','Equatorial Guinea','Eritrea','Estonia','Ethiopia','Falkland Islands','Faroe Islands','Fiji','Finland','France',\
+			'French Guiana','French Polynesia','French Southern Territories','Gabon','Gambia','Georgia','Germany','Ghana','Gibraltar','Greece',\
+			'Greenland','Grenada','Guadeloupe','Guam','Guatemala','Guernsey','Guinea','Guinea-Bissau','Guyana',\
+			'Haiti','Heard Island and McDonald Islands','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland',\
+			'Isle of Man','Israel','Italy','Jamaica','Japan','Jersey','Jordan','Kazakhstan','Kenya','Kiribati',\
+			'Kosovo','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein',\
+			'Lithuania','Luxembourg','Macao','Macedonia','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta',\
+			'Marshall Islands','Martinique','Mauritania','Mauritius','Mayotte','Mexico','Micronesia','Moldova','Monaco','Mongolia',\
+			'Montenegro','Montserrat','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Caledonia',\
+			'New Zealand','Nicaragua','Niger','Nigeria','Niue','Norfolk Island','North Korea','Northern Cyprus','Northern Mariana Islands','Norway',\
+			'Oman','Pakistan','Palau','Palestina','Panama','Papua New Guinea','Paracel Islands','Paraguay','Peru','Philippines',\
+			'Pitcairn Islands','Poland','Portugal','Puerto Rico','Qatar','Republic of Congo','Reunion','Romania','Russia','Rwanda',\
+			'Saint-Barthélemy','Saint-Martin','Saint Helena','Saint Kitts and Nevis','Saint Lucia','Saint Pierre and Miquelon','Saint Vincent and the Grenadines','Samoa','San Marino','Sao Tome and Principe',\
+			'Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Sint Maarten','Slovakia','Slovenia','Solomon Islands',\
+			'Somalia','South Africa','South Georgia and the South Sandwich Islands','South Korea','South Sudan','Spain','Spratly islands','Sri Lanka','Sudan','Suriname',\
+			'Svalbard and Jan Mayen','Swaziland','Sweden','Switzerland','Syria','Taiwan','Tajikistan','Tanzania','Thailand','Togo',\
+			'Tokelau','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Turks and Caicos Islands','Tuvalu','Uganda','Ukraine',\
+			'United Arab Emirates','United Kingdom','United States','United States Minor Outlying Islands','Uruguay','Uzbekistan','Vanuatu','Vatican City','Venezuela','Vietnam',\
+			'Virgin Islands, U.S.','Wallis and Futuna','Western Sahara','Yemen','Zambia','Zimbabwe']
+	country_short = ['AFG','XAD','ALA','ALB','DZA','ASM','AND','AGO','AIA','ATA',\
+					'ATG','ARG','ARM','ABW','AUS','AUT','AZE','BHS','BHR','BGD',\
+					'BRB','BLR','BEL','BLZ','BEN','BMU','BTN','BOL','BES','BIH',\
+					'BWA','BVT','BRA','IOT','VGB','BRN','BGR','BFA','BDI','KHM',\
+					'CMR','CAN','CPV','XCA','CYM','CAF','TCD','CHL','CHN','CXR',\
+					'XCL','CCK','COL','COM','COK','CRI','CIV','HRV','CUB','CUW',\
+					'CYP','CZE','COD','DNK','DJI','DMA','DOM','TLS','ECU','EGY',\
+					'SLV','GNQ','ERI','EST','ETH','FLK','FRO','FJI','FIN','FRA',\
+					'GUF','PYF','ATF','GAB','GMB','GEO','DEU','GHA','GIB','GRC',\
+					'GRL','GRD','GLP','GUM','GTM','GGY','GIN','GNB','GUY','HTI',\
+					'HMD','HND','HKG','HUN','ISL','IND','IDN','IRN','IRQ','IRL',\
+					'IMN','ISR','ITA','JAM','JPN','JEY','JOR','KAZ','KEN','KIR',\
+					'XKO','KWT','KGZ','LAO','LVA','LBN','LSO','LBR','LBY','LIE',\
+					'LTU','LUX','MAC','MKD','MDG','MWI','MYS','MDV','MLI','MLT',\
+					'MHL','MTQ','MRT','MUS','MYT','MEX','FSM','MDA','MCO','MNG',\
+					'MNE','MSR','MAR','MOZ','MMR','NAM','NRU','NPL','NLD','NCL',\
+					'NZL','NIC','NER','NGA','NIU','NFK','PRK','XNC','MNP','NOR',\
+					'OMN','PAK','PLW','PSE','PAN','PNG','XPI','PRY','PER','PHL',\
+					'PCN','POL','PRT','PRI','QAT','COG','REU','ROU','RUS','RWA',\
+					'BLM','MAF','SHN','KNA','LCA','SPM','VCT','WSM','SMR','STP',\
+					'SAU','SEN','SRB','SYC','SLE','SGP','SXM','SVK','SVN','SLB',\
+					'SOM','ZAF','SGS','KOR','SSD','ESP','XSP','LKA','SDN','SUR',\
+					'SJM','SWZ','SWE','CHE','SYR','TWN','TJK','TZA','THA','TGO',\
+					'TKL','TON','TTO','TUN','TUR','TKM','TCA','TUV','UGA','UKR',\
+					'ARE','GBR','USA','UMI','URY','UZB','VUT','VAT','VEN','VNM',\
+					'VIR','WLF','ESH','YEM','ZMB','ZWE']
+	lod = [3,2,2,4,3,4,2,4,1,1,2,3,2,1,3,4,3,2,2,5,2,3,5,2,3,2,3,4,2,4,3,1,4,1,2,3,3,4,5,5,4,4,2,1,2,3,4,4,4,1,1,1,3,2,1,3,5,3,3,1,2,3,4,3,3,2,3,4,4,\
+			3,3,3,3,4,4,1,3,3,5,6,3,2,2,3,3,3,5,3,1,4,2,2,3,2,3,2,4,3,3,5,1,3,2,3,3,4,5,3,3,2,3,2,4,2,3,2,3,3,4,1,3,2,3,3,3,4,2,4,2,2,3,5,3,2,5,4,3,1,5,3,\
+			1,3,3,2,2,3,2,2,1,3,2,2,5,4,4,3,2,5,3,3,3,3,4,3,1,1,3,2,2,3,3,4,2,3,4,3,1,3,4,4,1,4,4,2,2,3,3,3,4,6,1,1,3,2,2,2,2,3,2,3,2,5,3,2,4,2,1,3,3,3,3,\
+			5,1,3,4,5,1,3,4,3,2,3,3,4,3,3,4,4,4,3,2,2,2,3,3,2,2,2,5,3,4,4,3,2,3,3,3,1,3,4,3,3,2,3,3,3]
+
+	def __init__(self, iface):		
+		QDialog.__init__(self)
+		self.iface = iface
+		self.setupUi(self)
+		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+		self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+		self.LinOutputFolder.setText(os.getcwd())    
+		self.cboCountry.addItems(self.country)
+		self.cboCountry.currentIndexChanged.connect(self.updateLOD)   
+		self.cboCountry.setCurrentIndex(-1) 
+		self.LinLOD.setText('')
+	
+	def browse_outfile(self):
+		newname = QFileDialog.getExistingDirectory(None, "Output Folder",self.LinOutputFolder.displayText())
+
+		if newname != None:
+			self.LinOutputFolder.setText(newname)
+                	
+	def updateLOD(self):
+		idx = self.cboCountry.currentIndex()
+		self.LinLOD.setText(str(self.lod[idx]))
+	
+	def run(self):
+		outdir = unicode(self.LinOutputFolder.displayText())
+		idx = self.cboCountry.currentIndex()
+		hcmgis_gadm(self.country[idx],self.country_short[idx], outdir)				
 		return		
 
 # --------------------------------------------------------

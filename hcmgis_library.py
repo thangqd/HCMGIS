@@ -1875,7 +1875,6 @@ def hcmgis_gadm(country, country_short, outdir):
 	pre = 'https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_'
 	suf = '_shp.zip'
 	download_url_shp = pre + country_short + suf
-	print (download_url_shp)
 	zip_filename_shp = outdir + '\\'+ country_short +  suf
 	unzip_folder_shp = zip_filename_shp.replace('.zip','')
 	LinkFound = True

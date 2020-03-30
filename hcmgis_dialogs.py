@@ -249,33 +249,39 @@ class hcmgis_opendevelopmentmekong_dialog(QDialog, Ui_hcmgis_opendevelopmentmeko
 		return		
 
 class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):	
+	##################### Region
 	region = ['Africa','Antarctica','Asia','Australia and Oceania','Central America','Europe','North America','South America']
 	region_name = []
 	for reg in region:
 		reg_name = reg.replace(' and ','-').replace(' ','-').lower()
 		region_name.append(reg_name)
 	
+	##################### Asia
 	asia = ['Afghanistan','Armenia','Azerbaijan','Bangladesh','Bhutan','Cambodia','China','GCC States','India','Indonesia',\
 				'Iran','Iraq','Israel and Palestine','Japan','Jordan','Kazakhstan','Kyrgyzstan','Laos','Lebanon','Malaysia, Singapore, and Brunei',\
 				'Maldives','Mongolia','Myanmar','Nepal','North Korea','Pakistan','Philippines','Russian Federation','South Korea','Sri Lanka',\
 				'Syria','Taiwan','Tajikistan','Thailand','Turkmenistan','Uzbekistan','Vietnam','Yemen']
 	asia_name= []
-
 	for country in asia:
 		country_name = country.replace(' and ','_').replace(' ','_').lower()
 		asia_name.append(country_name)
-	
+	japan_state = ['Chubu region','Chugoku region','Hokkaido','Kansai region (a.k.a. Kinki region)','Kanto region','Kyushu','Shikoku','Tohoku region']
+
+
+	##################### Africa
 	africa =['Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cameroon','Canary Islands','Cape Verde','Central African Republic',\
 			'Chad','Comores','Congo (Republic/Brazzaville)','Congo (Democratic Republic/Kinshasa)','Djibouti','Egypt','Equatorial Guinea','Eritrea','Ethiopia','Gabon',\
 			'Ghana','Guinea','Guinea-Bissau','Ivory Coast','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi',\
 			'Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria,','Rwanda','Saint Helena',\
 			'Ascension, and Tristan da Cunha','Sao Tome and Principe','Senegal and Gambia','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Swaziland',\
-			'Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe']
+			'Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe',\
+			'South Africa (includes Lesotho)'] #special region
 	afica_name = []
 	for country in africa:
 		country_name = country.replace('Congo (Republic/Brazzaville)','congo-brazzaville').replace('Congo (Democratic Republic/Kinshasa)','congo-democratic-republic').replace(' ','-').lower()
 		afica_name.append(country_name)
-
+		
+	##################### Australia
 	australia = ['Australia','Cook Islands','Fiji','Kiribati','Marshall Islands','Micronesia','Nauru','New Caledonia','New Zealand','Niue',\
 				'Palau','Papua New Guinea','Samoa','Solomon Islands','Tonga','Tuvalu','Vanuatu']
 	australia_name = []
@@ -283,33 +289,65 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 		country_name = country.replace(' ','-').lower()
 		australia_name.append(country_name)
 
+	##################### Central America
 	centralamerica= ['bahamas','Belize','Cuba','Guatemala','Haiti and Dominican Republic','Jamaica','Nicaragua']
 	centralamerica_name = []
 	for country in centralamerica:
 		country_name = country.replace(' ','-').lower()
 		centralamerica_name.append(country_name)
 	
+	##################### Europe
 	europe= ['Albania','Andorra','Austria','Azores','Belarus','Belgium','Bosnia-Herzegovina','Bulgaria','Croatia','Cyprus',\
 			'Czech Republic','Denmark','Estonia','Faroe Islands','Finland','France','Georgia (Eastern Europe)','Germany','Great Britain','Greece',\
 			'Hungary','Iceland','Ireland and Northern Ireland','Isle of Man','Italy','Kosovo','Latvia','Liechtenstein','Lithuania','Luxembourg',\
 			'Macedonia','Malta','Moldova','Monaco','Montenegro','Netherlands','Norway','Poland','Portugal','Romania',\
-			'Russian Federation','Serbia','Slovakia','Slovenia','Spain','Sweden','Switzerland','Turkey','Ukraine (with Crimea)']
+			'Russian Federation','Serbia','Slovakia','Slovenia','Spain','Sweden','Switzerland','Turkey','Ukraine (with Crimea)',\
+			'Alps','Britain and Ireland','Germany, Austria, Switzerland']#special regions
 	europe_name = []
 	for country in europe:
 		country_name = country.replace('Georgia (Eastern Europe)','georgia').replace('Ukraine (with Crimea)','ukraine').replace(' ','-').lower()
 		europe_name.append(country_name)
+	france_state = ['Alsace','Aquitaine','Auvergne','Basse-Normandie','Bourgogne','Bretagne','Centre','Champagne Ardenne','Corse','Franche Comte',\
+					'Guadeloupe','Guyane','Haute-Normandie','Ile-de-France','Languedoc-Roussillon','Limousin','Lorraine','Martinique','Mayotte','Midi-Pyrenees',\
+					'Nord-Pas-de-Calais','Pays de la Loire','Picardie','Poitou-Charentes','Provence Alpes-Cote-d''Azur','Reunion','Rhone-Alpes']
+	germany_state = ['Baden-Württemberg','Bayern','Berlin','Brandenburg (mit Berlin)','Bremen','Hamburg','Hessen','Mecklenburg-Vorpommern','Niedersachsen','Nordrhein-Westfalen',\
+					'Rheinland-Pfalz','Saarland','Sachsen','Sachsen-Anhalt','Schleswig-Holstein','Thüringen']
+	great_britain_state = ['England','Scotland','Wales']
+	italy_state = ['centro-oeste','nordeste','norte','sudeste','sul']
+	netherlands_state = ['Drenthe','Flevoland','Friesland','Gelderland','Groningen','Limburg','Noord-Brabant','Noord-Holland','Overijssel','Utrecht',\
+					'Zeeland','Zuid-Holland']
 
-	northamerica= ['Canada','Greenland','Mexico','United States of America','US Midwest','US Northeast','US Pacific','US South','US West']
+	poland_state =['Lower Silesian Voivodeship','Kuyavian-Pomeranian Voivodeship','Lodzkie Voivodeship','Lublin Voivodeship','Lubusz Voivodeship',\
+		'Lesser Poland Voivodeship','Mazovian Voivodeship','Opole Voivodeship','Subcarpathian Voivodeship','Podlaskie Voivodeship',\
+		'Pomeranian Voivodeship','Silesian Voivodeship','Swietokrzyskie Voivodeship','Warmian-Masurian Voivodeship','Greater Poland Voivodeship','West Pomeranian Voivodeship']
+	
+	russian_federation_state = ['Central Federal District','Crimean Federal District','Far Eastern Federal District','North Caucasus Federal District','Northwestern Federal District',\
+			'Siberian Federal District','South Federal District','Ural Federal District','Volga Federal District','Kaliningrad']
+	
+	##################### North America
+	northamerica= ['Canada','Greenland','Mexico','United States of America',\
+		'US Midwest','US Northeast','US Pacific','US South','US West']# special regions of US
 	northamerica_name = []
 	for country in northamerica:
 		country_name = country.replace(' ','-').lower()
 		northamerica_name.append(country_name)
+	us_state = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida',\
+				'Georgia (US State)','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine',\
+				'Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire',\
+				'New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Puerto Rico',\
+				'Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia',\
+				'Wisconsin','Wyoming']
+	canada_state = ['Alberta','British Columbia','Manitoba','New Brunswick','Newfoundland and Labrador','Northwest Territories','Nova Scotia','Nunavut','Ontario','Prince Edward Island',\
+					'Quebec','Saskatchewan','Yukon']
 	
+	##################### South America
 	southamerica= ['Argentina','Bolivia','Brazil','Chile','Colombia','Ecuador','Paraguay','Peru','Suriname','Uruguay','Venezuela']
 	southamerica_name = []
 	for country in southamerica:
 		country_name = country.replace(' ','-').lower()
 		southamerica_name.append(country_name)
+	brazil_state = ['centro-oeste','nordeste','norte','sudeste','sul']
+
 
 	def __init__(self, iface):		
 		QDialog.__init__(self)
@@ -323,6 +361,8 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 		self.cboRegion.setCurrentIndex(-1) 
 		self.cboCountry.setCurrentIndex(-1) 
 		self.cboCountry.setEnabled(False)
+		self.cboCountry.currentIndexChanged.connect(self.loadprovince)
+		self.cboProvince.setEnabled(False)
 	
 	def browse_outfile(self):
 		newname = QFileDialog.getExistingDirectory(None, "Output Folder",self.LinOutputFolder.displayText())
@@ -349,6 +389,33 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 			self.cboCountry.addItems(self.northamerica)
 		elif (self.cboRegion.currentText() == 'South America'):
 			self.cboCountry.addItems(self.southamerica)
+	
+	def loadprovince(self):
+		self.cboProvince.clear()
+		self.cboProvince.setEnabled(True)
+		if 	(self.cboCountry.currentText() == 'United States of America'):
+			self.cboProvince.addItems(self.us_state)
+		elif (self.cboCountry.currentText() == 'Canada'):
+			self.cboProvince.addItems(self.canada_state)
+		elif (self.cboCountry.currentText() == 'Brazil'):
+			self.cboProvince.addItems(self.brazil_state)
+		elif (self.cboCountry.currentText() == 'France'):
+			self.cboProvince.addItems(self.france_state)
+		elif (self.cboCountry.currentText() == 'Germany'):
+			self.cboProvince.addItems(self.germany_state)
+		elif (self.cboCountry.currentText() == 'Great Britain'):
+			self.cboProvince.addItems(self.great_britain_state)
+		elif (self.cboCountry.currentText() == 'Italy'):
+			self.cboProvince.addItems(self.italy_state)
+		elif (self.cboCountry.currentText() == 'Netherlands'):
+			self.cboProvince.addItems(self.netherlands_state)	
+		elif (self.cboCountry.currentText() == 'Poland'):
+			self.cboProvince.addItems(self.poland_state)
+		elif (self.cboCountry.currentText() == 'Russian Federation'):
+			self.cboProvince.addItems(self.russian_federation_state)	
+		elif (self.cboCountry.currentText() == 'Japan'):
+			self.cboProvince.addItems(self.japan_state)	
+		
 	
 	def run(self):
 		outdir = unicode(self.LinOutputFolder.displayText())

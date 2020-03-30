@@ -1814,15 +1814,20 @@ def hcmgis_geofabrik(region, country, outdir):
 	import os
 	import urllib
 	import zipfile
-	import tempfile
+	#import tempfile
 	import urllib.request
-	temp_dir = tempfile.mkdtemp()
+	from PyQt5 import QtGui
+
+	#temp_dir = tempfile.mkdtemp()
 	download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '-latest-free.shp.zip'	
+	print (download_url_shp)
 	zip_filename_shp = outdir + '\\'+ country +  '-latest-free.shp.zip'
 	unzip_folder_shp = zip_filename_shp.replace('.zip','')
-	
+	print (zip_filename_shp)
+
 	download_url_pbf = r'https://download.geofabrik.de/' + region + '/'+ country+ '-latest.osm.pbf'	
 	filename_pbf = outdir + '\\'+ country +  '-latest.osm.pbf'
+	print (filename_pbf)
 	
 	LinkFound = True
 	try:
@@ -1832,29 +1837,86 @@ def hcmgis_geofabrik(region, country, outdir):
 	
 	if  LinkFound:
 		filesizeinMB = round(int(urllib.request.urlopen(download_url_shp).info()['Content-Length'])*10**(-6),2)
-		QMessageBox.information(None, "Attention",'Estimated Shapefile size: ' + str(filesizeinMB) + ' MB. '+ 'Downloading may take time. Please be patient!')
-		zip, headers = urllib.request.urlretrieve(download_url_shp, zip_filename_shp)
-		if not os.path.exists (unzip_folder_shp):
-			os.mkdir(unzip_folder_shp)
-		with zipfile.ZipFile(zip, 'r') as zip_ref:
-			zip_ref.extractall(unzip_folder_shp)		
-		#os.chdir(zip_folder)
-		wholelist = os.listdir(unzip_folder_shp)
-		root = QgsProject.instance().layerTreeRoot()
-		shapeGroup = root.addGroup(country)
-		for file in wholelist:
-			if ".shp" in file:
-				if "xml" not in file:
-					fileroute=unzip_folder_shp+'\\'+file
-					filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
-					QgsProject.instance().addMapLayer(filename,False)
-					shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+		confirmed = QMessageBox.question(None, "Attention",'Estimated Shapefile size: ' + str(filesizeinMB) + ' MB. '+ 'Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+		if confirmed == QMessageBox.Yes:
+			zip, headers = urllib.request.urlretrieve(download_url_shp, zip_filename_shp)
+			if not os.path.exists (unzip_folder_shp):
+				os.mkdir(unzip_folder_shp)
+			with zipfile.ZipFile(zip, 'r') as zip_ref:
+				zip_ref.extractall(unzip_folder_shp)		
+			#os.chdir(zip_folder)
+			wholelist = os.listdir(unzip_folder_shp)
+			root = QgsProject.instance().layerTreeRoot()
+			shapeGroup = root.addGroup(country)
+			for file in wholelist:
+				if ".shp" in file:
+					if "xml" not in file:
+						fileroute=unzip_folder_shp+'\\'+file
+						filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
+						QgsProject.instance().addMapLayer(filename,False)
+						shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+			QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
 	else:
 		filesizeinMB = round(int(urllib.request.urlopen(download_url_pbf).info()['Content-Length'])*10**(-6),2)
-		QMessageBox.information(None, "Attention",'Estimated OSM pbf file size: ' + str(filesizeinMB) + ' MB. '+ 'Downloading may take time. Please be patient!')
-		pbf, headers =  urllib.request.urlretrieve(download_url_pbf, filename_pbf)		 
-		QMessageBox.information(None, "Attention",u'Data in OSM PBF format. Please manually add it to QGIS!')
-	QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+		confirmed = QMessageBox.question(None, "Attention",'Estimated OSM pbf file size: ' + str(filesizeinMB) + ' MB. '+ 'Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+		if confirmed == QMessageBox.Yes:
+			pbf, headers =  urllib.request.urlretrieve(download_url_pbf, filename_pbf)		 
+			QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!\nData in OSM pdf format. Please manually add it to QGIS!')
+
+def hcmgis_geofabrik2(region, country,state, outdir):
+	import os
+	import urllib
+	import zipfile
+	#import tempfile
+	import urllib.request
+	from PyQt5 import QtGui
+
+	#temp_dir = tempfile.mkdtemp()
+	download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '/' + state + '-latest-free.shp.zip'	
+	print (download_url_shp)
+	zip_filename_shp = outdir + '\\'+ country + '-'+ state + '-latest-free.shp.zip'
+	unzip_folder_shp = zip_filename_shp.replace('.zip','')
+	print (zip_filename_shp)
+
+	download_url_pbf = r'https://download.geofabrik.de/' + region + '/'+ country+ state+'-latest.osm.pbf'	
+	filename_pbf = outdir + '\\'+ country + '-'+ state + '-latest.osm.pbf'
+	print (filename_pbf)
+	
+	LinkFound = True
+	try:
+		urllib.request.urlopen(download_url_shp)
+	except:
+		LinkFound = False
+	
+	if  LinkFound:
+		filesizeinMB = round(int(urllib.request.urlopen(download_url_shp).info()['Content-Length'])*10**(-6),2)
+		confirmed = QMessageBox.question(None, "Attention",'Estimated Shapefile size: ' + str(filesizeinMB) + ' MB. '+ 'Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+		if confirmed == QMessageBox.Yes:
+			zip, headers = urllib.request.urlretrieve(download_url_shp, zip_filename_shp)
+			if not os.path.exists (unzip_folder_shp):
+				os.mkdir(unzip_folder_shp)
+			with zipfile.ZipFile(zip, 'r') as zip_ref:
+				zip_ref.extractall(unzip_folder_shp)		
+			#os.chdir(zip_folder)
+			wholelist = os.listdir(unzip_folder_shp)
+			root = QgsProject.instance().layerTreeRoot()
+			shapeGroup = root.addGroup(country)
+			for file in wholelist:
+				if ".shp" in file:
+					if "xml" not in file:
+						fileroute=unzip_folder_shp+'\\'+file
+						filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
+						QgsProject.instance().addMapLayer(filename,False)
+						shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+			QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+	else:
+		filesizeinMB = round(int(urllib.request.urlopen(download_url_pbf).info()['Content-Length'])*10**(-6),2)
+		confirmed = QMessageBox.question(None, "Attention",'Estimated OSM pbf file size: ' + str(filesizeinMB) + ' MB. '+ 'Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+		if confirmed == QMessageBox.Yes:
+			pbf, headers =  urllib.request.urlretrieve(download_url_pbf, filename_pbf)		 
+			QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!\nData in OSM pdf format. Please manually add it to QGIS!')
+
+	
 	# with zipfile.ZipFile(zip) as zf:
 	#     files = zf.namelist()
 	#     for filename in files:
@@ -1882,27 +1944,27 @@ def hcmgis_gadm(country, country_short, outdir):
 		urllib.request.urlopen(download_url_shp)
 	except:
 		LinkFound = False
-	
 	if  LinkFound:
 		filesizeinMB = round(int(urllib.request.urlopen(download_url_shp).info()['Content-Length'])*10**(-6),2)
-		QMessageBox.information(None, "Attention",'Estimated Shapefile size: ' + str(filesizeinMB) + ' MB. '+ 'Downloading may take time. Please be patient!')
-		zip, headers = urllib.request.urlretrieve(download_url_shp, zip_filename_shp)
-		if not os.path.exists (unzip_folder_shp):
-			os.mkdir(unzip_folder_shp)
-		with zipfile.ZipFile(zip, 'r') as zip_ref:
-			zip_ref.extractall(unzip_folder_shp)		
-		#os.chdir(zip_folder)
-		wholelist = os.listdir(unzip_folder_shp)
-		root = QgsProject.instance().layerTreeRoot()
-		shapeGroup = root.addGroup(country)
-		for file in wholelist:
-			if ".shp" in file:
-				if "xml" not in file:
-					fileroute=unzip_folder_shp+'\\'+file
-					filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
-					QgsProject.instance().addMapLayer(filename,False)
-					shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+		confirmed = QMessageBox.question(None, "Attention",'Estimated Shapefile size: ' + str(filesizeinMB) + ' MB. '+ 'Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+		if confirmed == QMessageBox.Yes:
+			zip, headers = urllib.request.urlretrieve(download_url_shp, zip_filename_shp)
+			if not os.path.exists (unzip_folder_shp):
+				os.mkdir(unzip_folder_shp)
+			with zipfile.ZipFile(zip, 'r') as zip_ref:
+				zip_ref.extractall(unzip_folder_shp)		
+			#os.chdir(zip_folder)
+			wholelist = os.listdir(unzip_folder_shp)
+			root = QgsProject.instance().layerTreeRoot()
+			shapeGroup = root.addGroup(country)
+			for file in wholelist:
+				if ".shp" in file:
+					if "xml" not in file:
+						fileroute=unzip_folder_shp+'\\'+file
+						filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
+						QgsProject.instance().addMapLayer(filename,False)
+						shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+			QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
 	else:
-		QMessageBox.information(None, "Attention",u'Link not found!')
-		return
-	QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+		QMessageBox.warning(None, "Attention",u'Link not found!')
+	return

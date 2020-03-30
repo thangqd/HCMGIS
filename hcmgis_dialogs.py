@@ -265,7 +265,12 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 	for country in asia:
 		country_name = country.replace(' and ','_').replace(' ','_').lower()
 		asia_name.append(country_name)
-	japan_state = ['Chubu region','Chugoku region','Hokkaido','Kansai region (a.k.a. Kinki region)','Kanto region','Kyushu','Shikoku','Tohoku region']
+	
+	japan_state = ['Chubu region','Chugoku region','Hokkaido','Kansai region','Kanto region','Kyushu','Shikoku','Tohoku region']
+	japan_state_name= []
+	for state in japan_state:
+		state_name = state.replace(' region','').lower()
+		japan_state_name.append(state_name)
 
 
 	##################### Africa
@@ -276,10 +281,11 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 			'Ascension, and Tristan da Cunha','Sao Tome and Principe','Senegal and Gambia','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Swaziland',\
 			'Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe',\
 			'South Africa (includes Lesotho)'] #special region
-	afica_name = []
+	africa_name = []
 	for country in africa:
-		country_name = country.replace('Congo (Republic/Brazzaville)','congo-brazzaville').replace('Congo (Democratic Republic/Kinshasa)','congo-democratic-republic').replace(' ','-').lower()
-		afica_name.append(country_name)
+		country_name = country.replace('Congo (Republic/Brazzaville)','congo-brazzaville').replace('Congo (Democratic Republic/Kinshasa)','congo-democratic-republic')\
+		.replace('South Africa (includes Lesotho)','south-africa-and-lesotho') .replace(' ','-').lower()
+		africa_name.append(country_name)
 		
 	##################### Australia
 	australia = ['Australia','Cook Islands','Fiji','Kiribati','Marshall Islands','Micronesia','Nauru','New Caledonia','New Zealand','Niue',\
@@ -305,31 +311,62 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 			'Alps','Britain and Ireland','Germany, Austria, Switzerland']#special regions
 	europe_name = []
 	for country in europe:
-		country_name = country.replace('Georgia (Eastern Europe)','georgia').replace('Ukraine (with Crimea)','ukraine').replace(' ','-').lower()
+		country_name = country.replace('Georgia (Eastern Europe)','georgia').replace('Ukraine (with Crimea)','ukraine').replace('Germany, Austria, Switzerland','dach').\
+			replace('Russian Federation','russia').replace(' ','-').lower()
 		europe_name.append(country_name)
 	france_state = ['Alsace','Aquitaine','Auvergne','Basse-Normandie','Bourgogne','Bretagne','Centre','Champagne Ardenne','Corse','Franche Comte',\
 					'Guadeloupe','Guyane','Haute-Normandie','Ile-de-France','Languedoc-Roussillon','Limousin','Lorraine','Martinique','Mayotte','Midi-Pyrenees',\
 					'Nord-Pas-de-Calais','Pays de la Loire','Picardie','Poitou-Charentes','Provence Alpes-Cote-d''Azur','Reunion','Rhone-Alpes']
-	germany_state = ['Baden-Württemberg','Bayern','Berlin','Brandenburg (mit Berlin)','Bremen','Hamburg','Hessen','Mecklenburg-Vorpommern','Niedersachsen','Nordrhein-Westfalen',\
-					'Rheinland-Pfalz','Saarland','Sachsen','Sachsen-Anhalt','Schleswig-Holstein','Thüringen']
+	france_state_name= []
+	for state in france_state:
+		state_name = state.replace(' ','-').lower()
+		france_state_name.append(state_name)
+
+	germany_state = ['Baden-Wurttemberg','Bayern','Berlin','Brandenburg (mit Berlin)','Bremen','Hamburg','Hessen','Mecklenburg-Vorpommern','Niedersachsen','Nordrhein-Westfalen',\
+					'Rheinland-Pfalz','Saarland','Sachsen','Sachsen-Anhalt','Schleswig-Holstein','Thuringen']
+	germany_state_name= []
+	for state in germany_state:
+		state_name = state.replace('Brandenburg (mit Berlin)','brandenburg').lower()
+		germany_state_name.append(state_name)
+	
 	great_britain_state = ['England','Scotland','Wales']
-	italy_state = ['centro-oeste','nordeste','norte','sudeste','sul']
+	great_britain_state_name = ['england','scotland','wales']	
+
+	italy_state = ['Centro', 'Isole', 'Nord-Est', 'Nord-Ovest', 'Sud']
+	italy_state_name =[]
+	for state in italy_state:
+		state_name = state.lower()
+		italy_state_name.append(state_name)
+
 	netherlands_state = ['Drenthe','Flevoland','Friesland','Gelderland','Groningen','Limburg','Noord-Brabant','Noord-Holland','Overijssel','Utrecht',\
 					'Zeeland','Zuid-Holland']
+	netherlands_state_name= []
+	for state in netherlands_state:
+		state_name = state.lower()
+		netherlands_state_name.append(state_name)
+	
 
 	poland_state =['Lower Silesian Voivodeship','Kuyavian-Pomeranian Voivodeship','Lodzkie Voivodeship','Lublin Voivodeship','Lubusz Voivodeship',\
 		'Lesser Poland Voivodeship','Mazovian Voivodeship','Opole Voivodeship','Subcarpathian Voivodeship','Podlaskie Voivodeship',\
 		'Pomeranian Voivodeship','Silesian Voivodeship','Swietokrzyskie Voivodeship','Warmian-Masurian Voivodeship','Greater Poland Voivodeship','West Pomeranian Voivodeship']
+	poland_state_name= ['dolnoslaskie', 'kujawsko-pomorskie', 'lodzkie','lubelskie', 'lubuskie',\
+						'malopolskie', 'mazowieckie', 'opolskie','podkarpackie','podlaskie',\
+						'pomorskie', 'slaskie', 'swietokrzyskie', 'warminsko-mazurskie', 'wielkopolskie','zachodniopomorskie']
 	
+
 	russian_federation_state = ['Central Federal District','Crimean Federal District','Far Eastern Federal District','North Caucasus Federal District','Northwestern Federal District',\
 			'Siberian Federal District','South Federal District','Ural Federal District','Volga Federal District','Kaliningrad']
+	russian_federation_state_name = []
+	for state in russian_federation_state:
+		state_name = state.replace('Federal','fed').replace(' ','-').lower()
+		russian_federation_state_name.append(state_name)
 	
 	##################### North America
 	northamerica= ['Canada','Greenland','Mexico','United States of America',\
 		'US Midwest','US Northeast','US Pacific','US South','US West']# special regions of US
 	northamerica_name = []
 	for country in northamerica:
-		country_name = country.replace(' ','-').lower()
+		country_name = country.replace('United States of America','us').replace(' ','-').lower()
 		northamerica_name.append(country_name)
 	us_state = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida',\
 				'Georgia (US State)','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine',\
@@ -337,8 +374,17 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 				'New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Puerto Rico',\
 				'Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia',\
 				'Wisconsin','Wyoming']
+	us_state_name = []
+	for state in us_state:
+		state_name = state.replace('Georgia (US State)','georgia').replace(' ','-').lower()
+		us_state_name.append(state_name)
+
 	canada_state = ['Alberta','British Columbia','Manitoba','New Brunswick','Newfoundland and Labrador','Northwest Territories','Nova Scotia','Nunavut','Ontario','Prince Edward Island',\
 					'Quebec','Saskatchewan','Yukon']
+	canada_state_name = []
+	for state in canada_state:
+		state_name = state.replace(' ','-').lower()
+		canada_state_name.append(state_name)
 	
 	##################### South America
 	southamerica= ['Argentina','Bolivia','Brazil','Chile','Colombia','Ecuador','Paraguay','Peru','Suriname','Uruguay','Venezuela']
@@ -346,8 +392,9 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 	for country in southamerica:
 		country_name = country.replace(' ','-').lower()
 		southamerica_name.append(country_name)
+	
 	brazil_state = ['centro-oeste','nordeste','norte','sudeste','sul']
-
+	brazil_state_name = brazil_state
 
 	def __init__(self, iface):		
 		QDialog.__init__(self)
@@ -377,6 +424,7 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 			self.cboCountry.addItems(self.asia)
 		elif (self.cboRegion.currentText() == 'Africa'):
 			self.cboCountry.addItems(self.africa)
+			self.cboCountry.insertSeparator(len(self.africa)-1)
 		elif (self.cboRegion.currentText() == 'Antarctica'):
 			self.cboCountry.addItem('Antarctica')
 		elif (self.cboRegion.currentText() == 'Australia and Oceania'):
@@ -385,8 +433,10 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 			self.cboCountry.addItems(self.centralamerica)
 		elif (self.cboRegion.currentText() == 'Europe'):
 			self.cboCountry.addItems(self.europe)
+			self.cboCountry.insertSeparator(len(self.europe)-3)
 		elif (self.cboRegion.currentText() == 'North America'):
 			self.cboCountry.addItems(self.northamerica)
+			self.cboCountry.insertSeparator(len(self.northamerica)-5)
 		elif (self.cboRegion.currentText() == 'South America'):
 			self.cboCountry.addItems(self.southamerica)
 	
@@ -415,35 +465,81 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 			self.cboProvince.addItems(self.russian_federation_state)	
 		elif (self.cboCountry.currentText() == 'Japan'):
 			self.cboProvince.addItems(self.japan_state)	
+		self.cboProvince.setCurrentIndex(-1)
 		
 	
 	def run(self):
 		outdir = unicode(self.LinOutputFolder.displayText())
-		if (self.cboRegion.currentText() == 'Asia'):
-			country_idx = self.asia.index(self.cboCountry.currentText())
-			hcmgis_geofabrik('asia',self.asia_name[country_idx], outdir)
-		elif (self.cboRegion.currentText() == 'Africa'):
-			country_idx = self.asia.index(self.cboCountry.currentText())
-			hcmgis_geofabrik('afica',self.africa_name[country_idx], outdir)	
-		elif (self.cboRegion.currentText() == 'Antarctica'):
-			hcmgis_geofabrik('','antarctica', outdir)	
-		elif (self.cboRegion.currentText() == 'Australia and Oceania'):
-			country_idx = self.australia.index(self.cboCountry.currentText())
-			hcmgis_geofabrik('australia-oceania',self.australia_name[country_idx], outdir)
-		elif (self.cboRegion.currentText() == 'Central America'):
-			country_idx = self.centralamerica.index(self.cboCountry.currentText())
-			hcmgis_geofabrik('central-america',self.centralamerica_name[country_idx], outdir)
-		elif (self.cboRegion.currentText() == 'Europe'):
-			country_idx = self.europe.index(self.cboCountry.currentText())
-			hcmgis_geofabrik('europe',self.europe_name[country_idx], outdir)	
-		elif (self.cboRegion.currentText() == 'North America'):
-			country_idx = self.northamerica.index(self.cboCountry.currentText())
-			hcmgis_geofabrik('north-america',self.northamerica_name[country_idx], outdir)
-		elif (self.cboRegion.currentText() == 'South America'):
-			country_idx = self.southamerica.index(self.cboCountry.currentText())
-			hcmgis_geofabrik('south-america',self.southamerica_name[country_idx], outdir)				
+		if (self.cboProvince.currentIndex()<0):
+			if (self.cboRegion.currentText() == 'Asia'):
+				country_idx = self.asia.index(self.cboCountry.currentText())
+				hcmgis_geofabrik('asia',self.asia_name[country_idx], outdir)
+			elif (self.cboRegion.currentText() == 'Africa'):
+				country_idx = self.africa.index(self.cboCountry.currentText())
+				hcmgis_geofabrik('africa',self.africa_name[country_idx], outdir)	
+			elif (self.cboRegion.currentText() == 'Antarctica'):
+				hcmgis_geofabrik('','antarctica', outdir)	
+			elif (self.cboRegion.currentText() == 'Australia and Oceania'):
+				country_idx = self.australia.index(self.cboCountry.currentText())
+				hcmgis_geofabrik('australia-oceania',self.australia_name[country_idx], outdir)
+			elif (self.cboRegion.currentText() == 'Central America'):
+				country_idx = self.centralamerica.index(self.cboCountry.currentText())
+				hcmgis_geofabrik('central-america',self.centralamerica_name[country_idx], outdir)
+			elif (self.cboRegion.currentText() == 'Europe'):
+				country_idx = self.europe.index(self.cboCountry.currentText())
+				if self.cboCountry.currentText() == 'Russian Federation':
+					hcmgis_geofabrik('',self.europe_name[country_idx], outdir)	
+				else:
+					hcmgis_geofabrik('europe',self.europe_name[country_idx], outdir)	
+			elif (self.cboRegion.currentText() == 'North America'):
+				country_idx = self.northamerica.index(self.cboCountry.currentText())
+				hcmgis_geofabrik('north-america',self.northamerica_name[country_idx], outdir)
+			elif (self.cboRegion.currentText() == 'South America'):
+				country_idx = self.southamerica.index(self.cboCountry.currentText())
+				hcmgis_geofabrik('south-america',self.southamerica_name[country_idx], outdir)
+		else:
+			if (self.cboCountry.currentText() == 'Japan'):
+				state_idx = self.japan_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('asia','japan',self.japan_state_name[state_idx], outdir)	
+			
+			elif (self.cboCountry.currentText() == 'France'):
+				state_idx = self.france_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('europe','france',self.france_state_name[state_idx], outdir)
+			elif (self.cboCountry.currentText() == 'Germany'):
+				state_idx = self.germany_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('europe','germany',self.germany_state_name[state_idx], outdir)
+			elif (self.cboCountry.currentText() == 'Great Britain'):
+				state_idx = self.great_britain_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('europe','great-britain',self.great_britain_state_name[state_idx], outdir)
+			elif (self.cboCountry.currentText() == 'Italy'):
+				state_idx = self.italy_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('europe','italy',self.italy_state_name[state_idx], outdir)
+			elif (self.cboCountry.currentText() == 'Netherlands'):
+				state_idx = self.netherlands_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('europe','netherlands',self.netherlands_state_name[state_idx], outdir)
+			elif (self.cboCountry.currentText() == 'Poland'):
+				state_idx = self.poland_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('europe','poland',self.poland_state_name[state_idx], outdir)
+			elif (self.cboCountry.currentText() == 'Russian Federation'):
+				state_idx = self.russian_federation_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('','russia',self.russian_federation_state_name[state_idx], outdir)
+					
+			elif (self.cboCountry.currentText() == 'United States of America'):
+				state_idx = self.us_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('north-america','us',self.us_state_name[state_idx], outdir)
+			elif (self.cboCountry.currentText() == 'Canada'):
+				state_idx = self.canada_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('north-america','canada',self.canada_state_name[state_idx], outdir)
+			
+			elif (self.cboCountry.currentText() == 'Brazil'):
+				state_idx = self.brazil_state.index(self.cboProvince.currentText())
+				hcmgis_geofabrik2('south-america','brazil',self.brazil_state_name[state_idx], outdir)
+
 		return		
 
+########################################################
+# GADM
+#########################################################
 class hcmgis_gadm_dialog(QDialog, Ui_hcmgis_gadm_form):	
 	country = ['Afghanistan','Akrotiri and Dhekelia','Åland','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica',\
 			'Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh',\

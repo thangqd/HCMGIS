@@ -2,7 +2,7 @@
 
 **- Basemap**: Add dozens of global basemaps from Google, Carto, ESRI, OSM Stamen, etc.
 
-**- Batch Converter**: Batch convert CSV to Point Shapefile, TXT/ XLSX to CSV and other GIS formats in a folder and its subfolders
+**- Batch Converter**: Batch convert CSV to Point Shapefile, TXT/ XLSX to CSV and other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;
 
 **- Download CO-VID19 Data**:  Global COVID-19 Live Update and Time Series from Johns Holfkins CSSE, Vietnam COVID-19 Live Update from HCMGIS OpenData
 
@@ -26,7 +26,7 @@
 
 **HCMGIS** - Basemap, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
-**- Batch Converter**: Chuyển đổi tất cả các file XY (CSV) sang dạng điểm (shapefile), TXT/ XLSX --> CSV, và các định dạng GIS khác cho toàn bộ các file trong thư mục và các thư mục con
+**- Batch Converter**: Chuyển đổi tất cả các file XY (CSV) sang dạng điểm (shapefile), TXT/ XLSX --> CSV, và các định dạng GIS khác (bao gồm OSM bpf, GeoPackage) cho toàn bộ các file trong thư mục và các thư mục con
 
 **- Basemap**: Thêm bản đồ nền Google, Carto, ESRI, OSM Stamen,...trong QGIS
 

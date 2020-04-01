@@ -88,12 +88,12 @@
        </item>
        <item>
         <property name="text">
-         <string>DXF</string>
+         <string>GPKG</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>GPKG</string>
+         <string>PBF</string>
         </property>
        </item>
        <item>
@@ -104,6 +104,16 @@
        <item>
         <property name="text">
          <string>GML</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>DXF</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>DGN</string>
         </property>
        </item>
        <item>

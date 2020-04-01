@@ -263,7 +263,7 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 				'Syria','Taiwan','Tajikistan','Thailand','Turkmenistan','Uzbekistan','Vietnam','Yemen']
 	asia_name= []
 	for country in asia:
-		country_name = country.replace(' and ','_').replace(' ','_').lower()
+		country_name = country.replace('Israel and Palestine','israel-and-palestine' ).replace('Malaysia, Singapore, and Brunei','malaysia-singapore-brunei').replace('Russian Federation','russia').replace(' ','-').lower()
 		asia_name.append(country_name)
 	
 	japan_state = ['Chubu region','Chugoku region','Hokkaido','Kansai region','Kanto region','Kyushu','Shikoku','Tohoku region']
@@ -277,14 +277,14 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 	africa =['Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cameroon','Canary Islands','Cape Verde','Central African Republic',\
 			'Chad','Comores','Congo (Republic/Brazzaville)','Congo (Democratic Republic/Kinshasa)','Djibouti','Egypt','Equatorial Guinea','Eritrea','Ethiopia','Gabon',\
 			'Ghana','Guinea','Guinea-Bissau','Ivory Coast','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi',\
-			'Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria,','Rwanda','Saint Helena',\
-			'Ascension, and Tristan da Cunha','Sao Tome and Principe','Senegal and Gambia','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Swaziland',\
+			'Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria','Rwanda','Saint Helena, Ascension, and Tristan da Cunha',\
+			'Sao Tome and Principe','Senegal and Gambia','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Swaziland',\
 			'Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe',\
 			'South Africa (includes Lesotho)'] #special region
 	africa_name = []
 	for country in africa:
 		country_name = country.replace('Congo (Republic/Brazzaville)','congo-brazzaville').replace('Congo (Democratic Republic/Kinshasa)','congo-democratic-republic')\
-		.replace('South Africa (includes Lesotho)','south-africa-and-lesotho') .replace(' ','-').lower()
+		.replace('South Africa (includes Lesotho)','south-africa-and-lesotho').replace(' ','-').replace(',','').lower()
 		africa_name.append(country_name)
 		
 	##################### Australia
@@ -299,7 +299,7 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 	centralamerica= ['bahamas','Belize','Cuba','Guatemala','Haiti and Dominican Republic','Jamaica','Nicaragua']
 	centralamerica_name = []
 	for country in centralamerica:
-		country_name = country.replace(' ','-').lower()
+		country_name = country.replace('Dominican Republic','domrep').replace(' ','-').lower()
 		centralamerica_name.append(country_name)
 	
 	##################### Europe
@@ -473,7 +473,10 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 		if (self.cboProvince.currentIndex()<0):
 			if (self.cboRegion.currentText() == 'Asia'):
 				country_idx = self.asia.index(self.cboCountry.currentText())
-				hcmgis_geofabrik('asia',self.asia_name[country_idx], outdir)
+				if self.cboCountry.currentText() == 'Russian Federation':
+					hcmgis_geofabrik('',self.asia_name[country_idx], outdir)	
+				else:
+					hcmgis_geofabrik('asia',self.asia_name[country_idx], outdir)	
 			elif (self.cboRegion.currentText() == 'Africa'):
 				country_idx = self.africa.index(self.cboCountry.currentText())
 				hcmgis_geofabrik('africa',self.africa_name[country_idx], outdir)	
@@ -1397,6 +1400,12 @@ class hcmgis_merge_field_dialog(QDialog, Ui_hcmgis_merge_field_form):
 
 # Format Convert
 class hcmgis_format_convert_dialog(QDialog, Ui_hcmgis_format_convert_form):		
+	#out_put_format = ['AmigoCloud','BNA','Carto','Cloudant','CouchDB','CSV','DB2ODBC','DGN','DXF','ElasticSearch','ESRI Shapefile',\
+	#				'Geoconcept','GeoJSON','GeoJSONSeq','GeoRSS','GFT','GML','GPKG','GPSBabel','GPSTrackMaker','GPX','Interlis 1',\
+	#				'Interlis 2','JML','KML','LIBKML','MapInfo File','MBTiles','Memory','MSSQLSpatial','MVT','MySQL','netCDF','NGW',\
+	#				'OCI','ODBC','ODS','OGR_GMT','PCIDSK','PDF','PDS4','PGDUMP','PostgreSQL','S57','Selafin','SQLite','TIGER','VDV','WAsP','XLSX']
+	out_put_format=['CSV','ESRI Shapefile','GeoJSON','GML','GPKG']
+	out_put_ext = ['csv','shp','geojson','gml','gpkg']
 	def __init__(self, iface):
 		QDialog.__init__(self)
 		self.iface = iface
@@ -1406,7 +1415,9 @@ class hcmgis_format_convert_dialog(QDialog, Ui_hcmgis_format_convert_form):
 		self.txtError.clear()
 		self.BtnInputFolder.clicked.connect(self.read_files)		                           
 		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-		self.cboInputFormat.currentIndexChanged.connect(self.update_files)   
+		self.cboInputFormat.currentIndexChanged.connect(self.update_files) 
+		self.cboOutputFormat.clear()
+		self.cboOutputFormat.addItems(self.out_put_format)  
 		self.cboOutputFormat.currentIndexChanged.connect(self.update_status)                 
               
 	def update_status(self):
@@ -1461,7 +1472,7 @@ class hcmgis_format_convert_dialog(QDialog, Ui_hcmgis_format_convert_form):
 			self.hcmgis_set_status_bar(self.status)
 	
 		
-	def run(self):             		
+	def run(self):      
 		item_count = 0
 		error_count = 0
 		items = []
@@ -1481,7 +1492,9 @@ class hcmgis_format_convert_dialog(QDialog, Ui_hcmgis_format_convert_form):
 			input_file_name = item.text()
 			temp_file_name = item.text()
 			input_ext = "." + str(self.cboInputFormat.currentText()).lower()
-			output_file_name = temp_file_name.replace(input_ext, "", 1)			
+			idx = self.cboOutputFormat.currentIndex()
+			output_ext = "." + self.out_put_ext[idx]
+			output_file_name = temp_file_name.replace(input_ext, output_ext, 1)		
 			message = hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name)
 			if message:
 				#QMessageBox.critical(self.iface.mainWindow(), "Vector Format Convert", message)

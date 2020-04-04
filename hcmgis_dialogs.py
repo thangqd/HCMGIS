@@ -410,6 +410,39 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 		self.cboCountry.setEnabled(False)
 		self.cboCountry.currentIndexChanged.connect(self.loadprovince)
 		self.cboProvince.setEnabled(False)
+		self.hcmgis_set_status_bar(self.status)		
+
+	def hcmgis_set_status_bar(self, status_bar):
+		status_bar.setMinimum(0)
+		status_bar.setMaximum(100)
+		status_bar.setValue(0)
+		status_bar.setFormat("Ready")
+		self.status_bar = status_bar
+
+	def hcmgis_status_callback(self, percent_complete, message):
+		try:
+			if not message:
+				message = str(int(percent_complete)) + "%"
+
+			self.status_bar.setFormat(message)
+
+			if percent_complete < 0:
+				self.status_bar.setValue(0)
+			elif percent_complete > 100:
+				self.status_bar.setValue(100)
+			else:
+				self.status_bar.setValue(percent_complete)
+
+			self.iface.statusBarIface().showMessage(message)
+
+			# print("status_callback(" + message + ")")
+		except:
+			print(message)
+
+		# add handling of "Close" button
+		return 0
+		
+
 	
 	def browse_outfile(self):
 		newname = QFileDialog.getExistingDirectory(None, "Output Folder",self.LinOutputFolder.displayText())
@@ -474,70 +507,69 @@ class hcmgis_geofabrik_dialog(QDialog, Ui_hcmgis_geofabrik_form):
 			if (self.cboRegion.currentText() == 'Asia'):
 				country_idx = self.asia.index(self.cboCountry.currentText())
 				if self.cboCountry.currentText() == 'Russian Federation':
-					hcmgis_geofabrik('',self.asia_name[country_idx], outdir)	
+					message = hcmgis_geofabrik('',self.asia_name[country_idx], outdir,self.hcmgis_status_callback)	
 				else:
-					hcmgis_geofabrik('asia',self.asia_name[country_idx], outdir)	
+					message = hcmgis_geofabrik('asia',self.asia_name[country_idx], outdir,self.hcmgis_status_callback)	
 			elif (self.cboRegion.currentText() == 'Africa'):
 				country_idx = self.africa.index(self.cboCountry.currentText())
-				hcmgis_geofabrik('africa',self.africa_name[country_idx], outdir)	
+				message = hcmgis_geofabrik('africa',self.africa_name[country_idx], outdir,self.hcmgis_status_callback)	
 			elif (self.cboRegion.currentText() == 'Antarctica'):
-				hcmgis_geofabrik('','antarctica', outdir)	
+				message = hcmgis_geofabrik('','antarctica', outdir)	
 			elif (self.cboRegion.currentText() == 'Australia and Oceania'):
 				country_idx = self.australia.index(self.cboCountry.currentText())
-				hcmgis_geofabrik('australia-oceania',self.australia_name[country_idx], outdir)
+				message = hcmgis_geofabrik('australia-oceania',self.australia_name[country_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboRegion.currentText() == 'Central America'):
 				country_idx = self.centralamerica.index(self.cboCountry.currentText())
-				hcmgis_geofabrik('central-america',self.centralamerica_name[country_idx], outdir)
+				message = hcmgis_geofabrik('central-america',self.centralamerica_name[country_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboRegion.currentText() == 'Europe'):
 				country_idx = self.europe.index(self.cboCountry.currentText())
 				if self.cboCountry.currentText() == 'Russian Federation':
-					hcmgis_geofabrik('',self.europe_name[country_idx], outdir)	
+					message = hcmgis_geofabrik('',self.europe_name[country_idx], outdir,self.hcmgis_status_callback)	
 				else:
-					hcmgis_geofabrik('europe',self.europe_name[country_idx], outdir)	
+					message = hcmgis_geofabrik('europe',self.europe_name[country_idx], outdir,self.hcmgis_status_callback)	
 			elif (self.cboRegion.currentText() == 'North America'):
 				country_idx = self.northamerica.index(self.cboCountry.currentText())
-				hcmgis_geofabrik('north-america',self.northamerica_name[country_idx], outdir)
+				message = hcmgis_geofabrik('north-america',self.northamerica_name[country_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboRegion.currentText() == 'South America'):
 				country_idx = self.southamerica.index(self.cboCountry.currentText())
-				hcmgis_geofabrik('south-america',self.southamerica_name[country_idx], outdir)
+				message = hcmgis_geofabrik2('south-america',self.southamerica_name[country_idx], outdir,self.hcmgis_status_callback)
 		else:
 			if (self.cboCountry.currentText() == 'Japan'):
 				state_idx = self.japan_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('asia','japan',self.japan_state_name[state_idx], outdir)	
+				message = hcmgis_geofabrik2('asia','japan',self.japan_state_name[state_idx], outdir,self.hcmgis_status_callback)	
 			
 			elif (self.cboCountry.currentText() == 'France'):
 				state_idx = self.france_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('europe','france',self.france_state_name[state_idx], outdir)
+				message = hcmgis_geofabrik2('europe','france',self.france_state_name[state_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboCountry.currentText() == 'Germany'):
 				state_idx = self.germany_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('europe','germany',self.germany_state_name[state_idx], outdir)
+				message = hcmgis_geofabrik2('europe','germany',self.germany_state_name[state_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboCountry.currentText() == 'Great Britain'):
 				state_idx = self.great_britain_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('europe','great-britain',self.great_britain_state_name[state_idx], outdir)
+				message = hcmgis_geofabrik2('europe','great-britain',self.great_britain_state_name[state_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboCountry.currentText() == 'Italy'):
 				state_idx = self.italy_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('europe','italy',self.italy_state_name[state_idx], outdir)
+				message = hcmgis_geofabrik2('europe','italy',self.italy_state_name[state_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboCountry.currentText() == 'Netherlands'):
 				state_idx = self.netherlands_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('europe','netherlands',self.netherlands_state_name[state_idx], outdir)
+				message = hcmgis_geofabrik2('europe','netherlands',self.netherlands_state_name[state_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboCountry.currentText() == 'Poland'):
 				state_idx = self.poland_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('europe','poland',self.poland_state_name[state_idx], outdir)
+				message = hcmgis_geofabrik2('europe','poland',self.poland_state_name[state_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboCountry.currentText() == 'Russian Federation'):
 				state_idx = self.russian_federation_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('','russia',self.russian_federation_state_name[state_idx], outdir)
+				message = hcmgis_geofabrik2('','russia',self.russian_federation_state_name[state_idx], outdir,self.hcmgis_status_callback)
 					
 			elif (self.cboCountry.currentText() == 'United States of America'):
 				state_idx = self.us_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('north-america','us',self.us_state_name[state_idx], outdir)
+				message = hcmgis_geofabrik2('north-america','us',self.us_state_name[state_idx], outdir,self.hcmgis_status_callback)
 			elif (self.cboCountry.currentText() == 'Canada'):
 				state_idx = self.canada_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('north-america','canada',self.canada_state_name[state_idx], outdir)
+				message = hcmgis_geofabrik2('north-america','canada',self.canada_state_name[state_idx], outdir,self.hcmgis_status_callback)
 			
 			elif (self.cboCountry.currentText() == 'Brazil'):
 				state_idx = self.brazil_state.index(self.cboProvince.currentText())
-				hcmgis_geofabrik2('south-america','brazil',self.brazil_state_name[state_idx], outdir)
-
+				message = hcmgis_geofabrik2('south-america','brazil',self.brazil_state_name[state_idx], outdir,self.hcmgis_status_callback)
 		return		
 
 ########################################################
@@ -612,7 +644,38 @@ class hcmgis_gadm_dialog(QDialog, Ui_hcmgis_gadm_form):
 		self.cboCountry.currentIndexChanged.connect(self.updateLOD)   
 		self.cboCountry.setCurrentIndex(-1) 
 		self.LinLOD.setText('')
-	
+		self.hcmgis_set_status_bar(self.status)		
+
+	def hcmgis_set_status_bar(self, status_bar):
+		status_bar.setMinimum(0)
+		status_bar.setMaximum(100)
+		status_bar.setValue(0)
+		status_bar.setFormat("Ready")
+		self.status_bar = status_bar
+
+	def hcmgis_status_callback(self, percent_complete, message):
+		try:
+			if not message:
+				message = str(int(percent_complete)) + "%"
+
+			self.status_bar.setFormat(message)
+
+			if percent_complete < 0:
+				self.status_bar.setValue(0)
+			elif percent_complete > 100:
+				self.status_bar.setValue(100)
+			else:
+				self.status_bar.setValue(percent_complete)
+
+			self.iface.statusBarIface().showMessage(message)
+
+			# print("status_callback(" + message + ")")
+		except:
+			print(message)
+
+		# add handling of "Close" button
+		return 0
+		
 	def browse_outfile(self):
 		newname = QFileDialog.getExistingDirectory(None, "Output Folder",self.LinOutputFolder.displayText())
 
@@ -626,7 +689,7 @@ class hcmgis_gadm_dialog(QDialog, Ui_hcmgis_gadm_form):
 	def run(self):
 		outdir = unicode(self.LinOutputFolder.displayText())
 		idx = self.cboCountry.currentIndex()
-		hcmgis_gadm(self.country[idx],self.country_short[idx], outdir)				
+		hcmgis_gadm(self.country[idx],self.country_short[idx], outdir,self.hcmgis_status_callback)				
 		return		
 
 # --------------------------------------------------------
@@ -1260,7 +1323,7 @@ class hcmgis_split_dialog(QDialog, Ui_hcmgis_split_form):
 		self.CboField.setLayer (self.CboInput.currentLayer () )
 		self.CboInput.activated.connect(self.update_field)                
 		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-		self.LinOutputFolder.setText(os.getcwd())                                             
+		self.LinOutputFolder.setText()                                             
 		self.BtnOutputFolder.clicked.connect(self.browse_outfiles)
 	
 	def update_field(self):

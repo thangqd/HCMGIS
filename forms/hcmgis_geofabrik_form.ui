@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>521</width>
-    <height>266</height>
+    <height>315</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -75,6 +75,13 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="Label">
+       <property name="text">
+        <string>Select folder to save shapefile</string>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="0">
       <widget class="QLineEdit" name="LinOutputFolder">
        <property name="readOnly">
@@ -89,10 +96,17 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0" colspan="2">
-      <widget class="QLabel" name="Label">
+     <item row="3" column="0" colspan="2">
+      <widget class="QProgressBar" name="status">
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QLabel" name="lblStatus">
        <property name="text">
-        <string>Select folder to save shapefile</string>
+        <string/>
        </property>
       </widget>
      </item>

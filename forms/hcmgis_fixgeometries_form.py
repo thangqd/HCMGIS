@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'hcmgis_fixgeometries_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -13,38 +13,43 @@ class Ui_hcmgis_fixgeometries_form(object):
         hcmgis_fixgeometries_form.setObjectName("hcmgis_fixgeometries_form")
         hcmgis_fixgeometries_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_fixgeometries_form.setEnabled(True)
-        hcmgis_fixgeometries_form.resize(341, 140)
+        hcmgis_fixgeometries_form.resize(341, 162)
         hcmgis_fixgeometries_form.setMouseTracking(False)
-        self.BtnOKCancel = QtWidgets.QDialogButtonBox(hcmgis_fixgeometries_form)
-        self.BtnOKCancel.setGeometry(QtCore.QRect(175, 100, 156, 31))
-        self.BtnOKCancel.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.BtnOKCancel.setObjectName("BtnOKCancel")
+        self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_fixgeometries_form)
+        self.verticalLayout.setObjectName("verticalLayout")
         self.LblInput = QtWidgets.QLabel(hcmgis_fixgeometries_form)
-        self.LblInput.setGeometry(QtCore.QRect(10, 7, 321, 16))
         self.LblInput.setObjectName("LblInput")
+        self.verticalLayout.addWidget(self.LblInput)
         self.CboInput = QgsMapLayerComboBox(hcmgis_fixgeometries_form)
-        self.CboInput.setGeometry(QtCore.QRect(10, 24, 321, 21))
         self.CboInput.setObjectName("CboInput")
+        self.verticalLayout.addWidget(self.CboInput)
         self.LblOutput_3 = QtWidgets.QLabel(hcmgis_fixgeometries_form)
-        self.LblOutput_3.setGeometry(QtCore.QRect(10, 50, 321, 16))
         self.LblOutput_3.setObjectName("LblOutput_3")
+        self.verticalLayout.addWidget(self.LblOutput_3)
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
         self.LinOutput = QtWidgets.QLineEdit(hcmgis_fixgeometries_form)
         self.LinOutput.setEnabled(True)
-        self.LinOutput.setGeometry(QtCore.QRect(10, 70, 241, 20))
         self.LinOutput.setMouseTracking(True)
         self.LinOutput.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.LinOutput.setAcceptDrops(False)
         self.LinOutput.setText("")
         self.LinOutput.setReadOnly(False)
         self.LinOutput.setObjectName("LinOutput")
+        self.gridLayout.addWidget(self.LinOutput, 0, 0, 1, 1)
         self.BtnOutput = QtWidgets.QPushButton(hcmgis_fixgeometries_form)
         self.BtnOutput.setEnabled(True)
-        self.BtnOutput.setGeometry(QtCore.QRect(260, 70, 71, 21))
         font = QtGui.QFont()
         font.setBold(False)
         font.setWeight(50)
         self.BtnOutput.setFont(font)
         self.BtnOutput.setObjectName("BtnOutput")
+        self.gridLayout.addWidget(self.BtnOutput, 0, 1, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout)
+        self.BtnOKCancel = QtWidgets.QDialogButtonBox(hcmgis_fixgeometries_form)
+        self.BtnOKCancel.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.BtnOKCancel.setObjectName("BtnOKCancel")
+        self.verticalLayout.addWidget(self.BtnOKCancel)
 
         self.retranslateUi(hcmgis_fixgeometries_form)
         self.BtnOKCancel.accepted.connect(hcmgis_fixgeometries_form.accept)
@@ -58,7 +63,7 @@ class Ui_hcmgis_fixgeometries_form(object):
         self.LblOutput_3.setText(_translate("hcmgis_fixgeometries_form", "Output Shapefile"))
         self.BtnOutput.setText(_translate("hcmgis_fixgeometries_form", "Browse..."))
 
-from qgis.gui import QgsMapLayerComboBox
+from qgsmaplayercombobox import QgsMapLayerComboBox
 
 if __name__ == "__main__":
     import sys

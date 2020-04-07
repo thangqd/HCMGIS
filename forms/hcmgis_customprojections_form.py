@@ -2,20 +2,18 @@
 
 # Form implementation generated from reading ui file 'hcmgis_customprojections_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_customprojections_form(object):
     def setupUi(self, hcmgis_customprojections_form):
         hcmgis_customprojections_form.setObjectName("hcmgis_customprojections_form")
         hcmgis_customprojections_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_customprojections_form.setEnabled(True)
-        hcmgis_customprojections_form.resize(592, 344)
+        hcmgis_customprojections_form.resize(521, 344)
         hcmgis_customprojections_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_customprojections_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -43,7 +41,6 @@ class Ui_hcmgis_customprojections_form(object):
         self.LblZone.setObjectName("LblZone")
         self.gridLayout.addWidget(self.LblZone, 4, 0, 1, 1)
         self.lnZone = QtWidgets.QLineEdit(hcmgis_customprojections_form)
-        self.lnZone.setReadOnly(True)
         self.lnZone.setObjectName("lnZone")
         self.gridLayout.addWidget(self.lnZone, 4, 1, 1, 1)
         self.lblEPSGCode = QtWidgets.QLabel(hcmgis_customprojections_form)
@@ -260,3 +257,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_customprojections_form)
     hcmgis_customprojections_form.show()
     sys.exit(app.exec_())
+

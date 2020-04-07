@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'hcmgis_checkvalidity_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -13,18 +13,20 @@ class Ui_hcmgis_checkvalidity_form(object):
         hcmgis_checkvalidity_form.setObjectName("hcmgis_checkvalidity_form")
         hcmgis_checkvalidity_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_checkvalidity_form.setEnabled(True)
-        hcmgis_checkvalidity_form.resize(341, 89)
+        hcmgis_checkvalidity_form.resize(341, 118)
         hcmgis_checkvalidity_form.setMouseTracking(False)
+        self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_checkvalidity_form)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.LblInput = QtWidgets.QLabel(hcmgis_checkvalidity_form)
+        self.LblInput.setObjectName("LblInput")
+        self.verticalLayout.addWidget(self.LblInput)
+        self.CboInput = QgsMapLayerComboBox(hcmgis_checkvalidity_form)
+        self.CboInput.setObjectName("CboInput")
+        self.verticalLayout.addWidget(self.CboInput)
         self.BtnOKCancel = QtWidgets.QDialogButtonBox(hcmgis_checkvalidity_form)
-        self.BtnOKCancel.setGeometry(QtCore.QRect(177, 50, 156, 31))
         self.BtnOKCancel.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.BtnOKCancel.setObjectName("BtnOKCancel")
-        self.LblInput = QtWidgets.QLabel(hcmgis_checkvalidity_form)
-        self.LblInput.setGeometry(QtCore.QRect(10, 7, 321, 16))
-        self.LblInput.setObjectName("LblInput")
-        self.CboInput = QgsMapLayerComboBox(hcmgis_checkvalidity_form)
-        self.CboInput.setGeometry(QtCore.QRect(10, 24, 321, 21))
-        self.CboInput.setObjectName("CboInput")
+        self.verticalLayout.addWidget(self.BtnOKCancel)
 
         self.retranslateUi(hcmgis_checkvalidity_form)
         self.BtnOKCancel.accepted.connect(hcmgis_checkvalidity_form.accept)

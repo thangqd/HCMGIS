@@ -18,6 +18,11 @@ class hcmgis_menu:
 		self.iface = iface
 		self.hcmgis_menu = None
 
+	basemap_provider = [ 'Google Maps'		
+						]
+	basemap_url = ['tmt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
+					]
+
 	def hcmgis_add_submenu(self, submenu):
 		if self.hcmgis_menu != None:
 			self.hcmgis_menu.addMenu(submenu)
@@ -357,16 +362,16 @@ class hcmgis_menu:
 		self.opendata_menu.addAction(self.gadm_action)
 
 
-		#Open Development Mekong
-		self.hcmgis_add_submenu(self.opendata_menu)
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_odmekong.png")
-		self.opendevelopmentmekong_action = QAction(icon, u'Open Development Mekong', self.iface.mainWindow())
-		self.opendevelopmentmekong_action.triggered.connect(self.opendevelopmentmekong)		
-		self.opendata_menu.addAction(self.opendevelopmentmekong_action)
+		# #Open Development Mekong
+		# self.hcmgis_add_submenu(self.opendata_menu)
+		# icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_odmekong.png")
+		# self.opendevelopmentmekong_action = QAction(icon, u'Open Development Mekong', self.iface.mainWindow())
+		# self.opendevelopmentmekong_action.triggered.connect(self.opendevelopmentmekong)		
+		# self.opendata_menu.addAction(self.opendevelopmentmekong_action)
 
 		#HCMGIS OpenData
 		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-		self.opendata_action = QAction(icon, u'HCMGIS OpenData', self.iface.mainWindow())
+		self.opendata_action = QAction(icon, u'HCMGIS OpenData and other WFS Servers', self.iface.mainWindow())
 		self.opendata_action.triggered.connect(self.opendata)		
 		self.opendata_menu.addAction(self.opendata_action)
 
@@ -458,13 +463,20 @@ class hcmgis_menu:
 			self.iface.mainWindow().menuBar().removeAction(self.hcmgis_menu.menuAction())
 		else:
 			self.iface.removePluginMenu("&hcmgis", self.basemap_menu.menuAction())
+			self.iface.removePluginMenu("&hcmgis", self.batch_converter_menu.menuAction())
+			self.iface.removePluginMenu("&hcmgis", self.covid19_menu.menuAction())						
 			self.iface.removePluginMenu("&hcmgis", self.openddata_menu.menuAction())
+			self.iface.removePluginMenu("&hcmgis", self.projections_menu.menuAction())			
 			self.iface.removePluginMenu("&hcmgis", self.geoprocessing_menu.menuAction())
 			self.iface.removePluginMenu("&hcmgis", self.tool_menu.menuAction())
+			
 
 	##############
 	# Google
 	############
+	def basemaps_call(self, basemap_index):		
+		hcmgis_basemap(self.iface,self.basemap_url[basemap_index],self.basemap_provider[basemap_index])
+
 	def googlemaps_call(self):
 		service_url ="mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
 		name = "Google Maps"
@@ -818,9 +830,9 @@ class hcmgis_menu:
 		dialog = hcmgis_opendata_dialog(self.iface)
 		dialog.exec_()
 	
-	def opendevelopmentmekong(self):
-		dialog = hcmgis_opendevelopmentmekong_dialog(self.iface)
-		dialog.exec_()
+	# def opendevelopmentmekong(self):
+	# 	dialog = hcmgis_opendevelopmentmekong_dialog(self.iface)
+	# 	dialog.exec_()
 	
 	def geofabrik(self):
 		dialog = hcmgis_geofabrik_dialog(self.iface)

@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>557</width>
-    <height>430</height>
+    <width>706</width>
+    <height>462</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -22,53 +22,147 @@
   <property name="windowTitle">
    <string>HCMGIS OpenData</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QLabel" name="label_4">
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="text">
-      <string>Select layers</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QListWidget" name="sourcelayers">
-     <property name="selectionMode">
-      <enum>QAbstractItemView::ExtendedSelection</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="ChkSaveShapefile">
-     <property name="text">
-      <string>Save layers to disk</string>
-     </property>
-    </widget>
-   </item>
-   <item>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="4" column="0" colspan="2">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="1">
-      <widget class="QPushButton" name="BtnOutputFolder">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="CboFormat">
+       <item>
+        <property name="text">
+         <string>Shapefile</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SHAPE-ZIP</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>JSON</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>KML</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GML2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GML3</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="LblFormat">
        <property name="text">
-        <string>Browse...</string>
+        <string>Format</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
+     <item row="7" column="0" colspan="2">
+      <widget class="QTableWidget" name="TblWFSLayers">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::NoDragDrop</enum>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Title</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item row="3" column="0" colspan="2">
+      <widget class="QComboBox" name="cboWFSProvider">
+       <item>
+        <property name="text">
+         <string>HCMGIS OpenData - Data worth Sharing</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>OpenDevelopmetMekong</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>OpenDevelopmetCambodia</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>OpenDevelopmentLao</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>OpenDevelopmentMyanmar</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>OpenDevelopmentVietnam</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="2">
+      <widget class="QCheckBox" name="ChkSaveShapefile">
+       <property name="text">
+        <string>Save layers to disk</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>WFS Server</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Select layers</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
       <widget class="QLineEdit" name="LinOutputFolder">
        <property name="enabled">
         <bool>false</bool>
@@ -90,9 +184,39 @@
        </property>
       </widget>
      </item>
+     <item row="9" column="1">
+      <widget class="QPushButton" name="BtnOutputFolder">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0" colspan="2">
+      <widget class="QProgressBar" name="status">
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0" colspan="2">
+      <widget class="QLabel" name="LblSattus">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
-   <item>
+   <item row="5" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -105,7 +229,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>sourcelayers</tabstop>
   <tabstop>BtnApplyClose</tabstop>
  </tabstops>
  <resources/>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'hcmgis_closestpair_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -13,7 +13,7 @@ class Ui_hcmgis_closestpair_form(object):
         hcmgis_closestpair_form.setObjectName("hcmgis_closestpair_form")
         hcmgis_closestpair_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_closestpair_form.setEnabled(True)
-        hcmgis_closestpair_form.resize(450, 154)
+        hcmgis_closestpair_form.resize(441, 154)
         hcmgis_closestpair_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_closestpair_form)
         self.verticalLayout.setObjectName("verticalLayout")

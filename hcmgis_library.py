@@ -9,13 +9,21 @@ import io
 import re
 import csv
 import sys
-import time
 import locale
 import random
-#import urllib2
-import os.path
+import xlrd
+import urllib
+import argparse
+import json
+import logging
+import numbers
+import requests
+import zipfile
+import stat
 import operator
 import tempfile
+import urllib.request
+import os.path
 import xml.etree.ElementTree
 
 from qgis.core import *
@@ -23,16 +31,15 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from qgis.gui import QgsMessageBar
-
-import argparse
-import json
-import logging
-import numbers
-import sys
-import requests
+from math import *
+# Used instead of "import math" so math functions can be used without "math." prefix
+import qgis.utils
+import processing   
+from osgeo import gdal
+from osgeo import ogr
+from osgeo import osr
 
 ####################### arcgis2geojson
-
 def pointsEqual(a, b):
     """
     checks if 2 [x, y] points are equal
@@ -296,7 +303,6 @@ def convert(arcgis, idAttribute=None):
 
     return geojson
 
-
 def main():
     parser = argparse.ArgumentParser(description='Convert ArcGIS JSON to GeoJSON')
     parser.add_argument(
@@ -319,11 +325,6 @@ def main():
     return 0
 
 
-#from processing.tools.vector import VectorWriter
-
-
-# Used instead of "import math" so math functions can be used without "math." prefix
-from math import *
 global _Unicode, _TCVN3, _VNIWin, _KhongDau
 _Unicode = [
 u'â',u'Â',u'ă',u'Ă',u'đ',u'Đ',u'ê',u'Ê',u'ô',u'Ô',u'ơ',u'Ơ',u'ư',u'Ư',u'á',u'Á',u'à',u'À',u'ả',u'Ả',u'ã',u'Ã',u'ạ',u'Ạ',
@@ -359,9 +360,6 @@ u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',
 # --------------------------------------------------------
 
 def hcmgis_basemap(self, service_url, name):
-    import requests
-    import qgis.utils
-    
     service_uri = "type=xyz&zmin=0&zmax=22&url=http://"+requests.utils.quote(service_url)	
     tms_layer = qgis.utils.iface.addRasterLayer(service_uri, name, "wms")
     if not tms_layer.isValid():
@@ -384,7 +382,6 @@ def hcmgis_basemap(self, service_url, name):
 
 
 def hcmgis_vietbando(self, service_url, name):
-    import qgis.utils
     sources = []
     service_url = "http://"+service_url
     sources.append(["connections-xyz",name,"","","",service_url,"","22","0"])
@@ -408,7 +405,6 @@ def hcmgis_vietbando(self, service_url, name):
 #for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
 
 def hcmgis_medialaxis(qgis, layer, selectedfield, density):		
-    import processing
     ## create skeleton/ media axis
     parameters1 = {'INPUT':layer,
                     'OUTPUT':  "memory:polygon"}
@@ -466,7 +462,8 @@ def hcmgis_medialaxis(qgis, layer, selectedfield, density):
                     'TOLERANCE' : 1,
                     'OUTPUT':  "memory:medialaxis"}
     processing.runAndLoadResults('qgis:simplifygeometries',parameter11)  
-    
+
+       
     #Calculate min/ max/ average width 
     # parameter12 =  {'INPUT': explode['OUTPUT'],	
                     # 'OVERLAY': polygon['OUTPUT'], 
@@ -498,7 +495,6 @@ def hcmgis_medialaxis(qgis, layer, selectedfield, density):
     return
 
 def hcmgis_centerline(qgis,layer,density,chksurround,distance):		
-    import processing
     convexhull	= None
     ## extract gaps of polygon
     # fix geometries
@@ -611,7 +607,6 @@ def hcmgis_centerline(qgis,layer,density,chksurround,distance):
 # Finding closest/ Farthest pair of Points
 ################################################################
 def hcmgis_closestpair(qgis,layer,field):		
-    import processing
     if layer is None:
         return 'No selected layer!'
     if ((field is None) or (field == '')):
@@ -873,7 +868,6 @@ def hcmgis_merge(qgis, layernames, savename, addlayer):
 
 
 def hcmgis_split(qgis, layer,selectedfield, outdir):	
-    import processing
     if layer is None:
         return u'No selected layers!'  
     parameters = {'INPUT':layer,
@@ -1257,255 +1251,11 @@ def hcmgis_completion_message(qgis, message):
     hcmgis_status_message(qgis, message)
 
 # --------------------------------------------------------
-#    hcmgis_voronoi - Voronoi diagram creation
-#    reference: mmqgis
-# --------------------------------------------------------
-
-def hcmgis_voronoi_diagram(qgis, sourcelayer, savename, addlayer):
-    layer = hcmgis_find_layer(sourcelayer)
-    if layer == None:
-        return "Layer " + sourcename + " not found"
-    
-    if len(savename) <= 0:
-        return "No output filename given"
-
-    if QFile(savename).exists():
-        if not QgsVectorFileWriter.deleteShapeFile(savename):
-            return "Failure deleting existing shapefile: " + savename
-
-    outfile = QgsVectorFileWriter(savename, "utf-8", layer.fields(), 
-            QgsWkbTypes.Polygon, layer.crs(), "ESRI Shapefile")
-
-    if (outfile.hasError() != QgsVectorFileWriter.NoError):
-        return "Failure creating output shapefile: " + unicode(outfile.errorMessage())
-
-    points = []
-    xmin = 0
-    xmax = 0
-    ymin = 0
-    ymax = 0
-
-    for feature in layer.getFeatures():
-        # Re-read by feature ID because nextFeature() doesn't always seem to read attributes
-        # layer.featureAtId(feature.id(), feature)
-        geometry = feature.geometry()
-        hcmgis_status_message(qgis, "Reading feature " + unicode(feature.id()))
-        # print str(feature.id()) + ": " + str(geometry.wkbType())
-        if geometry.wkbType() == QgsWkbTypes.Point:
-            points.append( (geometry.asPoint().x(), geometry.asPoint().y(), feature.attributes()) )
-            if (len(points) <= 1) or (xmin > geometry.asPoint().x()):
-                xmin = geometry.asPoint().x()
-            if (len(points) <= 1) or (xmax < geometry.asPoint().x()):
-                xmax = geometry.asPoint().x()
-            if (len(points) <= 1) or (ymin > geometry.asPoint().y()):
-                ymin = geometry.asPoint().y()
-            if (len(points) <= 1) or (ymax < geometry.asPoint().y()):
-                ymax = geometry.asPoint().y()
-
-    if (len(points) < 3):
-        return "Too few points to create diagram"
-
-    for point_number, center in enumerate(points):
-    # for center in [ points[17] ]:
-        # print "\nCenter, " + str(center[0]) + ", " + str(center[1])
-        if (point_number % 20) == 0:
-            #hcmgis_status_message(qgis, "Processing point " + \
-            #	unicode(center[0]) + ", " + unicode(center[1]))
-            hcmgis_status_message(qgis, "Processing point " + unicode(point_number) + " of " + unicode(len(points)))
-
-        # Borders are tangents to midpoints between all neighbors
-        tangents = []
-        for neighbor in points:
-            border = hcmgis_voronoi_line((center[0] + neighbor[0]) / 2.0, (center[1] + neighbor[1]) / 2.0)
-            if ((neighbor[0] != center[0]) or (neighbor[1] != center[1])):
-                tangents.append(border)
-
-        # Add edge intersections to clip to extent of points
-        offset = (xmax - xmin) * 0.01
-        tangents.append(hcmgis_voronoi_line(xmax + offset, center[1]))
-        tangents.append(hcmgis_voronoi_line(center[0], ymax + offset))
-        tangents.append(hcmgis_voronoi_line(xmin - offset, center[1]))
-        tangents.append(hcmgis_voronoi_line(center[0], ymin - offset))
-        #print "Extent x = " + str(xmax) + " -> " + str(xmin) + ", y = " + str(ymax) + " -> " + str(ymin)
-
-        # Find vector distance and angle to border from center point
-        for scan in range(0, len(tangents)):
-            run = tangents[scan].x - center[0]
-            rise = tangents[scan].y - center[1]
-            tangents[scan].distance = sqrt((run * run) + (rise * rise))
-            if (tangents[scan].distance <= 0):
-                tangents[scan].angle = 0
-            elif (tangents[scan].y >= center[1]):
-                tangents[scan].angle = acos(run / tangents[scan].distance)
-            elif (tangents[scan].y < center[1]):
-                tangents[scan].angle = (2 * pi) - acos(run / tangents[scan].distance)
-            elif (tangents[scan].x > center[0]):
-                tangents[scan].angle = pi / 2.0
-            else:
-                tangents[scan].angle = 3 * pi / 4
-
-            #print "  Tangent, " + str(tangents[scan].x) + ", " + str(tangents[scan].y) + \
-            #	", angle " + str(tangents[scan].angle * 180 / pi) + ", distance " + \
-            #	str(tangents[scan].distance)
-
-
-        # Find the closest line - guaranteed to be a border
-        closest = -1
-        for scan in range(0, len(tangents)):
-            if ((closest == -1) or (tangents[scan].distance < tangents[closest].distance)):
-                closest = scan
-
-        # Use closest as the first border
-        border = hcmgis_voronoi_line(tangents[closest].x, tangents[closest].y)
-        border.angle = tangents[closest].angle
-        border.distance = tangents[closest].distance
-        borders = [ border ]
-
-        #print "  Border 0) " + str(closest) + " of " + str(len(tangents)) + ", " \
-        #	+ str(border.x) + ", " + str(border.y) \
-        #	+ ", (angle " + str(border.angle * 180 / pi) + ", distance " \
-        #	+ str(border.distance) + ")"
-
-        # Work around the tangents in a CCW circle
-        circling = 1
-        while circling:
-            next = -1
-            scan = 0
-            while (scan < len(tangents)):
-                anglebetween = tangents[scan].angle - borders[len(borders) - 1].angle
-                if (anglebetween < 0):
-                    anglebetween += (2 * pi)
-                elif (anglebetween > (2 * pi)):
-                    anglebetween -= (2 * pi)
-
-                #print "    Scanning " + str(scan) + " of " + str(len(borders)) + \
-                #	", " + str(tangents[scan].x) + ", " + str(tangents[scan].y) + \
-                #	", angle " + str(tangents[scan].angle * 180 / pi) + \
-                #	", anglebetween " + str(anglebetween * 180 / pi)
-
-                # If border intersects to the left
-                if (anglebetween < pi) and (anglebetween > 0):
-                    # A typo here with a reversed slash cost 8/13/2009 debugging
-                    tangents[scan].iangle = atan2( (tangents[scan].distance / 
-                        borders[len(borders) - 1].distance) \
-                        - cos(anglebetween), sin(anglebetween))
-                    tangents[scan].idistance = borders[len(borders) - 1].distance \
-                        / cos(tangents[scan].iangle)
-
-                    tangents[scan].iangle += borders[len(borders) - 1].angle
-
-                    # If the rightmost intersection so far, it's a candidate for next border
-                    if (next < 0) or (tangents[scan].iangle < tangents[next].iangle):
-                        # print "      Take idistance " + str(tangents[scan].idistance)
-                        next = scan
-
-                scan += 1
-
-            # iangle/distance are for intersection of border with next border
-            borders[len(borders) - 1].iangle = tangents[next].iangle
-            borders[len(borders) - 1].idistance = tangents[next].idistance
-
-            # Stop circling if back to the beginning
-            if (borders[0].x == tangents[next].x) and (borders[0].y == tangents[next].y):
-                circling = 0
-
-            else:
-                # Add the next border
-                border = hcmgis_voronoi_line(tangents[next].x, tangents[next].y)
-                border.angle = tangents[next].angle
-                border.distance = tangents[next].distance
-                border.iangle = tangents[next].iangle
-                border.idistance = tangents[next].idistance
-                borders.append(border)
-                #print "  Border " + str(len(borders) - 1) + \
-                #	") " + str(next) + ", " + str(border.x) + \
-                #	", " + str(border.y) + ", angle " + str(border.angle * 180 / pi) +\
-                #	", iangle " + str(border.iangle * 180 / pi) +\
-                #	", idistance " + str(border.idistance) + "\n"
-
-            # Remove the border from the list so not repeated
-            tangents.pop(next)
-            if (len(tangents) <= 0):
-                circling = 0
-
-        polygon = []
-        if len(borders) >= 3:
-            for border in borders:
-                ix = center[0] + (border.idistance * cos(border.iangle))
-                iy = center[1] + (border.idistance * sin(border.iangle))
-                #print "  Node, " + str(ix) + ", " + str(iy) + \
-                #	", angle " + str(border.angle * 180 / pi) + \
-                #	", iangle " + str(border.iangle * 180 / pi) + \
-                #	", idistance " + str(border.idistance) + ", from " \
-                #	+ str(border.x) + ", " + str(border.y)
-                polygon.append(QgsPointXY(ix, iy))
-
-            #print "Polygon " + unicode(point_number)
-            #for x in range(0, len(polygon)):
-            #	print "  Point " + unicode(polygon[x].x()) + ", " + unicode(polygon[x].y())
-
-            # Remove duplicate nodes
-            # Compare as strings (unicode) to avoid odd precision discrepancies
-            # that sometimes cause duplicate points to be unrecognized
-            dup = 0
-            while (dup < (len(polygon) - 1)):
-                if (unicode(polygon[dup].x()) == unicode(polygon[dup + 1].x())) and \
-                   (unicode(polygon[dup].y()) == unicode(polygon[dup + 1].y())):
-                    polygon.pop(dup)
-                    # print "  Removed duplicate node " + unicode(dup) + \
-                    #	" in polygon " + unicode(point_number)
-                else:
-                    # print "  " + unicode(polygon[dup].x()) + ", " + \
-                    #	unicode(polygon[dup].y()) + " != " + \
-                    #	unicode(polygon[dup + 1].x()) + ", " + \
-                    #	unicode(polygon[dup + 1].y())
-                    dup = dup + 1
-
-            # attributes = { 0:QVariant(center[0]), 1:QVariant(center[1]) }
-
-        if len(polygon) >= 3:
-            geometry = QgsGeometry.fromPolygonXY([ polygon ])
-            feature = QgsFeature()
-            feature.setGeometry(geometry)
-            feature.setAttributes(center[2])
-            outfile.addFeature(feature)
-                
-    del outfile
-
-    if addlayer:
-        qgis.addVectorLayer(savename, os.path.basename(savename), "ogr")
-
-    hcmgis_completion_message(qgis, "Created " + unicode(len(points)) + " polygon Voronoi diagram")
-
-    return None
-
-def hcmgis_endpoint(start, distance, degrees):
-    # Assumes points are WGS 84 lat/long, distance in meters,
-    # bearing in degrees with north = 0, east = 90, west = -90
-    # Uses the haversine formula for calculation:
-    # http://www.movable-type.co.uk/scripts/latlong.html
-    radius = 6378137.0 # meters
-
-    start_lon = start.x() * pi / 180
-    start_lat = start.y() * pi / 180
-    bearing = degrees * pi / 180
-
-    end_lat = asin((sin(start_lat) * cos(distance / radius)) +
-        (cos(start_lat) * sin(distance / radius) * cos(bearing)))
-    end_lon = start_lon + atan2( \
-        sin(bearing) * sin(distance / radius) * cos(start_lat),
-        cos(distance / radius) - (sin(start_lat) * sin(end_lat)))
-
-    return QgsPointXY(end_lon * 180 / pi, end_lat * 180 / pi)
-
-
-# --------------------------------------------------------
 # hcmgis_lec - Largest Empty Circle inside the convexhull of a point set based on Voronoi Diagram
 # 	 
 # --------------------------------------------------------
 
 def hcmgis_lec(qgis, layer, selectedfield):	
-    import processing
     if layer is None:
         return u'No selected point layer!'  
     if (not layer.wkbType()== QgsWkbTypes.Point):
@@ -1593,89 +1343,6 @@ def hcmgis_lec(qgis, layer, selectedfield):
     # except Exception:
     # 	return	
 
-# --------------------------------------------------------
-#    hcmgis_buffers - Create buffers around shapes
-# --------------------------------------------------------
-def hcmgis_buffer_point(point, meters, edges, rotation_degrees):
-    if (meters <= 0) or (edges < 3):
-        return None
-
-    # Points are treated separately from other geometries so that discrete
-    # edges can be supplied for non-circular buffers that are not supported
-    # by the QgsGeometry.buffer() function
-
-    wgs84 = QgsCoordinateReferenceSystem()
-    wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
-
-    # print "Point " + unicode(point.x()) + ", " + unicode(point.y()) + " meters " + unicode(meters)
-
-    polyline = []
-    for edge in range(0, edges + 1):
-        degrees = ((float(edge) * 360.0 / float(edges)) + rotation_degrees) % 360
-        polyline.append(hcmgis_endpoint(QgsPointXY(point), meters, degrees))
-
-    return QgsGeometry.fromPolygonXY([polyline])
-
-
-def hcmgis_buffers(qgis, layer, radius_attribute, radius, radius_unit, edge_attribute, edge_count, 
-    rotation_attribute, rotation_degrees, savename, selectedonly, addlayer):
-    # Create the output file
-    if QFile(savename).exists():
-        if not QgsVectorFileWriter.deleteShapeFile(savename):
-            return "Failure deleting existing shapefile: " + savename
- 
-    wgs84 = QgsCoordinateReferenceSystem()
-    wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
-    transform = QgsCoordinateTransform(layer.crs(), wgs84, QgsProject.instance())
-    # print layer.crs().toProj4() + " -> " + wgs84.toProj4()
-    
-    outfile = QgsVectorFileWriter(savename, "utf-8", layer.fields(), QgsWkbTypes.Polygon, wgs84, "ESRI Shapefile")
-
-    if (outfile.hasError() != QgsVectorFileWriter.NoError):
-        return "Failure creating output shapefile: " + unicode(outfile.errorMessage())
-
-    # Create buffers for each feature
-    buffercount = 0
-    featurecount = layer.featureCount()
-    if selectedonly:
-        feature_list = layer.selectedFeatures()
-    else:
-        feature_list = layer.getFeatures()
-
-    for feature_index, feature in enumerate(feature_list):
-        #hcmgis_status_message(qgis, "Writing feature " + \
-            #unicode(feature.id()) + " of " + unicode(featurecount))
-
-        geometry = feature.geometry()
-        geometry.transform(transform) # Needs to be WGS 84 to use Haversine distance calculation
-        # print "Transform " + unicode(x) + ": " + unicode(geometry.centroid().asPoint().x())
-
-        if (geometry.wkbType() in [QgsWkbTypes.Point, QgsWkbTypes.Point25D, QgsWkbTypes.MultiPoint, QgsWkbTypes.MultiPoint25D]):
-
-            #newgeometry = hcmgis_buffer_point(geometry.asPoint(), feature_radius, feature_edges, feature_rotation)
-            newgeometry = hcmgis_buffer_point(geometry.asPoint(), radius, edge_count, 0)
-
-        if newgeometry == None:
-            return "Failure converting geometry for feature " + unicode(buffercount)
-
-        else:
-            newfeature = QgsFeature()
-            newfeature.setGeometry(newgeometry)
-            newfeature.setAttributes(feature.attributes())
-            outfile.addFeature(newfeature)
-    
-        buffercount = buffercount + 1
-
-    del outfile
-
-    if addlayer:
-        vlayer = qgis.addVectorLayer(savename, os.path.basename(savename), "ogr")
-        
-    #hcmgis_completion_message(qgis, unicode(buffercount) + " buffers created for " + \
-        #unicode(featurecount) + " features")
-
-    return None
-
 #hcmgis_format_convert
 def hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name):
     if  (input_file_name.endswith('.pbf') or input_file_name.endswith('.gpkg') or input_file_name.endswith('.dxf') or  input_file_name.endswith('.dgn')):
@@ -1685,7 +1352,6 @@ def hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name):
         except:
             return "Failure creating output file"
     else:
-        import processing
         input_file = QgsVectorLayer(input_file_name)	
         if input_file.featureCount() <= 0:
             return "Invalid Vector file"
@@ -1774,9 +1440,7 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
 
     return None
 
-def hcmgis_txt2csv(input_txt_name, output_file_name, status_callback = None):
-    import csv
-    import os
+def hcmgis_txt2csv(input_txt_name, output_file_name, status_callback = None):    
     with open(input_txt_name, "r") as input_file:
         in_txt = csv.reader(input_file)
         with open(output_file_name, 'w', newline='') as output_file:
@@ -1788,12 +1452,8 @@ def hcmgis_txt2csv(input_txt_name, output_file_name, status_callback = None):
 
     return None
 
-def hcmgis_xls2csv(input_xls_name, 	output_file_name, status_callback = None):
-    import csv
-    import os
-    import xlrd
+def hcmgis_xls2csv(input_xls_name, 	output_file_name, status_callback = None):  
     temp_outfile_name = output_file_name.replace(".csv","", 1)
-
     #Non_empty sheets	
     with xlrd.open_workbook(input_xls_name) as wb:
         non_empty_sheets = []
@@ -1820,13 +1480,6 @@ def hcmgis_xls2csv(input_xls_name, 	output_file_name, status_callback = None):
     return None
 
 def hcmgis_geofabrik(region, country, outdir,status_callback = None):
-    import os
-    import urllib
-    import zipfile
-    #import tempfile
-    import urllib.request
-    from PyQt5 import QtGui
-
     #temp_dir = tempfile.mkdtemp()
     download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '-latest-free.shp.zip'	
     #print (download_url_shp)
@@ -1932,13 +1585,6 @@ def hcmgis_geofabrik(region, country, outdir,status_callback = None):
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
   
 def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
-    import os
-    import urllib
-    import zipfile
-    #import tempfile
-    import urllib.request
-    from PyQt5 import QtGui
-
     #temp_dir = tempfile.mkdtemp()
     download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '/' + state + '-latest-free.shp.zip'	
     print (download_url_shp)
@@ -2041,12 +1687,7 @@ def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
                 status_callback(100,None) 
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
 
-def hcmgis_gadm(country, country_short, outdir,status_callback = None):
-    import os
-    import urllib
-    import zipfile
-    import tempfile
-    import urllib.request
+def hcmgis_gadm(country, country_short, outdir,status_callback = None):  
     pre = 'https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_'
     suf = '_shp.zip'
     download_url_shp = pre + country_short + suf
@@ -2099,6 +1740,8 @@ def hcmgis_gadm(country, country_short, outdir,status_callback = None):
     else:
         QMessageBox.warning(None, "Attention",u'Link not found!')
     return
+
+
 #################
 #ogr2ogr
 ##################
@@ -2140,13 +1783,6 @@ def hcmgis_gadm(country, country_short, outdir,status_callback = None):
 # Note : this is the most direct port of ogr2ogr.cpp possible
 # It could be made much more Python'ish !
 
-import sys
-import os
-import stat
-
-from osgeo import gdal
-from osgeo import ogr
-from osgeo import osr
 
 ###############################################################################
 

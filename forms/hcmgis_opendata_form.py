@@ -67,9 +67,9 @@ class Ui_hcmgis_opendata_form(object):
         self.LinOutputFolder.setReadOnly(True)
         self.LinOutputFolder.setObjectName("LinOutputFolder")
         self.gridLayout.addWidget(self.LinOutputFolder, 19, 0, 1, 2)
-        self.cboWFSServer = QtWidgets.QComboBox(hcmgis_opendata_form)
-        self.cboWFSServer.setObjectName("cboWFSServer")
-        self.gridLayout.addWidget(self.cboWFSServer, 13, 1, 1, 2)
+        self.cboServerName = QtWidgets.QComboBox(hcmgis_opendata_form)
+        self.cboServerName.setObjectName("cboServerName")
+        self.gridLayout.addWidget(self.cboServerName, 13, 1, 1, 2)
         self.TxtAbstract = QtWidgets.QPlainTextEdit(hcmgis_opendata_form)
         self.TxtAbstract.setMaximumSize(QtCore.QSize(16777215, 80))
         self.TxtAbstract.setReadOnly(True)
@@ -126,6 +126,12 @@ class Ui_hcmgis_opendata_form(object):
         self.LblSattus.setText("")
         self.LblSattus.setObjectName("LblSattus")
         self.gridLayout.addWidget(self.LblSattus, 21, 0, 1, 3)
+        self.LblServerType = QtWidgets.QLabel(hcmgis_opendata_form)
+        self.LblServerType.setObjectName("LblServerType")
+        self.gridLayout.addWidget(self.LblServerType, 0, 0, 1, 1)
+        self.cboServerType = QtWidgets.QComboBox(hcmgis_opendata_form)
+        self.cboServerType.setObjectName("cboServerType")
+        self.gridLayout.addWidget(self.cboServerType, 0, 1, 1, 2)
         self.gridLayout_2.addLayout(self.gridLayout, 9, 0, 1, 2)
 
         self.retranslateUi(hcmgis_opendata_form)
@@ -138,7 +144,7 @@ class Ui_hcmgis_opendata_form(object):
         hcmgis_opendata_form.setWindowTitle(_translate("hcmgis_opendata_form", "HCMGIS OpenData"))
         self.ChkSaveShapefile.setText(_translate("hcmgis_opendata_form", "Save layers to disk"))
         self.LblTitle.setText(_translate("hcmgis_opendata_form", "Title"))
-        self.label.setText(_translate("hcmgis_opendata_form", "WFS Server"))
+        self.label.setText(_translate("hcmgis_opendata_form", "Server Name"))
         self.BtnOutputFolder.setText(_translate("hcmgis_opendata_form", "Browse..."))
         self.TblWFSLayers.setSortingEnabled(True)
         item = self.TblWFSLayers.horizontalHeaderItem(0)
@@ -156,6 +162,7 @@ class Ui_hcmgis_opendata_form(object):
         self.LblFormat.setText(_translate("hcmgis_opendata_form", "Format"))
         self.lblAbstract.setText(_translate("hcmgis_opendata_form", "Abstract"))
         self.label_4.setText(_translate("hcmgis_opendata_form", "WFS layers"))
+        self.LblServerType.setText(_translate("hcmgis_opendata_form", "Server Type"))
 
 
 if __name__ == "__main__":

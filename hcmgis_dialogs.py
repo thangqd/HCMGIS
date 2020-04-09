@@ -19,10 +19,11 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from owslib.wfs import WebFeatureService
+#from owslib.ogcapi import Features
 from qgis.gui import QgsMessageBar
 import qgis.utils
 from glob import glob
-import urllib, re
+import urllib, re, ssl
 from PyQt5 import QtCore
 
 try:
@@ -181,13 +182,20 @@ class hcmgis_dialog(QtWidgets.QDialog):
             item = list_widget.takeItem(index)
             item = None
             # list_widget.removeItemWidget(list_widget.item(index))
-    
+    server_types = ['WFS',
+                    'ArcGIS Feature Server'
+                ]
+    arcgis_servers = []
+    arcgis_urls = []
     wfs_servers = ['HCMGIS OpenData',
                   'OpenDevelopmetMekong',
                   'OpenDevelopmetCambodia',
                   'OpenDevelopmentLao',
                   'OpenDevelopmentMyanmar',
-                  'OpenDevelopmentVietnam'      
+                  'OpenDevelopmentVietnam',
+                  'ISRIC Data Hub',
+                  'World Food Programme',
+                  'PUMA - World Bank Group'
                 ]
 
     wfs_urls = [
@@ -196,81 +204,67 @@ class hcmgis_dialog(QtWidgets.QDialog):
         'https://data.opendevelopmentmekong.net/geoserver/ODCambodia',
         'https://data.opendevelopmentmekong.net/geoserver/ODLao',
         'https://data.opendevelopmentmekong.net/geoserver/ODMyanmar',
-        'https://data.opendevelopmentmekong.net/geoserver/ODVietnam'
+        'https://data.opendevelopmentmekong.net/geoserver/ODVietnam',
+        'https://data.isric.org/geoserver',
+        'https://geonode.wfp.org/geoserver',
+        'https://puma.worldbank.org/geoserver'
+#         'http://webgis.regione.sardegna.it/geoservers',
+#         ''
+
+# http://geomap.reteunitaria.piemonte.it/ws/gsareprot/rp-01/areeprotwfs/wfs_gsareprot_1?service=WFS&request=getCapabilities 
+
+# http://demo.opengeo.org/geoserver/wfs?service=wfs&version=1.1.0&request=getCapabilities
+
+# http://mrdata.usgs.gov/services/mt?request=getcapabilities&service=WFS&version=1.0.0&
+
+# http://mrdata.usgs.gov/services/tx?request=getcapabilities&service=WFS&version=1.0.0&
+
+# http://mrdata.usgs.gov/services/mrds?request=getcapabilities&service=WFS&version=1.0.0
+
+# http://sdi.geoportal.gov.pl/wfs_prg/wfservice.aspx?REQUEST=GetCapabilities&SERVICE=WFS&VERSION=1.1.0
         ]
   
-
-    def hcmgis_fill_list_widget_with_wfs_layers(self,list_widget,idx, status_callback = None):	
-        list_widget.clear()           		
-        try:
-            wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities')
-            if wfs is not None:
-                data = wfs.read().decode('utf-8')
-                layer_name_regex = r'<Name>(.+?)</Name><Title>'
-                layer_name_pattern  = re.compile(layer_name_regex)
-
-                layer_title_regex = r'</Name><Title>(.+?)</Title><Abstract>'
-                layer_title_pattern  = re.compile(layer_title_regex)
-
-                layer_abstract_regex = r'</Title><Abstract>(.+?)</Abstract>'
-                layer_abstract_pattern  = re.compile(layer_abstract_regex)
-
-                layer_name = re.findall(layer_name_pattern,data)
-                layer_title = re.findall(layer_title_pattern,data)
-                layer_abstract = re.findall(layer_abstract_pattern,data)
-            
-                if layer_name is not None:
-                    #layer_name.remove(layer_name[0])
-                    #layer_title.remove(layer_title[0])
-                    #layer_abstract.remove(layer_abstract[0])  
-                    ii = 0          
-                    for item in layer_name:  
-                        list_widget.addItem(item)          			
-                        if status_callback: 
-                            status_callback(ii,None)
-                        ii+=1		
-                    message = str(ii) + " WFS layers loaded"
-                    MessageBar = qgis.utils.iface.messageBar()
-                    MessageBar.pushMessage(message, 0, 3)  		
-                else: return
-            else: return
-        except Exception as e:
-            QMessageBox.warning(None, "WFS ERROR",str(e))	
-            return		
-
-    def hcmgis_fill_table_widget_with_wfs_layers(self,table_widget, idx, TxtTitle, TxtAbstract, status_callback = None):	
-        table_widget.clear()          
+    def hcmgis_fill_table_widget_with_wfs_layers0(self,table_widget, idx, TxtTitle, TxtAbstract, status_callback = None):	
         table_widget.setRowCount(0) 
         TxtTitle.clear()
-        TxtAbstract.clear()
-        columns = ['Name', 'Title']            
-        table_widget.setColumnCount(len(columns))
-        table_widget.setHorizontalHeaderLabels(columns)       		       
+        TxtAbstract.clear()             		       
         try:
-            wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities')
+            ssl._create_default_https_context = ssl._create_unverified_context
+            #wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',context=ssl._create_unverified_context())
+            #wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities')
+            wfs = requests.get(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',verify = False)
+           
             if wfs is not None:              
-                data = wfs.read().decode('utf-8')
-                server_title_regex = r'<ows:Title>(.+?)</ows:Title>'
-                server_title_pattern = re.compile(server_title_regex)
+                #data = wfs.read().decode('utf-8')
+                data = wfs.text
+                #print (data)
+                server_title_regex = r'<ows:Title>(.+?)</ows:Title>|<ows:Title/>'
+                #server_title_pattern = re.compile(server_title_regex)
                 
-                server_abstract_regex = r'<ows:Abstract>(.+?)</ows:Abstract>'
-                server_abstract_pattern = re.compile(server_abstract_regex)
+                server_abstract_regex = r'<ows:Abstract>(.+?)</ows:Abstract>|<ows:Abstract/>'
+                #server_abstract_pattern = re.compile(server_abstract_regex)
+               
+                server_title = re.findall(server_title_regex,data,re.DOTALL)
+                server_abstract = re.findall(server_abstract_regex,data,re.DOTALL)
 
                 layer_name_regex = r'<Name>(.+?)</Name>'
-                layer_name_pattern  = re.compile(layer_name_regex)
+                #layer_name_pattern  = re.compile(layer_name_regex)
 
                 layer_title_regex = r'<Title>(.+?)</Title>|<Title/>'
-                layer_title_pattern  = re.compile(layer_title_regex)
+                #layer_title_pattern  = re.compile(layer_title_regex)
 
-                layer_name = re.findall(layer_name_pattern,data)
-                layer_title = re.findall(layer_title_pattern,data)
-                
-                server_title = re.findall(server_title_pattern,data)
-                server_abstract = re.findall(server_abstract_pattern,data)
+                layer_name = re.findall(layer_name_regex,data,re.DOTALL)
+                layer_title = re.findall(layer_title_regex,data,re.DOTALL)
+                print(server_title)   
+                print(server_abstract)   
+                #print(layer_name)   
+                #print(layer_title)       
 
                 if layer_name is not None: 
-                    TxtTitle.insertPlainText(server_title[0])
-                    TxtAbstract.insertPlainText(server_abstract[0])
+                    if len(server_title)>0:
+                        TxtTitle.insertPlainText(server_title[0])
+                    if len (server_abstract)>0:
+                        TxtAbstract.insertPlainText(server_abstract[0].replace('&#13;','')) #delete unwanted character before \n
                     #layer_name.remove(layer_name[0])
                     #layer_title.remove(layer_title[0])
                     for i in range (len(layer_name)):  
@@ -290,39 +284,42 @@ class hcmgis_dialog(QtWidgets.QDialog):
         except Exception as e:
             QMessageBox.warning(None, "WFS ERROR",str(e))	
             return
-       
-
-    def hcmgis_fill_table_widget_with_wfs_layers_1(self,table_widget,idx, status_callback = None):	
-        table_widget.clearContents()           		
+    
+    def hcmgis_fill_table_widget_with_wfs_layers(self,table_widget, idx, TxtTitle, TxtAbstract, status_callback = None):	
+        table_widget.clear()          
+        table_widget.setRowCount(0) 
+        TxtTitle.clear()
+        TxtAbstract.clear()
         columns = ['Name', 'Title']            
         table_widget.setColumnCount(len(columns))
-        table_widget.setHorizontalHeaderLabels(columns)
+        table_widget.setHorizontalHeaderLabels(columns)       		       
         try:
-            wfs = WebFeatureService(url=self.wfs_urls[idx], version='1.0.0')
-            wfs_contents = list(wfs.contents)
-            if wfs_contents is not None:                
-                ii = 0
-                for item in wfs_contents:                    
-                    table_widget.insertRow(ii)
-                    table_widget.setItem(ii,0, QTableWidgetItem(item))
-                    table_widget.setItem(ii,1, QTableWidgetItem(wfs[item].title))
-                    table_widget.item(ii,0).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
-                    table_widget.item(ii,1).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
+            wfs = WebFeatureService(self.wfs_urls[idx] +'/wfs', version = '2.0.0')             
+            if wfs is not None:              
+                TxtTitle.insertPlainText(wfs.identification.title)
+                TxtAbstract.insertPlainText(wfs.identification.abstract)
+                layer_names = list(wfs.contents)
+                if layer_names is not None: 
+                    i = 0
+                    for layer_name  in layer_names:  
+                        table_widget.insertRow(i)
+                        table_widget.setItem(i,0, QTableWidgetItem(layer_name))
+                        table_widget.setItem(i,1, QTableWidgetItem(wfs[layer_name].title))
+                        table_widget.item(i,0).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
+                        table_widget.item(i,1).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
+                        i+=1
+                        status_callback((i/len(layer_names))*100,None)
 
-                   # table_widget.setItem(ii,2, QTableWidgetItem(wfs[item].abstract))                     			
-                    if status_callback: 
-                        status_callback(ii,None)
-                    ii+=1		
-                message = str(ii) + " WFS layers loaded"
-                MessageBar = qgis.utils.iface.messageBar()
-                MessageBar.pushMessage(message, 0, 3)                   
+                    message = str(i) + " WFS layers loaded"
+                    MessageBar = qgis.utils.iface.messageBar()
+                    MessageBar.pushMessage(message, 0, 2)  		
+                else: return
             else: return
         except Exception as e:
             QMessageBox.warning(None, "WFS ERROR",str(e))	
-            return		
-     
+            return  
         
-  # --------------------------------------------------------
+# --------------------------------------------------------
 #    HCMGIS Opendata
 # --------------------------------------------------------
 
@@ -336,25 +333,45 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
         self.LinOutputFolder.setText(os.getcwd())                                             
         self.ChkSaveShapefile.stateChanged.connect(self.toggleouputfolder)
-        self.cboWFSServer.addItems(self.wfs_servers)
-        self.cboWFSServer.setCurrentIndex(-1)
-        self.cboWFSServer.currentIndexChanged.connect(self.readwfs)
-        self.CboFormat.setEnabled(False)
-        self.hcmgis_set_status_bar(self.status)	
-        self.TblWFSLayers.setHorizontalHeaderLabels(('Name', 'Title'))
+        
+        columns = ['Name', 'Title']            
+        self.TblWFSLayers.setColumnCount(len(columns))
+        self.TblWFSLayers.setHorizontalHeaderLabels(columns) 
         self.TblWFSLayers.resizeColumnsToContents()
         self.TblWFSLayers.resizeRowsToContents()
         self.TblWFSLayers.horizontalHeader().setStretchLastSection(True)	
         # self.TblWFSLayers.setDragDropMode(QAbstractItemView.DragOnly)  
         # self.TblWFSLayers.setDragEnabled(True) 
+        
+        self.cboServerType.currentIndexChanged.connect(self.updateServer)
+        self.cboServerType.addItems(self.server_types)        
+        self.cboServerName.setCurrentIndex(0)
 
+
+        self.cboServerName.setCurrentIndex(-1)
+        self.cboServerName.currentIndexChanged.connect(self.readwfs)
+        self.CboFormat.setEnabled(False)
+        self.hcmgis_set_status_bar(self.status)	
+        
+     
+
+    def updateServer(self):
+        self.cboServerName.clear()
+        self.TxtTitle.clear()
+        self.TxtAbstract.clear()
+        self.TblWFSLayers.setRowCount(0)
+
+        if self.cboServerType.currentIndex() == 0:             #'WFS'
+            self.cboServerName.addItems(self.wfs_servers)
+            self.cboServerName.setCurrentIndex(0)
 
     def readwfs(self):
-        self.hcmgis_set_status_bar(self.status)	
-        self.LblSattus.clear()
-        self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboWFSServer.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)
-        
-                           
+        if (self.cboServerName.currentIndex()>-1):
+            self.hcmgis_set_status_bar(self.status)	
+            self.LblSattus.clear()
+            #self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)           
+            self.hcmgis_fill_table_widget_with_wfs_layers0(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)
+
     def togglesave(self):
         self.ChkSaveShapefile.setChecked(self.CboFormat.currentIndex()>0)
 
@@ -376,13 +393,10 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
     def run(self):
         self.hcmgis_set_status_bar(self.status)	
         self.LblSattus.clear()
-        idx = self.cboWFSServer.currentIndex()
+        idx = self.cboServerName.currentIndex()
         opendata_url =self.wfs_urls[idx]
         outdir = unicode(self.LinOutputFolder.displayText())
         wfs_format  = self.CboFormat.currentText().lower()
-        if  self.cboWFSServer.currentIndex() == 0: #HCMGIS OpenData
-            uri = opendata_url + "/ows?service=WFS&version=2.0.0&request=GetFeature&typename="        
-        else: uri = opendata_url + "/ows?service=WFS&version=1.0.0&request=GetFeature&typename="        
         ext = "." + wfs_format
         if (wfs_format == "json"):
             wfs_format = "application/json"
@@ -396,7 +410,6 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
             ext = '.gml'
 
         layernames = []	
-        layertitles = []
         rows = []	
         for index in self.TblWFSLayers.selectedIndexes():
             if index.row() not in rows:
@@ -404,15 +417,16 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         for row_index in rows:
             if (self.TblWFSLayers.item(row_index, 0) is not None):
                 layernames.append(self.TblWFSLayers.item(row_index, 0).text())
-                layertitles.append(self.TblWFSLayers.item(row_index,1).text())
+        print(rows)
+        print(layernames)
         ii = 0        
         if layernames is not None:
             for layer_name in layernames:
-                #uri = opendata_url + "/ows?service=WFS&version=2.0.0&request=GetFeature&typename="+ str(layer_name)    
-                uri += str(layer_name)          	
+                uri = opendata_url + "/ows?service=WFS&version=1.0.0&request=GetFeature&typename="+ str(layer_name)                       	
+                #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)                       	
                 if (not self.ChkSaveShapefile.isChecked()):
                     try:
-                        success = qgis.utils.iface.addVectorLayer(uri, str(layer_name),"WFS")
+                        success = qgis.utils.iface.addVectorLayer(uri, layer_name,"WFS")
                         if success:                           
                             ii+=1		
                             self.LblSattus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers loaded")	    			
@@ -420,28 +434,64 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                             self.status.setValue(percent_complete)
                             message = str(int(percent_complete)) + "%"
                             self.status.setFormat(message)
-                    except Exception as e:
-                        QMessageBox.critical(self.iface.mainWindow(), "WFS", e)
-                   
-                else:                      
+                    except Exception as e:                      
+                        QMessageBox.critical(self.iface.mainWindow(), "WFS", e)                                          
+                else:   
+                    uri = opendata_url + "/ows?service=WFS&version=1.0.0&request=GetFeature&typename="+ str(layer_name)   
+                    #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)                       	                                       	                   
                     uri += '&outputFormat='
                     uri += wfs_format
                     try:
-                        filename = outdir + "\\"+ str(layer_name).replace(":","_") + ext
-                        urllib.request.urlretrieve(uri,filename)
-                        layer = QgsVectorLayer(filename, QFileInfo(filename).baseName(), 'ogr')
-                        layer.dataProvider().setEncoding(u'UTF-8')
-                        if (layer.isValid()):                     
-                            QgsProject.instance().addMapLayer(layer)                         
-                            ii+=1		
-                            self.LblSattus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and loaded")	
-                            percent_complete = ii/len(layernames)*100
-                            self.status.setValue(percent_complete)
-                            message = str(int(percent_complete)) + "%"
-                            self.status.setFormat(message)  
+                        # filename = outdir + "\\"+ str(layer_name).replace(":","_") + ext
+                        # ssl._create_default_https_context = ssl._create_unverified_context
+                        # #urllib.request.urlretrieve(uri,filename,context=ssl._create_unverified_context())
+                        # urllib.request.urlretrieve(uri,filename)
+                        # layer = QgsVectorLayer(filename, QFileInfo(filename).baseName(), 'ogr')
+                        # layer.dataProvider().setEncoding(u'UTF-8')
+                        # if (layer.isValid()):                     
+                        #     QgsProject.instance().addMapLayer(layer)                         
+                        #     ii+=1		
+                        #     self.LblSattus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and loaded")	
+                        #     percent_complete = ii/len(layernames)*100
+                        #     self.status.setValue(percent_complete)
+                        #     message = str(int(percent_complete)) + "%"
+                        #     self.status.setFormat(message)  
+                        headers = ""
+                        contents = requests.get(uri, headers=headers, stream=True, allow_redirects=True, verify = False)
+                        filename = outdir + "\\"+ str(layer_name).replace(":","_") + ext    
+                        #total_size = int(len(contents.content))
+                        #total_size_MB = round(total_size*10**(-6),2)
+                        #chunk_size = int(total_size/100)                        
+                        if  (contents.status_code == 200):
+                            #print ('total_length MB:', total_size_MB)
+                            i = 0
+                            f = open(filename, 'wb')                           
+                            for chunk in contents.iter_content(chunk_size = 1024):
+                                if not chunk:
+                                    break
+                                f.write(chunk)
+                                # self.status.setValue(i)
+                                # message = str(int(i)) + "%"
+                                # self.status.setFormat(message) 
+                                # self.iface.statusBarIface().showMessage(message)
+                                #self.hcmgis_status_callback(i/1024, None)
+                                #print (str(i))
+                                i+=1                                                      
+                            f.close()
+                            layer = QgsVectorLayer(filename, QFileInfo(filename).baseName(), 'ogr')
+                            layer.dataProvider().setEncoding(u'UTF-8')
+                            if (layer.isValid()):                     
+                                QgsProject.instance().addMapLayer(layer)                         
+                                ii+=1		
+                                self.LblSattus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and loaded")	
+                                percent_complete = ii/len(layernames)*100
+                                self.status.setValue(percent_complete)
+                                message = str(int(percent_complete)) + "%"
+                                self.status.setFormat(message)  
                     except Exception as e:
+                        qgis.utils.iface.addVectorLayer(uri, str(layer_name),"WFS")    
                         QMessageBox.critical(self.iface.mainWindow(), "WFS", e)
-                        qgis.utils.iface.addVectorLayer(uri, str(layer_name),"WFS")             
+                                 
         return		
 
 

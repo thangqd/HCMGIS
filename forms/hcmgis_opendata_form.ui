@@ -71,7 +71,7 @@
      <item row="13" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>WFS Server</string>
+        <string>Server Name</string>
        </property>
       </widget>
      </item>
@@ -129,7 +129,7 @@
       </widget>
      </item>
      <item row="13" column="1" colspan="2">
-      <widget class="QComboBox" name="cboWFSServer"/>
+      <widget class="QComboBox" name="cboServerName"/>
      </item>
      <item row="15" column="1" colspan="2">
       <widget class="QPlainTextEdit" name="TxtAbstract">
@@ -275,6 +275,16 @@
         <string/>
        </property>
       </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="LblServerType">
+       <property name="text">
+        <string>Server Type</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="2">
+      <widget class="QComboBox" name="cboServerType"/>
      </item>
     </layout>
    </item>

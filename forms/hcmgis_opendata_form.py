@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_hcmgis_opendata_form(object):
     def setupUi(self, hcmgis_opendata_form):
         hcmgis_opendata_form.setObjectName("hcmgis_opendata_form")
-        hcmgis_opendata_form.setWindowModality(QtCore.Qt.ApplicationModal)
+        hcmgis_opendata_form.setWindowModality(QtCore.Qt.NonModal)
         hcmgis_opendata_form.setEnabled(True)
         hcmgis_opendata_form.resize(593, 619)
         hcmgis_opendata_form.setMouseTracking(False)

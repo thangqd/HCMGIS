@@ -1538,6 +1538,12 @@ def hcmgis_geofabrik(region, country, outdir,status_callback = None):
                 i+=1
             status_callback(100,None)            
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break 
+            qgis.utils.iface.setActiveLayer(layer)
+            qgis.utils.iface.zoomToActiveLayer()  
     else:
         zip = requests.get(download_url_pbf, headers=headers, stream=True, allow_redirects=True)    
         total_size = int(zip.headers.get('content-length'))
@@ -1583,6 +1589,12 @@ def hcmgis_geofabrik(region, country, outdir,status_callback = None):
                 i+=1
             status_callback(100,None)  
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break 
+            qgis.utils.iface.setActiveLayer(layer)
+            qgis.utils.iface.zoomToActiveLayer()  
   
 def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
     #temp_dir = tempfile.mkdtemp()
@@ -1639,7 +1651,13 @@ def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
                     status_callback(i,None)
                 i+=1
             status_callback(100,None)            
-            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')    
+            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')  
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break 
+            qgis.utils.iface.setActiveLayer(layer)
+            qgis.utils.iface.zoomToActiveLayer()  
     else:
         zip = requests.get(download_url_pbf, headers=headers, stream=True, allow_redirects=True)    
         total_size = int(zip.headers.get('content-length'))
@@ -1686,6 +1704,13 @@ def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
             if status_callback: 
                 status_callback(100,None) 
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break 
+            qgis.utils.iface.setActiveLayer(layer)
+            qgis.utils.iface.zoomToActiveLayer()
+
 
 def hcmgis_gadm(country, country_short, outdir,status_callback = None):  
     pre = 'https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_'
@@ -1737,6 +1762,15 @@ def hcmgis_gadm(country, country_short, outdir,status_callback = None):
                 i+=1
             status_callback(100,None)            
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            # zoom to group extent
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break 
+            qgis.utils.iface.setActiveLayer(layer)
+            qgis.utils.iface.zoomToActiveLayer()
+
+
     else:
         QMessageBox.warning(None, "Attention",u'Link not found!')
     return

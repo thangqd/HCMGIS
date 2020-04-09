@@ -3,7 +3,7 @@
  <class>hcmgis_opendata_form</class>
  <widget class="QDialog" name="hcmgis_opendata_form">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="enabled">
    <bool>true</bool>

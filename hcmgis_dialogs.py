@@ -155,47 +155,26 @@ class hcmgis_dialog(QtWidgets.QDialog):
         return preferred
 
 
-    def hcmgis_fill_list_widget_with_vector_layers(self, list_widget):
-        # Add layers not in the list
-        for layer in self.iface.mapCanvas().layers():
-            if layer.type() == QgsMapLayer.VectorLayer:
-                found = False
-                for index in range(list_widget.count()):
-                    if list_widget.item(index).text() == layer.name():
-                        found = True
-                        break
-                if not found:
-                    list_widget.addItem(layer.name())
-        # Remove layers no longer on the map
-        removed = []
-        for index in range(list_widget.count()):
-            found = False
-            for layer in self.iface.mapCanvas().layers():
-                if layer.name() == list_widget.item(index).text():
-                    found = True
-                    break
-            if not found:
-                removed.append(index)
-
-        removed.reverse()
-        for index in removed:
-            item = list_widget.takeItem(index)
-            item = None
-            # list_widget.removeItemWidget(list_widget.item(index))
     server_types = ['WFS',
                     'ArcGIS Feature Server'
                 ]
     arcgis_servers = []
     arcgis_urls = []
     wfs_servers = ['HCMGIS OpenData',
-                  'OpenDevelopmetMekong',
-                  'OpenDevelopmetCambodia',
-                  'OpenDevelopmentLao',
-                  'OpenDevelopmentMyanmar',
-                  'OpenDevelopmentVietnam',
-                  'ISRIC Data Hub',
-                  'World Food Programme',
-                  'PUMA - World Bank Group'
+                'OpenDevelopmetMekong',
+                'OpenDevelopmetCambodia',
+                'OpenDevelopmentLao',
+                'OpenDevelopmentMyanmar',
+                'OpenDevelopmentVietnam',
+                'ISTI-CNR Pisa',
+                'Stanford University',
+                'CAEARTE-CONAE',
+                'OpenAPI',
+                'IBGE',
+                'INDE',
+                'ISRIC Data Hub',
+                'World Food Programme',
+                'PUMA - World Bank Group'                
                 ]
 
     wfs_urls = [
@@ -205,24 +184,16 @@ class hcmgis_dialog(QtWidgets.QDialog):
         'https://data.opendevelopmentmekong.net/geoserver/ODLao',
         'https://data.opendevelopmentmekong.net/geoserver/ODMyanmar',
         'https://data.opendevelopmentmekong.net/geoserver/ODVietnam',
+        'http://geoserver.d4science.org:80/geoserver',
+        'https://geowebservices.stanford.edu:443/geoserver/wfs',        
+        'http://ambiente.caearte.conae.gov.ar/geoserver',
+        'http://openapi.aurin.org.au//public',
+        'https://geoservicos.ibge.gov.br/geoserver',
+        'https://geoservicos.inde.gov.br/geoserver',
         'https://data.isric.org/geoserver',
         'https://geonode.wfp.org/geoserver',
-        'https://puma.worldbank.org/geoserver'
-#         'http://webgis.regione.sardegna.it/geoservers',
-#         ''
-
-# http://geomap.reteunitaria.piemonte.it/ws/gsareprot/rp-01/areeprotwfs/wfs_gsareprot_1?service=WFS&request=getCapabilities 
-
-# http://demo.opengeo.org/geoserver/wfs?service=wfs&version=1.1.0&request=getCapabilities
-
-# http://mrdata.usgs.gov/services/mt?request=getcapabilities&service=WFS&version=1.0.0&
-
-# http://mrdata.usgs.gov/services/tx?request=getcapabilities&service=WFS&version=1.0.0&
-
-# http://mrdata.usgs.gov/services/mrds?request=getcapabilities&service=WFS&version=1.0.0
-
-# http://sdi.geoportal.gov.pl/wfs_prg/wfservice.aspx?REQUEST=GetCapabilities&SERVICE=WFS&VERSION=1.1.0
-        ]
+        'https://puma.worldbank.org/geoserver',
+         ]
   
     def hcmgis_fill_table_widget_with_wfs_layers0(self,table_widget, idx, TxtTitle, TxtAbstract, status_callback = None):	
         table_widget.setRowCount(0) 
@@ -232,11 +203,27 @@ class hcmgis_dialog(QtWidgets.QDialog):
             ssl._create_default_https_context = ssl._create_unverified_context
             #wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',context=ssl._create_unverified_context())
             #wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities')
-            wfs = requests.get(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',verify = False)
-           
+            #wfs = requests.get(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',verify = False)
+            uri = self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities'
+            print (uri)
+            wfs = requests.get(uri, stream=True, allow_redirects=True, verify = False)
+            filename = os.getcwd() + "\\"+ str(self.wfs_servers[idx])  + ".xml"   
+            print (filename)
+            if  (wfs.status_code == 200):               
+                f = open(filename, 'wb')                           
+                for chunk in wfs.iter_content(chunk_size = 1024):
+                    if not chunk:
+                        break
+                    f.write(chunk)                                                            
+                f.close()
+                   
             if wfs is not None:              
                 #data = wfs.read().decode('utf-8')
-                data = wfs.text
+                #data = wfs.text
+                getcapabilities = open(filename, 'r') 
+                data = getcapabilities.read()
+                getcapabilities.close()
+                os.remove(filename)
                 #print (data)
                 server_title_regex = r'<ows:Title>(.+?)</ows:Title>|<ows:Title/>'
                 #server_title_pattern = re.compile(server_title_regex)
@@ -255,18 +242,14 @@ class hcmgis_dialog(QtWidgets.QDialog):
 
                 layer_name = re.findall(layer_name_regex,data,re.DOTALL)
                 layer_title = re.findall(layer_title_regex,data,re.DOTALL)
-                print(server_title)   
-                print(server_abstract)   
-                #print(layer_name)   
-                #print(layer_title)       
+                if len(server_title)>0:
+                    TxtTitle.insertPlainText(server_title[0])
+                if len (server_abstract)>0:
+                    TxtAbstract.insertPlainText(server_abstract[0].replace('&#13;','')) #delete unwanted character before \n
+                
+                #QMessageBox.information(None, "Congrats",u'GetCapabilities completed! Now wait for a minute to load WFS Layers')
 
-                if layer_name is not None: 
-                    if len(server_title)>0:
-                        TxtTitle.insertPlainText(server_title[0])
-                    if len (server_abstract)>0:
-                        TxtAbstract.insertPlainText(server_abstract[0].replace('&#13;','')) #delete unwanted character before \n
-                    #layer_name.remove(layer_name[0])
-                    #layer_title.remove(layer_title[0])
+                if layer_name is not None:                    
                     for i in range (len(layer_name)):  
                         table_widget.insertRow(i)
                         table_widget.setItem(i,0, QTableWidgetItem(layer_name[i]))
@@ -433,9 +416,9 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                             percent_complete = ii/len(layernames)*100
                             self.status.setValue(percent_complete)
                             message = str(int(percent_complete)) + "%"
-                            self.status.setFormat(message)
+                            self.status.setFormat(message)                            
                     except Exception as e:                      
-                        QMessageBox.critical(self.iface.mainWindow(), "WFS", e)                                          
+                        QMessageBox.critical(self.iface.mainWindow(), "WFS", e)                                                                  
                 else:   
                     uri = opendata_url + "/ows?service=WFS&version=1.0.0&request=GetFeature&typename="+ str(layer_name)   
                     #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)                       	                                       	                   
@@ -459,12 +442,12 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                         headers = ""
                         contents = requests.get(uri, headers=headers, stream=True, allow_redirects=True, verify = False)
                         filename = outdir + "\\"+ str(layer_name).replace(":","_") + ext    
-                        #total_size = int(len(contents.content))
-                        #total_size_MB = round(total_size*10**(-6),2)
-                        #chunk_size = int(total_size/100)                        
+                        # total_size = int(len(contents.content))
+                        # total_size_MB = round(total_size*10**(-6),2)
+                        # chunk_size = int(total_size/100)                        
                         if  (contents.status_code == 200):
                             #print ('total_length MB:', total_size_MB)
-                            i = 0
+                            #i = 0
                             f = open(filename, 'wb')                           
                             for chunk in contents.iter_content(chunk_size = 1024):
                                 if not chunk:
@@ -474,9 +457,9 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                                 # message = str(int(i)) + "%"
                                 # self.status.setFormat(message) 
                                 # self.iface.statusBarIface().showMessage(message)
-                                #self.hcmgis_status_callback(i/1024, None)
-                                #print (str(i))
-                                i+=1                                                      
+                                # self.hcmgis_status_callback(i/1024, None)
+                                # print (str(i))
+                                #i+=1                                                      
                             f.close()
                             layer = QgsVectorLayer(filename, QFileInfo(filename).baseName(), 'ogr')
                             layer.dataProvider().setEncoding(u'UTF-8')
@@ -491,6 +474,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                     except Exception as e:
                         qgis.utils.iface.addVectorLayer(uri, str(layer_name),"WFS")    
                         QMessageBox.critical(self.iface.mainWindow(), "WFS", e)
+            qgis.utils.iface.zoomToActiveLayer()
                                  
         return		
 

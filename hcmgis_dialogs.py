@@ -24,6 +24,8 @@ from qgis.gui import QgsMessageBar
 import qgis.utils
 from glob import glob
 import urllib, re, ssl
+from time import sleep
+
 from PyQt5 import QtCore
 
 try:
@@ -36,8 +38,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/forms")
 from hcmgis_opendata_form import *
 from hcmgis_geofabrik_form import *
 from hcmgis_gadm_form import *
-from hcmgis_merge_form import *
-from hcmgis_split_form import *
 from hcmgis_font_convert_form import *
 from hcmgis_split_field_form import *
 from hcmgis_merge_field_form import *
@@ -112,13 +112,43 @@ class hcmgis_dialog(QtWidgets.QDialog):
 
         return header
 
+    def hcmgis_fill_list_widget_with_vector_layers(self, list_widget):
+        # Add layers not in the list
+        for layer in self.iface.mapCanvas().layers():
+            if layer.type() == QgsMapLayer.VectorLayer:
+                found = False
+                for index in range(list_widget.count()):
+                    if list_widget.item(index).text() == layer.name():
+                        found = True
+                        break
+                if not found:
+                    list_widget.addItem(layer.name())
+
+        # Remove layers no longer on the map
+        removed = []
+        for index in range(list_widget.count()):
+            found = False
+            for layer in self.iface.mapCanvas().layers():
+                if layer.name() == list_widget.item(index).text():
+                    found = True
+                    break
+            if not found:
+                removed.append(index)
+
+        removed.reverse()
+        for index in removed:
+            item = list_widget.takeItem(index)
+            item = None
+            # list_widget.removeItemWidget(list_widget.item(index))
+
     def hcmgis_set_status_bar(self, status_bar):
         status_bar.setMinimum(0)
         status_bar.setMaximum(100)
         status_bar.setValue(0)
         status_bar.setFormat("Ready")
         self.status_bar = status_bar
-
+    
+  
     def hcmgis_status_callback(self, percent_complete, message):
         try:
             if not message:
@@ -141,31 +171,70 @@ class hcmgis_dialog(QtWidgets.QDialog):
 
         # add handling of "Close" button
         return 0
+    def hcmgis_set_status_bar_withlabel(self, status_bar, status_lable):
+        status_bar.setMinimum(0)
+        status_bar.setMaximum(100)
+        status_bar.setValue(0)
+        status_bar.setFormat("Ready")
+        self.status_bar = status_bar
+        self.status_lable = status_lable
+
+    def hcmgis_status_callback_withlabel(self, percent_complete, lable):
+        try:
+            
+            message = str(int(percent_complete)) + "%"
+            self.status_lable.setText(lable)
+
+            self.status_bar.setFormat(message)
+
+            if percent_complete < 0:
+                self.status_bar.setValue(0)
+            elif percent_complete > 100:
+                self.status_bar.setValue(100)
+            else:
+                self.status_bar.setValue(percent_complete)
+
+            self.iface.statusBarIface().showMessage(message)
+
+            # print("status_callback(" + message + ")")
+        except:
+            print(message)
+
+        # add handling of "Close" button
+        return 0
 
     def hcmgis_temp_file_name(self, temp, suffix):
-        preferred = os.getcwd() +"/" + temp + suffix
-        if not os.path.isfile(preferred):
-            return preferred
-
-        for x in range(2, 10):
-            name = os.getcwd() + temp + unicode(x) + suffix
+        home_path = os.getcwd()
+        for x in range(1, 10):
+            name = home_path + "\\" +temp + str(x) + suffix
             if not os.path.isfile(name):
                 return name
 
-        return preferred
+        return home_path + "\\"+ temp + suffix
+
+        # preferred = os.getcwd() + r"\" + temp + suffix
+        # if not os.path.isfile(preferred):
+        #     return preferred
+
+        # for x in range(2, 10):
+        #     name = os.getcwd() + temp + unicode(x) + suffix
+        #     if not os.path.isfile(name):
+        #         return name
+
+        # return preferred
 
 
-    server_types = ['WFS',
-                    'ArcGIS Feature Server'
+    server_types = ['WFS'
+                    #'ArcGIS Feature Server'
                 ]
     arcgis_servers = []
     arcgis_urls = []
     wfs_servers = ['HCMGIS OpenData',
-                'OpenDevelopmetMekong',
-                'OpenDevelopmetCambodia',
-                'OpenDevelopmentLao',
-                'OpenDevelopmentMyanmar',
-                'OpenDevelopmentVietnam',
+                'OpenDevelopmet Mekong',
+                'OpenDevelopmet Cambodia',
+                'OpenDevelopment Lao',
+                'OpenDevelopment Myanmar',
+                'OpenDevelopment Vietnam',
                 'ISTI-CNR Pisa',
                 'Stanford University',
                 'CAEARTE-CONAE',
@@ -185,7 +254,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
         'https://data.opendevelopmentmekong.net/geoserver/ODMyanmar',
         'https://data.opendevelopmentmekong.net/geoserver/ODVietnam',
         'http://geoserver.d4science.org:80/geoserver',
-        'https://geowebservices.stanford.edu:443/geoserver/wfs',        
+        'https://geowebservices.stanford.edu:443/geoserver',        
         'http://ambiente.caearte.conae.gov.ar/geoserver',
         'http://openapi.aurin.org.au//public',
         'https://geoservicos.ibge.gov.br/geoserver',
@@ -204,7 +273,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
             #wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',context=ssl._create_unverified_context())
             #wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities')
             #wfs = requests.get(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',verify = False)
-            uri = self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities'
+            uri = self.wfs_urls[idx] +'/wfs?version=2.0.0&request=GetCapabilities'
             print (uri)
             wfs = requests.get(uri, stream=True, allow_redirects=True, verify = False)
             filename = os.getcwd() + "\\"+ str(self.wfs_servers[idx])  + ".xml"   
@@ -261,7 +330,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
                     status_callback(((i+1)/len(layer_name))*100,None)
                     message = str(i+1) + " WFS layers loaded"
                     MessageBar = qgis.utils.iface.messageBar()
-                    MessageBar.pushMessage(message, 0, 3)  		
+                    MessageBar.pushMessage(message, 0, 2)  		
                 else: return
             else: return
         except Exception as e:
@@ -351,7 +420,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
     def readwfs(self):
         if (self.cboServerName.currentIndex()>-1):
             self.hcmgis_set_status_bar(self.status)	
-            self.LblSattus.clear()
+            self.LblStatus.clear()
             #self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)           
             self.hcmgis_fill_table_widget_with_wfs_layers0(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)
 
@@ -375,7 +444,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
    
     def run(self):
         self.hcmgis_set_status_bar(self.status)	
-        self.LblSattus.clear()
+        self.LblStatus.clear()
         idx = self.cboServerName.currentIndex()
         opendata_url =self.wfs_urls[idx]
         outdir = unicode(self.LinOutputFolder.displayText())
@@ -405,14 +474,14 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         ii = 0        
         if layernames is not None:
             for layer_name in layernames:
-                uri = opendata_url + "/ows?service=WFS&version=1.0.0&request=GetFeature&typename="+ str(layer_name)                       	
+                uri = opendata_url + "/wfs?version=1.0.0&request=GetFeature&typename="+ str(layer_name)                       	
                 #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)                       	
                 if (not self.ChkSaveShapefile.isChecked()):
                     try:
                         success = qgis.utils.iface.addVectorLayer(uri, layer_name,"WFS")
                         if success:                           
                             ii+=1		
-                            self.LblSattus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers loaded")	    			
+                            self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers loaded")	    			
                             percent_complete = ii/len(layernames)*100
                             self.status.setValue(percent_complete)
                             message = str(int(percent_complete)) + "%"
@@ -420,7 +489,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                     except Exception as e:                      
                         QMessageBox.critical(self.iface.mainWindow(), "WFS", e)                                                                  
                 else:   
-                    uri = opendata_url + "/ows?service=WFS&version=1.0.0&request=GetFeature&typename="+ str(layer_name)   
+                    uri = opendata_url + "/wfs?version=1.0.0&request=GetFeature&typename="+ str(layer_name)   
                     #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)                       	                                       	                   
                     uri += '&outputFormat='
                     uri += wfs_format
@@ -434,7 +503,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                         # if (layer.isValid()):                     
                         #     QgsProject.instance().addMapLayer(layer)                         
                         #     ii+=1		
-                        #     self.LblSattus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and loaded")	
+                        #     self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and loaded")	
                         #     percent_complete = ii/len(layernames)*100
                         #     self.status.setValue(percent_complete)
                         #     message = str(int(percent_complete)) + "%"
@@ -466,7 +535,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                             if (layer.isValid()):                     
                                 QgsProject.instance().addMapLayer(layer)                         
                                 ii+=1		
-                                self.LblSattus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and loaded")	
+                                self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and loaded")	
                                 percent_complete = ii/len(layernames)*100
                                 self.status.setValue(percent_complete)
                                 message = str(int(percent_complete)) + "%"
@@ -1324,32 +1393,178 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
             self.cboEPSG.setEnabled(True)
             self.TxtEPSGInfo.setEnabled(True)
 
-                        
 class hcmgis_medialaxis_dialog(hcmgis_dialog, Ui_hcmgis_medialaxis_form):		
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)		
         self.setupUi(self)	
         self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
-        self.CboField.setLayer (self.CboInput.currentLayer () )
+        self.CboField.setLayer (self.CboInput.currentLayer())
         self.CboInput.activated.connect(self.update_field) 
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-
+        self.hcmgis_set_status_bar_withlabel(self.status,self.LblStatus)	
                 
     def update_field(self):
-        self.CboField.setLayer (self.CboInput.currentLayer () )
+        self.CboField.setLayer(self.CboInput.currentLayer () )
+        
+        if (self.CboField.count()>0):
+            self.CboField.setCurrentIndex(0)
     
                 
-    def run(self):             		
+    def run(self):             	
+        self.LblStatus.clear()	
         layer = self.CboInput.currentLayer()
         if layer is None:
             return u'No selected layers!'  
         selectedfield = self.CboField.currentText()
         density = self.spinBox.value()
-        if layer.selectedFeatureCount()>0 and layer.selectedFeatureCount() <= 100:		
-            message = hcmgis_medialaxis(self.iface,layer, selectedfield, density)
+        if layer.selectedFeatureCount() in range(100):
+            message = hcmgis_medialaxis(self.iface,layer,selectedfield, density,self.hcmgis_status_callback_withlabel)
             if message != None:
-                QMessageBox.critical(self.iface.mainWindow(), "Skeleton/ Media Axis", message)						               
-            else: return	
+                QMessageBox.critical(self.iface.mainWindow(), "Skeleton/ Media Axis", message)	
+            else: 
+                self.LblStatus.setText('Completed ' + str(layer.selectedFeatureCount()) + ' features')                
+            # i = 0
+            # parameters1 = {'INPUT':layer,
+            #         'OUTPUT':  "memory:polygon"}
+            # polygon = processing.run('qgis:saveselectedfeatures',parameters1)
+            # message = 'saveselectedfeatures'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # #QMessageBox.information(None,"Warning",message)
+            # #CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            # self.hcmgis_status_callback(percent,None)
+          
+            
+            # #densify by interval
+            # parameters2 = {'INPUT': polygon['OUTPUT'],
+            #                 'INTERVAL' :density,
+            #                 'OUTPUT' : "memory:polygon_densify"} 
+            # polygon_densify = processing.run('qgis:densifygeometriesgivenaninterval', parameters2)
+            # message = 'densifygeometriesgivenaninterval'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            # self.hcmgis_status_callback(percent,None)	  		
+            
+            # # extract vertices
+            # parameters3 = {'INPUT': polygon_densify['OUTPUT'],					
+            #                 'OUTPUT' : "memory:points"} 
+            # points = processing.run('qgis:extractvertices', parameters3)	
+            # message = 'extractvertices'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            # self.hcmgis_status_callback(percent,None)	 
+            
+            # parameters4 = {'INPUT': points['OUTPUT'],
+            #                 'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
+            # voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)
+            # message = 'voronoipolygons'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            
+            # self.hcmgis_status_callback(percent,None)	  
+            
+            # parameters5 = {'INPUT': voronoipolygon['OUTPUT'],
+            #                 'OUTPUT' : 'memory:voronoipolyline'} 
+            # voronoipolyline = processing.run('qgis:polygonstolines',parameters5)
+            # message = 'polygonstolines'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            
+            # self.hcmgis_status_callback(percent,None)  
+            
+            
+            # parameters6 = {'INPUT': voronoipolyline['OUTPUT'],					
+            #                 'OUTPUT' : 'memory:explode'}
+            # explode = processing.run('qgis:explodelines',parameters6)
+            # message = 'explodelines'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            # self.hcmgis_status_callback(percent,None)  
+            
+            # parameters7 = {'INPUT': explode['OUTPUT'],
+            #                 'PREDICATE' : [6], # within					
+            #                 'INTERSECT': polygon['OUTPUT'],		
+            #                 # 'INTERSECT': layer,		
+            #                 'METHOD' : 0,
+            #                 'OUTPUT' : 'memory:candidate'}
+            # candidate= processing.run('qgis:selectbylocation',parameters7)
+            # message = 'selectbylocation'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            # self.hcmgis_status_callback(percent,None)
+            
+            
+            # parameters8 = {'INPUT':candidate['OUTPUT'],
+            #                 'OUTPUT':  'memory:medialaxis'}
+            # medialaxis = processing.run('qgis:saveselectedfeatures',parameters8)
+            # message = 'saveselectedfeatures'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            # self.hcmgis_status_callback(percent,None) 
+            
+            # parameters9 = {'INPUT':medialaxis['OUTPUT'],
+            #                 'OUTPUT':  'memory:deleteduplicategeometries'}
+            # deleteduplicategeometries = processing.run('qgis:deleteduplicategeometries',parameters9)
+            # message = 'deleteduplicategeometries'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            # self.hcmgis_status_callback(percent,None)
+            
+            # parameter10 =  {'INPUT':deleteduplicategeometries['OUTPUT'],
+            #                 'FIELD' : selectedfield,
+            #                 'OUTPUT':  "memory:medialaxis_dissolve"}
+            # medialaxis_dissolve = processing.run('qgis:dissolve',parameter10) 
+            # message = 'dissolve'
+            # i+=1
+            # percent = int((i/11)*100)
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # CustomMessageBox.showWithTimeout(1, message, "Progress" , icon=QMessageBox.Information)
+            # self.hcmgis_status_callback(percent,None)
+            
+            # parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
+            #                 'METHOD' : 0,
+            #                 'TOLERANCE' : 1,
+            #                 'OUTPUT':  "memory:medialaxis"}
+            # processing.runAndLoadResults('qgis:simplifygeometries',parameter11) 
+            # message = 'simplifygeometries'
+            # #MessageBar = qgis.utils.iface.messageBar()
+            # #MessageBar.pushMessage(message, 0, 1)
+            # i+=1
+            # percent = int((i/11)*100)
+            # self.LblStatus.setText('Finished ' + str(layer.selectedFeatureCount()) + ' features')
+            # #MessageBar.pushMessage('Finished', 0, 1)
+            # CustomMessageBox.showWithTimeout(1, "Finished", "Progress" , icon=QMessageBox.Information)
+            # self.hcmgis_status_callback(percent,None)
+            
+            #MessageBar.clearWidgets()	
+
         else:
             #return u'Please select 1..100 features to create Skeleton/ Media Axis'		
             QMessageBox.information(None,  "Skeleton/ Media Axis",u'Please select 1..100 features to create Skeleton/ Media Axis!') 
@@ -1365,6 +1580,8 @@ class hcmgis_centerline_dialog(hcmgis_dialog, Ui_hcmgis_centerline_form):
         self.lblsurround.setEnabled(False)
         self.distance.setEnabled(False)			
         self.chksurround.stateChanged.connect(self.toggleSurround)
+        self.hcmgis_set_status_bar_withlabel(self.status,self.LblStatus)	
+
         
     def toggleSurround(self,state):
         if state > 0:
@@ -1382,10 +1599,11 @@ class hcmgis_centerline_dialog(hcmgis_dialog, Ui_hcmgis_centerline_form):
         chksurround = self.chksurround.isChecked() 
         distance = self.distance.value()
         if layer.selectedFeatureCount()>0:		
-            message = hcmgis_centerline(self.iface,layer,density,chksurround,distance)
+            message = hcmgis_centerline(self.iface,layer,density,chksurround,distance,self.hcmgis_status_callback_withlabel)
             if message != None:
                 QMessageBox.critical(self.iface.mainWindow(), "Centerline in Polygon's Gaps", message)						               
-            else: return	
+            else: 
+                self.LblStatus.setText('Finish! ')  	
         else:
             #return u'Please select at least 1 feature to create centerline		
             QMessageBox.information(None,  "Centerline",u'Please select at least 1 feature to create Centerline!') 
@@ -1402,16 +1620,20 @@ class hcmgis_closestpair_dialog(hcmgis_dialog, Ui_hcmgis_closestpair_form):
         self.CboField.setLayer (self.CboInput.currentLayer () )		
         self.CboInput.activated.connect(self.update_field)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)           
+        self.hcmgis_set_status_bar_withlabel(self.status,self.LblStatus)	
+
     def update_field(self):
         self.CboField.setLayer (self.CboInput.currentLayer () )	
+        if (self.CboField.count()>0):
+            self.CboField.setCurrentIndex(0)
         
     def run(self):             		
         layer = self.CboInput.currentLayer()
         field = self.CboField.currentText()
-        message = hcmgis_closestpair(self.iface,layer,field)
+        message = hcmgis_closestpair(self.iface,layer,field,self.hcmgis_status_callback_withlabel)
         if message != None:
             QMessageBox.critical(self.iface.mainWindow(), "Closest/ farthest pair of Points", message)						               
-        else: return			
+        else: self.LblStatus.setText('Finish! ')  			
         return
 
 # --------------------------------------------------------
@@ -1425,96 +1647,36 @@ class hcmgis_lec_dialog(hcmgis_dialog, Ui_hcmgis_lec_form):
         self.CboField.setLayer (self.CboInput.currentLayer () )	
         self.CboInput.activated.connect(self.update_field)         
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-          
-    
+        self.hcmgis_set_status_bar_withlabel(self.status,self.LblStatus)	
+        self.LinOutput.setText(self.hcmgis_temp_file_name("lec",".shp"))	
+        self.BtnBrowseOutput.clicked.connect(self.browse_outfiles)
+
+
+    def browse_outfiles(self):
+        newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
+            self.LinOutput.displayText(), "Shapefile (*.shp)")
+
+        if newname and newname[0]:
+            self.LinOutput.setText(newname[0])	
+
     def update_field(self):
         self.CboField.setLayer (self.CboInput.currentLayer () )	
-
+        if (self.CboField.count()>0):
+            self.CboField.setCurrentIndex(0)
+    
     def run(self):             		
         layer = self.CboInput.currentLayer()
         selectedfield = self.CboField.currentText()
         if layer is None:
             return u'No selected point layer!'		
         else:
-            message = hcmgis_lec(self.iface,layer, selectedfield)
+            output = unicode(self.LinOutput.displayText()).strip()	
+            message = hcmgis_lec(self.iface,layer,output,selectedfield,self.hcmgis_status_callback_withlabel)
             if message != None:
                 QMessageBox.critical(self.iface.mainWindow(), "Largest Empty Circle", message)						               
-            else: return		
+            else: self.LblStatus.setText('Finish! ')  		
         return
     
-# --------------------------------------------------------
-#   hcmggis_merge - Merge layers to single shapefile
-#	Reference: hcmgis
-# --------------------------------------------------------	
-class hcmgis_merge_dialog(hcmgis_dialog, Ui_hcmgis_merge_form):
-    def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)
-        self.browseoutfile.clicked.connect(self.browse_outfiles)		
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.hcmgis_fill_list_widget_with_vector_layers(self.sourcelayers)
-        self.sourcelayers.setDragDropMode(QAbstractItemView.InternalMove)
-        self.outfilename.setText(self.hcmgis_temp_file_name("merge",".shp"))	
-
-    
-    def browse_outfiles(self):
-        newname = QFileDialog.getSaveFileName(None, "Output Shapefile", 
-            self.outfilename.displayText(), "Shapefile (*.shp)")
-
-        if newname and newname[0]:
-            self.outfilename.setText(newname[0])
-            
-    def run(self):
-        layernames = []
-        for x in range(0, self.sourcelayers.count()):
-            if self.sourcelayers.item(x).isSelected():
-                layernames.append(unicode(self.sourcelayers.item(x).text()))
-
-        savename = unicode(self.outfilename.displayText()).strip()
-
-        message = hcmgis_merge(self.iface, layernames, savename, 1)
-        if message != None:
-            QMessageBox.critical(self.iface.mainWindow(), "Merge", message)
-
-            
-
-class hcmgis_split_dialog(hcmgis_dialog, Ui_hcmgis_split_form):	
-    def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)
-        self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)	
-        self.CboField.setLayer (self.CboInput.currentLayer () )
-        self.CboInput.activated.connect(self.update_field)                
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.LinOutputFolder.setText(os.getcwd())                                             
-        self.BtnOutputFolder.clicked.connect(self.browse_outfiles)
-    
-    def update_field(self):
-        self.CboField.setLayer (self.CboInput.currentLayer () )	
-    
-    def browse_outfiles(self):
-        newname = QFileDialog.getExistingDirectory(None, "Output Shapefile", self.LinOutputFolder.displayText())
-        if newname != None:
-            self.LinOutputFolder.setText(newname)
-                        
-    def run(self):             		
-        layer = self.CboInput.currentLayer()
-        selectedfield = self.CboField.currentText()
-        outdir = unicode(self.LinOutputFolder.displayText())
-        if layer is None:
-            return u'No selected layer!'
-        elif ((selectedfield is None) or (selectedfield == '')):
-            return u'No selected field!'
-        elif (not os.path.isdir(outdir)):
-            return u'Invalid Folder!'
-        else:
-            message = hcmgis_split(self.iface,layer,selectedfield,outdir)
-            if message != None:
-                QMessageBox.critical(self.iface.mainWindow(), "Split Layer", message)						               
-            else: return		
-        return
-
-
 class hcmgis_font_convert_dialog(hcmgis_dialog, Ui_hcmgis_font_convert_form):	
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)		
@@ -1528,6 +1690,8 @@ class hcmgis_font_convert_dialog(hcmgis_dialog, Ui_hcmgis_font_convert_form):
         self.LinOutput.setText(self.hcmgis_temp_file_name("convert_font",".shp"))	
     
         self.CboInput.activated.connect(self.update_fields)
+        self.hcmgis_set_status_bar_withlabel(self.status,self.LblStatus)	                
+  
         
     def update_fields(self):               
         self.ListFields.clear()
@@ -1556,10 +1720,10 @@ class hcmgis_font_convert_dialog(hcmgis_dialog, Ui_hcmgis_font_convert_form):
         for i in list(self.ListFields.selectedItems()):
             selectedfields.append(str(i.text()))
         if len(selectedfields) > 0:
-            message = hcmgis_convertfont(self.iface,input_layer, selectedfields, output_layer, sE, dE, caseI,selectedfeatureonly) 
+            message = hcmgis_convertfont(self.iface,input_layer, selectedfields, output_layer, sE, dE, caseI,selectedfeatureonly,self.hcmgis_status_callback_withlabel) 
             if message != None:
                 QMessageBox.critical(self.iface.mainWindow(), "Convert Font", message)						               
-        else: return
+            else: self.LblStatus.setText('Finish! ')  
 
 #---------------------------
 # Split Fields
@@ -1572,20 +1736,22 @@ class hcmgis_split_field_dialog(hcmgis_dialog, Ui_hcmgis_split_field_form):
         self.CboField.setLayer (self.CboInput.currentLayer () )
         self.CboInput.activated.connect(self.update_field)                
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-    
+        self.hcmgis_set_status_bar_withlabel(self.status,self.LblStatus)	
                 
     def update_field(self):
-        self.CboField.setLayer (self.CboInput.currentLayer () )
-            
+        self.CboField.setLayer(self.CboInput.currentLayer () )        
+        if (self.CboField.count()>0):
+            self.CboField.setCurrentIndex(0)
+             
     def run(self):             		
         layer = self.CboInput.currentLayer()
         char = self.CboChar.currentText()
         selectedfield = self.CboField.currentText()
         selectedfeatureonly = self.ChkSelectedFeaturesOnly.isChecked()
-        message = hcmgis_split_field(self.iface,layer, selectedfield, char,selectedfeatureonly)
+        message = hcmgis_split_field(self.iface,layer, selectedfield, char,selectedfeatureonly,self.hcmgis_status_callback_withlabel)
         if message != None:
             QMessageBox.critical(self.iface.mainWindow(), "Split Fields", message)						               
-        else: return		
+        else: self.LblStatus.setText('Finish! ')  		
         return
 
 #------------------------------
@@ -1599,7 +1765,8 @@ class hcmgis_merge_field_dialog(hcmgis_dialog, Ui_hcmgis_merge_field_form):
         self.update_fields()
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)	
         self.CboInput.activated.connect(self.update_fields)
-
+        self.hcmgis_set_status_bar_withlabel(self.status,self.LblStatus)	
+                
     def update_fields(self):
         self.ListFields.clear()
         if self.CboInput.currentLayer() != None:                        
@@ -1615,10 +1782,10 @@ class hcmgis_merge_field_dialog(hcmgis_dialog, Ui_hcmgis_merge_field_form):
         for i in list(self.ListFields.selectedItems()):
             selectedfields.append(str(i.text()))
         if len(selectedfields) > 0:
-            message = hcmgis_merge_field(self.iface,layer, selectedfields, char,selectedfeatureonly)
+            message = hcmgis_merge_field(self.iface,layer, selectedfields, char,selectedfeatureonly,self.hcmgis_status_callback_withlabel)
             if message != None:
                 QMessageBox.critical(self.iface.mainWindow(), "Merge Fields", message)						               
-        else: return
+            else: self.LblStatus.setText('Finish! ')  
         return
 
 # Format Convert
@@ -1634,7 +1801,8 @@ class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form)
         self.cboInputFormat.currentIndexChanged.connect(self.update_files) 
         self.cboOutputFormat.clear()
         self.cboOutputFormat.addItems(self.out_put_format)  
-        self.cboOutputFormat.currentIndexChanged.connect(self.update_status)                 
+        self.cboOutputFormat.currentIndexChanged.connect(self.update_status)            
+     
     
     #out_put_format = ['AmigoCloud','BNA','Carto','Cloudant','CouchDB','CSV','DB2ODBC','DGN','DXF','ElasticSearch','ESRI Shapefile',\
     #				'Geoconcept','GeoJSON','GeoJSONSeq','GeoRSS','GFT','GML','GPKG','GPSBabel','GPSTrackMaker','GPX','Interlis 1',\
@@ -1951,7 +2119,4 @@ class hcmgis_xls2csv_dialog(hcmgis_dialog, Ui_hcmgis_xls2csv_form):
         self.lsXLS.blockSignals(False)
         self.LinInputFolder.setEnabled(True)
         self.BtnInputFolder.setEnabled(True)	
-        self.status_bar.setEnabled(True)			
-        
-
-            
+        self.status_bar.setEnabled(True)

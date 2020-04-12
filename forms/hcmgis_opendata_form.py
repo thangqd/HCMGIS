@@ -122,10 +122,10 @@ class Ui_hcmgis_opendata_form(object):
         self.status.setProperty("value", 24)
         self.status.setObjectName("status")
         self.gridLayout.addWidget(self.status, 22, 0, 1, 3)
-        self.LblSattus = QtWidgets.QLabel(hcmgis_opendata_form)
-        self.LblSattus.setText("")
-        self.LblSattus.setObjectName("LblSattus")
-        self.gridLayout.addWidget(self.LblSattus, 21, 0, 1, 3)
+        self.LblStatus = QtWidgets.QLabel(hcmgis_opendata_form)
+        self.LblStatus.setText("")
+        self.LblStatus.setObjectName("LblStatus")
+        self.gridLayout.addWidget(self.LblStatus, 21, 0, 1, 3)
         self.LblServerType = QtWidgets.QLabel(hcmgis_opendata_form)
         self.LblServerType.setObjectName("LblServerType")
         self.gridLayout.addWidget(self.LblServerType, 0, 0, 1, 1)
@@ -141,7 +141,7 @@ class Ui_hcmgis_opendata_form(object):
 
     def retranslateUi(self, hcmgis_opendata_form):
         _translate = QtCore.QCoreApplication.translate
-        hcmgis_opendata_form.setWindowTitle(_translate("hcmgis_opendata_form", "HCMGIS OpenData"))
+        hcmgis_opendata_form.setWindowTitle(_translate("hcmgis_opendata_form", "Download OpenData"))
         self.ChkSaveShapefile.setText(_translate("hcmgis_opendata_form", "Save layers to disk"))
         self.LblTitle.setText(_translate("hcmgis_opendata_form", "Title"))
         self.label.setText(_translate("hcmgis_opendata_form", "Server Name"))

@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
-    <height>229</height>
+    <width>535</width>
+    <height>283</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -26,7 +26,7 @@
    <item>
     <widget class="QLabel" name="LblInput">
      <property name="text">
-      <string>Input Polygon (1..100 selected features limit!)</string>
+      <string>Input Polygon (1..100 selected features limit!) - Layer must be in Projected CRS</string>
      </property>
     </widget>
    </item>
@@ -36,7 +36,7 @@
    <item>
     <widget class="QLabel" name="LblInput_3">
      <property name="text">
-      <string>Unique field (when selected features &gt; 1)</string>
+      <string>Unique field</string>
      </property>
     </widget>
    </item>
@@ -78,6 +78,20 @@
      </property>
      <property name="text">
       <string>(Notice: Output should be refined after running)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="LblStatus">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="status">
+     <property name="value">
+      <number>24</number>
      </property>
     </widget>
    </item>

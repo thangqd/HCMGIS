@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>441</width>
-    <height>154</height>
+    <height>210</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -42,6 +42,20 @@
    </item>
    <item>
     <widget class="QgsFieldComboBox" name="CboField"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="LblStatus">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="status">
+     <property name="value">
+      <number>24</number>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="BtnApplyClose">

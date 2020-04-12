@@ -388,7 +388,7 @@ class hcmgis_menu:
 		self.projections_menu.addAction(self.projections_action)
 
 		
-		# Merge_Split submenu
+		# Geoprocessing submenu
 		self.geoprocessing_menu = QMenu(u'Geometry Processing')		
 		self.hcmgis_add_submenu(self.geoprocessing_menu)
 		
@@ -418,19 +418,8 @@ class hcmgis_menu:
 		self.geoprocessing_menu.addAction(self.lec_action)
 		
 
-		#Merge
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_merge.png")
-		self.merge_action = QAction(icon, u'Merge Layers', self.iface.mainWindow())
-		self.merge_action.triggered.connect(self.merge)		
-		self.geoprocessing_menu.addAction(self.merge_action)
-		
-		#Splits
-		icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_split.png")
-		self.split_action = QAction(icon, u'Split Layer', self.iface.mainWindow())
-		self.split_action.triggered.connect(self.split)
-		self.geoprocessing_menu.addAction(self.split_action)
-		
-		# Tool Submenu
+			
+		# Calculate Attribute submenu
 		self.tool_menu = QMenu(u'Calculate Field')	
 		self.hcmgis_add_submenu(self.tool_menu)
 				

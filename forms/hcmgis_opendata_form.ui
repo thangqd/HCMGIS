@@ -20,7 +20,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>HCMGIS OpenData</string>
+   <string>Download OpenData</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="10" column="0" colspan="2">
@@ -270,7 +270,7 @@
       </widget>
      </item>
      <item row="21" column="0" colspan="3">
-      <widget class="QLabel" name="LblSattus">
+      <widget class="QLabel" name="LblStatus">
        <property name="text">
         <string/>
        </property>

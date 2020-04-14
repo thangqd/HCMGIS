@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>535</width>
-    <height>283</height>
+    <width>479</width>
+    <height>343</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -24,76 +24,90 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="LblInput">
-     <property name="text">
-      <string>Input Polygon (1..100 selected features limit!) - Layer must be in Projected CRS</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QgsMapLayerComboBox" name="CboInput"/>
-   </item>
-   <item>
-    <widget class="QLabel" name="LblInput_3">
-     <property name="text">
-      <string>Unique field</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QgsFieldComboBox" name="CboField"/>
-   </item>
-   <item>
-    <widget class="QLabel" name="LblInput_2">
-     <property name="text">
-      <string>Density (m)</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QSpinBox" name="spinBox">
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <property name="minimum">
-      <number>1</number>
-     </property>
-     <property name="maximum">
-      <number>10</number>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="font">
-      <font>
-       <weight>50</weight>
-       <italic>true</italic>
-       <bold>false</bold>
-       <kerning>false</kerning>
-      </font>
-     </property>
-     <property name="text">
-      <string>(Notice: Output should be refined after running)</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="LblStatus">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QProgressBar" name="status">
-     <property name="value">
-      <number>24</number>
-     </property>
-    </widget>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="11" column="0" colspan="2">
+      <widget class="QProgressBar" name="status">
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="2">
+      <widget class="QLabel" name="LblOutput">
+       <property name="text">
+        <string>Output</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QLabel" name="LblInput_2">
+       <property name="text">
+        <string>Density (m)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0" colspan="2">
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <italic>true</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>(Notice: Output should be refined after running)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0" colspan="2">
+      <widget class="QLabel" name="LblStatus">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="LblInput">
+       <property name="text">
+        <string>Input Polygon (1..100 selected features limit!) - Layer must be in Projected CRS</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QLabel" name="LblInput_3">
+       <property name="text">
+        <string>Unique field</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QgsMapLayerComboBox" name="CboInput"/>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <widget class="QSpinBox" name="spinBox">
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0" colspan="2">
+      <widget class="QgsFieldComboBox" name="CboField"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QgsFileWidget" name="output_file_name"/>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="BtnApplyClose">
@@ -109,6 +123,11 @@
    <class>QgsFieldComboBox</class>
    <extends>QComboBox</extends>
    <header>qgsfieldcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsFileWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsfilewidget.h</header>
   </customwidget>
   <customwidget>
    <class>QgsMapLayerComboBox</class>

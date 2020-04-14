@@ -197,7 +197,7 @@
     <widget class="QListWidget" name="lsFiles"/>
    </item>
    <item>
-    <widget class="QLabel" name="lblStatus">
+    <widget class="QLabel" name="LblStatus">
      <property name="font">
       <font>
        <weight>75</weight>

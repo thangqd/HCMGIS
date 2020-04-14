@@ -75,7 +75,7 @@
         <string/>
        </property>
        <property name="readOnly">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -125,7 +125,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="lblStatus">
+    <widget class="QLabel" name="LblStatus">
      <property name="font">
       <font>
        <weight>75</weight>

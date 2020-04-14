@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
-    <height>210</height>
+    <width>422</width>
+    <height>319</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -44,6 +44,26 @@
     <widget class="QgsFieldComboBox" name="CboField"/>
    </item>
    <item>
+    <widget class="QLabel" name="LblOutput">
+     <property name="text">
+      <string>Closest pair of point</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QgsFileWidget" name="closest"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Farthest pair of point</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QgsFileWidget" name="farthest"/>
+   </item>
+   <item>
     <widget class="QLabel" name="LblStatus">
      <property name="text">
       <string/>
@@ -71,6 +91,11 @@
    <class>QgsFieldComboBox</class>
    <extends>QComboBox</extends>
    <header>qgsfieldcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsFileWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsfilewidget.h</header>
   </customwidget>
   <customwidget>
    <class>QgsMapLayerComboBox</class>

@@ -13,7 +13,7 @@ class Ui_hcmgis_merge_field_form(object):
         hcmgis_merge_field_form.setObjectName("hcmgis_merge_field_form")
         hcmgis_merge_field_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_merge_field_form.setEnabled(True)
-        hcmgis_merge_field_form.resize(523, 467)
+        hcmgis_merge_field_form.resize(523, 484)
         hcmgis_merge_field_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_merge_field_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -57,9 +57,6 @@ class Ui_hcmgis_merge_field_form(object):
         self.CboChar.addItem("")
         self.CboChar.addItem("")
         self.verticalLayout.addWidget(self.CboChar)
-        self.ChkSelectedFeaturesOnly = QtWidgets.QCheckBox(hcmgis_merge_field_form)
-        self.ChkSelectedFeaturesOnly.setObjectName("ChkSelectedFeaturesOnly")
-        self.verticalLayout.addWidget(self.ChkSelectedFeaturesOnly)
         self.LblStatus = QtWidgets.QLabel(hcmgis_merge_field_form)
         self.LblStatus.setText("")
         self.LblStatus.setObjectName("LblStatus")
@@ -97,7 +94,6 @@ class Ui_hcmgis_merge_field_form(object):
         self.CboChar.setItemText(8, _translate("hcmgis_merge_field_form", ":"))
         self.CboChar.setItemText(9, _translate("hcmgis_merge_field_form", ";"))
         self.CboChar.setItemText(10, _translate("hcmgis_merge_field_form", "&"))
-        self.ChkSelectedFeaturesOnly.setText(_translate("hcmgis_merge_field_form", "Selected features only"))
 
 from qgsmaplayercombobox import QgsMapLayerComboBox
 

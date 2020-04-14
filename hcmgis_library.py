@@ -38,294 +38,9 @@ import processing
 from osgeo import gdal
 from osgeo import ogr
 from osgeo import osr
+import os 
 
-####################### arcgis2geojson
-def pointsEqual(a, b):
-    """
-    checks if 2 [x, y] points are equal
-    """
-    for i in range(0, len(a)):
-        if a[i] != b[i]:
-            return False
-    return True
-
-
-def closeRing(coordinates):
-    """
-    checks if the first and last points of a ring are equal and closes the ring
-    """
-    if not pointsEqual(coordinates[0], coordinates[len(coordinates) - 1]):
-        coordinates.append(coordinates[0])
-    return coordinates
-
-
-def ringIsClockwise(ringToTest):
-    """
-    determine if polygon ring coordinates are clockwise. clockwise signifies
-    outer ring, counter-clockwise an inner ring or hole.
-    """
-
-    total = 0
-    i = 0
-    rLength = len(ringToTest)
-    pt1 = ringToTest[i]
-    pt2 = None
-    for i in range(0, rLength - 1):
-        pt2 = ringToTest[i + 1]
-        total += (pt2[0] - pt1[0]) * (pt2[1] + pt1[1])
-        pt1 = pt2
-
-    return (total >= 0)
-
-
-def vertexIntersectsVertex(a1, a2, b1, b2):
-    uaT = (b2[0] - b1[0]) * (a1[1] - b1[1]) - (b2[1] - b1[1]) * (a1[0] - b1[0])
-    ubT = (a2[0] - a1[0]) * (a1[1] - b1[1]) - (a2[1] - a1[1]) * (a1[0] - b1[0])
-    uB = (b2[1] - b1[1]) * (a2[0] - a1[0]) - (b2[0] - b1[0]) * (a2[1] - a1[1])
-
-    if uB != 0:
-        ua = uaT / uB
-        ub = ubT / uB
-
-        if ua >= 0 and ua <= 1 and ub >= 0 and ub <= 1:
-            return True
-
-    return False
-
-
-def arrayIntersectsArray(a, b):
-    for i in range(0, len(a)-1):
-        for j in range(0, len(b)-1):
-            if vertexIntersectsVertex(a[i], a[i + 1], b[j], b[j + 1]):
-                return True
-
-    return False
-
-
-def coordinatesContainPoint(coordinates, point):
-
-    contains = False
-    l = len(coordinates)
-    i = -1
-    j = l - 1
-    while ((i + 1) < l):
-        i = i + 1
-        ci = coordinates[i]
-        cj = coordinates[j]
-        if ((ci[1] <= point[1] and point[1] < cj[1]) or (cj[1] <= point[1] and point[1] < ci[1])) and\
-           (point[0] < (cj[0] - ci[0]) * (point[1] - ci[1]) / (cj[1] - ci[1]) + ci[0]):
-            contains = not contains
-        j = i
-    return contains
-
-
-def coordinatesContainCoordinates(outer, inner):
-    intersects = arrayIntersectsArray(outer, inner)
-    contains = coordinatesContainPoint(outer, inner[0])
-    if not intersects and contains:
-        return True
-    return False
-
-
-def convertRingsToGeoJSON(rings):
-    """
-    do any polygons in this array contain any other polygons in this array?
-    used for checking for holes in arcgis rings
-    """
-
-    outerRings = []
-    holes = []
-    x = None  # iterator
-    outerRing = None  # current outer ring being evaluated
-    hole = None  # current hole being evaluated
-
-    # for each ring
-    for r in range(0, len(rings)):
-        ring = closeRing(rings[r])
-        if len(ring) < 4:
-            continue
-
-        # is this ring an outer ring? is it clockwise?
-        if ringIsClockwise(ring):
-            polygon = [ring[::-1]]
-            outerRings.append(polygon)  # wind outer rings counterclockwise for RFC 7946 compliance
-        else:
-            holes.append(ring[::-1])  # wind inner rings clockwise for RFC 7946 compliance
-
-    uncontainedHoles = []
-
-    # while there are holes left...
-    while len(holes):
-        # pop a hole off out stack
-        hole = holes.pop()
-
-        # loop over all outer rings and see if they contain our hole.
-        contained = False
-        x = len(outerRings) - 1
-        while (x >= 0):
-            outerRing = outerRings[x][0]
-            if coordinatesContainCoordinates(outerRing, hole):
-                # the hole is contained push it into our polygon
-                outerRings[x].append(hole)
-                contained = True
-                break
-            x = x-1
-
-        # ring is not contained in any outer ring
-        # sometimes this happens https://github.com/Esri/esri-leaflet/issues/320
-        if not contained:
-            uncontainedHoles.append(hole)
-
-    # if we couldn't match any holes using contains we can try intersects...
-    while len(uncontainedHoles):
-        # pop a hole off out stack
-        hole = uncontainedHoles.pop()
-
-        # loop over all outer rings and see if any intersect our hole.
-        intersects = False
-        x = len(outerRings) - 1
-        while (x >= 0):
-            outerRing = outerRings[x][0]
-            if arrayIntersectsArray(outerRing, hole):
-                # the hole is contained push it into our polygon
-                outerRings[x].append(hole)
-                intersects = True
-                break
-            x = x-1
-
-        if not intersects:
-            outerRings.append([hole[::-1]])
-
-    if len(outerRings) == 1:
-        return {
-            'type': 'Polygon',
-            'coordinates': outerRings[0]
-        }
-    else:
-        return {
-            'type': 'MultiPolygon',
-            'coordinates': outerRings
-        }
-
-
-def getId(attributes, idAttribute=None):
-    keys = [idAttribute, 'OBJECTID', 'FID'] if idAttribute else ['OBJECTID', 'FID']
-    for key in keys:
-        if key in attributes and (
-                isinstance(attributes[key], numbers.Number) or
-                isinstance(attributes[key], str)):
-            return attributes[key]
-    raise KeyError('No valid id attribute found')
-
-
-def arcgis2geojson(arcgis, idAttribute=None):
-    if isinstance(arcgis, str):
-        return json.dumps(convert(json.loads(arcgis), idAttribute))
-    else:
-        return convert(arcgis, idAttribute)
-
-
-def convert(arcgis, idAttribute=None):
-    """
-    Convert an ArcGIS JSON object to a GeoJSON object
-    """
-
-    geojson = {}
-
-    if 'features' in arcgis and arcgis['features']:
-        geojson['type'] = 'FeatureCollection'
-        geojson['features'] = []
-        for feature in arcgis['features']:
-            geojson['features'].append(convert(feature, idAttribute))
-
-    if 'x' in arcgis and isinstance(arcgis['x'], numbers.Number) and\
-            'y' in arcgis and isinstance(arcgis['y'], numbers.Number):
-        geojson['type'] = 'Point'
-        geojson['coordinates'] = [arcgis['x'], arcgis['y']]
-        if 'z' in arcgis and isinstance(arcgis['z'], numbers.Number):
-            geojson['coordinates'].append(arcgis['z'])
-
-    if 'points' in arcgis:
-        geojson['type'] = 'MultiPoint'
-        geojson['coordinates'] = arcgis['points']
-
-    if 'paths' in arcgis:
-        if len(arcgis['paths']) == 1:
-            geojson['type'] = 'LineString'
-            geojson['coordinates'] = arcgis['paths'][0]
-        else:
-            geojson['type'] = 'MultiLineString'
-            geojson['coordinates'] = arcgis['paths']
-
-    if 'rings' in arcgis:
-        geojson = convertRingsToGeoJSON(arcgis['rings'])
-
-    if 'xmin' in arcgis and isinstance(arcgis['xmin'], numbers.Number) and\
-            'ymin' in arcgis and isinstance(arcgis['ymin'], numbers.Number) and\
-            'xmax' in arcgis and isinstance(arcgis['xmax'], numbers.Number) and\
-            'ymax' in arcgis and isinstance(arcgis['ymax'], numbers.Number):
-        geojson['type'] = 'Polygon'
-        geojson['coordinates'] = [[
-            [arcgis['xmax'], arcgis['ymax']],
-            [arcgis['xmin'], arcgis['ymax']],
-            [arcgis['xmin'], arcgis['ymin']],
-            [arcgis['xmax'], arcgis['ymin']],
-            [arcgis['xmax'], arcgis['ymax']]
-        ]]
-
-    if 'geometry' in arcgis or 'attributes' in arcgis:
-        geojson['type'] = 'Feature'
-        if 'geometry' in arcgis:
-            geojson['geometry'] = convert(arcgis['geometry'])
-        else:
-            geojson['geometry'] = None
-
-        if 'attributes' in arcgis:
-            geojson['properties'] = arcgis['attributes']
-            try:
-                geojson['id'] = getId(arcgis['attributes'], idAttribute)
-            except KeyError:
-                # don't set an id
-                pass
-        else:
-            geojson['properties'] = None
-
-    if 'geometry' in geojson and not(geojson['geometry']):
-        geojson['geometry'] = None
-
-    if 'spatialReference' in arcgis and\
-            'wkid' in arcgis['spatialReference'] and\
-            arcgis['spatialReference']['wkid'] != 4326:
-        logging.warning(
-            'Object converted in non-standard crs - ' +\
-            str(arcgis['spatialReference'])
-        )
-
-    return geojson
-
-def main():
-    parser = argparse.ArgumentParser(description='Convert ArcGIS JSON to GeoJSON')
-    parser.add_argument(
-        'file',
-        nargs='?',
-        help='Input file, if empty stdin is used',
-        type=argparse.FileType('r'),
-        default=sys.stdin
-    )
-    parser.add_argument(
-        '--id',
-        action='store',
-        help='Attribute to use as feature ID',
-        required=False,
-        default=None
-    )
-    args = parser.parse_args()
-
-    sys.stdout.write(arcgis2geojson(args.file.read(), idAttribute=args.id))
-    return 0
-
-
-global _Unicode, _TCVN3, _VNIWin, _KhongDau
+#global _Unicode, _TCVN3, _VNIWin, _KhongDau
 _Unicode = [
 u'â',u'Â',u'ă',u'Ă',u'đ',u'Đ',u'ê',u'Ê',u'ô',u'Ô',u'ơ',u'Ơ',u'ư',u'Ư',u'á',u'Á',u'à',u'À',u'ả',u'Ả',u'ã',u'Ã',u'ạ',u'Ạ',
 u'ấ',u'Ấ',u'ầ',u'Ầ',u'ẩ',u'Ẩ',u'ẫ',u'Ẫ',u'ậ',u'Ậ',u'ắ',u'Ắ',u'ằ',u'Ằ',u'ẳ',u'Ẳ',u'ẵ',u'Ẵ',u'ặ',u'Ặ',
@@ -354,19 +69,55 @@ u'e',u'E',u'e',u'E',u'e',u'E',u'e',u'E',u'e',u'E',u'e',u'E',u'e','uE',u'e',u'E',
 u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',
 u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'y',u'Y',u'y',u'Y',u'y',u'Y',u'y',u'Y',u'y',u'Y'
 ]
-
+basemap_names = ['Google Maps', 'Google Satellite',\
+                'Google Satellite Hybrid','Google Terrain', \
+                'Google Terrain Hybrid','Bing Virtual Earth',\
+                'Carto Antique','Carto Dark',\
+                'Carto Eco','Carto Light',\
+                'Esri Boundaries and Places','Esri Dark Gray',\
+                'ESri DeLorme','Esri Imagery',\
+                'Esri Light Gray','Esri National Geographic',\
+                'Esri Ocean','Esri Physical',\
+                'Esri Shaded Relief','Esri Street',\
+                'Esri Terrain','Esri Topographic',\
+                'F4 Map - 2D','Stamen Toner',
+                'Stamen Toner Background','Stamen Toner Hybrid',\
+                'Stamen Toner Lite','Stamen Terrain',\
+                'Stamen Terrain Background','Stamen Watercolor',\
+                'Wikimedia Maps','Vietbando Maps',\
+                'HCMGIS Aerial Images'
+             ]
+basemap_urls = ['mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',\
+                'mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}','mt1.google.com/vt/lyrs=t&x={x}&y={y}&z={z}',\
+                'mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}','ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1',\
+                'cartocdn_a.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png','a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',\
+                'cartocdn_a.global.ssl.fastly.net/base-eco/{z}/{x}/{y}.png', 'a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.pn',\
+                'server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}','server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',\
+                'server.arcgisonline.com/arcgis/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}', 'server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',\
+                'server.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}','server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',\
+                'server.arcgisonline.com/arcgis/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}','server.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',\
+                'server.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', 'server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',\
+                'server.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}','server.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',\
+                'tile1.f4map.com/tiles/f4_2d/{z}/{x}/{y}.png','a.tile.stamen.com/toner/{z}/{x}/{y}.png',\
+                'a.tile.stamen.com/toner-background/{z}/{x}/{y}.png','a.tile.stamen.com/toner-hybrid/{z}/{x}/{y}.png',\
+                'a.tile.stamen.com/toner-lite/{z}/{x}/{y}.png','a.tile.stamen.com/terrain/{z}/{x}/{y}.png',\
+                'a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png','c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg',\
+                'maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png','images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D',\
+                'trueortho.hcmgis.vn/basemap/cache_lidar/{z}/{x}/{y}.jpg'
+                ]                 
+              
 #--------------------------------------------------------
 #    Add basemap
 # --------------------------------------------------------
 
-def hcmgis_basemap(self, service_url, name):
-    service_uri = "type=xyz&zmin=0&zmax=22&url=http://"+requests.utils.quote(service_url)	
-    tms_layer = qgis.utils.iface.addRasterLayer(service_uri, name, "wms")
-    if not tms_layer.isValid():
-          print("Layer failed to load!")
+def hcmgis_basemap_load():
     sources = []
-    service_uri1 = "http://"+service_url
-    sources.append(["connections-xyz",name,"","","",service_uri1,"","22","0"])
+    for basemap_name in basemap_names:
+        idx = basemap_names.index(basemap_name)
+        basemap_url = basemap_urls[idx]
+        basemap_uri = "http://"+basemap_url
+        sources.append(["connections-xyz",basemap_name,"","","",basemap_uri,"","22","0"])
+    i = 0
     for source in sources:
         connectionType = source[0]
         connectionName = source[1]
@@ -377,150 +128,302 @@ def hcmgis_basemap(self, service_url, name):
         QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
         QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
         QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
-    # Update GUI
-    qgis.utils.iface.reloadConnections()
+        i+=1
+        print(str(i) + ('. ')+ source[1] +' added')        
+        try:
+            qgis.utils.iface.reloadConnections()    
+        except:
+            print('Reload Connection failed!')
+         
+def hcmgis_basemap(basemap_name):
+    idx = basemap_names.index(basemap_name)
+    basemap_url = basemap_urls[idx]
+    if ( basemap_name == 'Bing Virtual Earth' or basemap_name == 'Vietbando Maps') :
+        basemap_uri = "type=xyz&url=http://"+basemap_url
+        xyz_layer = QgsRasterLayer(basemap_uri,basemap_name, 'wms') 
+        if xyz_layer.isValid():    
+                QgsProject.instance().addMapLayer(xyz_layer)
+    else:
+        basemap_uri = "type=xyz&zmin=0&zmax=22&url=http://"+requests.utils.quote(basemap_url)
+        xyz_layer = qgis.utils.iface.addRasterLayer(basemap_uri, basemap_name, "wms") 
+        if not xyz_layer.isValid():
+             QMessageBox.warning(None, "Basemap", 'Basemap loaded error!')        
 
+    basemap_uri1 = "http://"+basemap_url
+    source = ["connections-xyz",basemap_name,"","","",basemap_uri1,"","22","0"]   
+    connectionType = source[0]
+    connectionName = source[1]
+    QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+    QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+    QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+    QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+    QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+    QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+    QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+    qgis.utils.iface.reloadConnections()              
 
-def hcmgis_vietbando(self, service_url, name):
-    sources = []
-    service_url = "http://"+service_url
-    sources.append(["connections-xyz",name,"","","",service_url,"","22","0"])
-    for source in sources:
-        connectionType = source[0]
-        connectionName = source[1]
-        QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
-        QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
-        QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
-        QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
-        QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
-        QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
-        QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
-    # Update GUI
-    qgis.utils.iface.reloadConnections()	
-                    
+       
+def hcmgis_covid19():  
+        uri_live_update = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Coronavirus_2019_nCoV_Cases/FeatureServer/2/query?where=1%3D1&outFields=*&outSR=4326&f=geojson'
+        layer_name= 'global_covid19_live_update'
+        json_name_live_update = os.path.join(os.getcwd(), layer_name + '.json')
+
+        urllib.request.urlretrieve(uri_live_update, json_name_live_update)
+        print ('Download completed: '+ str(json_name_live_update))
+        json_file_live_update  = QgsVectorLayer(json_name_live_update,layer_name,"ogr")
+        try:
+            if not json_file_live_update.isValid:
+                QMessageBox.warning(None, "Invalid Layer", "Global COVID-19 Live Update Download failed!")
+                return
+            else:	
+                QgsProject.instance().addMapLayer(json_file_live_update)					
+        except: pass                 
+    
+    
+def hcmgis_covid19_timeseries():
+    uri = ['https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
+    'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
+    'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
+    ]
+    layername = [
+        'global_time_series_covid19_confirmed',
+        'global_time_series_covid19_recovered',
+        'global_time_series_covid19_deaths'
+        ]
+    length = len(uri)
+
+    from osgeo import ogr
+    # driver = ogr.GetDriverByName('ESRI Shapefile')
+    # driver.DeleteDataSource('path_to_your_shape.shp')
+    for i in range(length):
+        csv_name = os.path.join(os.getcwd(), layername[i] + '.csv')
+        shapefile_name = os.path.join(os.getcwd(), layername[i] + '.shp')
+        
+        urllib.request.urlretrieve(uri[i], csv_name)
+        hcmgis_csv2shp(csv_name, 'Lat', 'Long', shapefile_name)	
+        print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))		
+        covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
+        try:
+            if not covidlayer.isValid():
+                QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')			
+            else:
+                QgsProject.instance().addMapLayer(covidlayer)		        
+        except:
+            pass
+       
+
+def hcmgis_covid19_vietnam0():
+    uri_vietnam = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam'
+    
+    vietnam = QgsVectorLayer(uri_vietnam, "Vietnam COVID-19 Live Update", "WFS")
+
+    if not vietnam.isValid():
+        QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed or Please remove Layers from Layers Panel before redownload!")	
+        return		
+    else:	
+        QgsProject.instance().addMapLayer(vietnam)		
+
+def hcmgis_covid19_vietnam():
+    uri_live_update = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam&format=application/json'
+    layer_name= 'vietnam_covid19_live_update'
+    json_name_live_update = os.path.join(os.getcwd(), layer_name + '.json')
+
+    urllib.request.urlretrieve(uri_live_update, json_name_live_update)
+    print ('Download completed: '+ str(json_name_live_update))
+    json_file_live_update  = QgsVectorLayer(json_name_live_update,layer_name,"ogr")
+    try:
+        if not json_file_live_update.isValid:
+            QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed!")
+            return
+        else:	
+            QgsProject.instance().addMapLayer(json_file_live_update)					
+    except: pass                 		
+        
 #--------------------------------------------------------
 #    hcmgis_medialaxis - Create skeleton/ medial axis/ centerline of roads, rivers and similar linear structures
 # --------------------------------------------------------
 
 #for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
 
-def hcmgis_medialaxis(self, layer, selectedfield, density,status_callback_withlabel = None):		
+def hcmgis_medialaxis(layer, field, density,output,status_callback = None):		
     ## create skeleton/ media axis  
     i = 0
-    parameters1 = {'INPUT':layer,
-            'OUTPUT':  "memory:polygon"}
-    polygon = processing.run('qgis:saveselectedfeatures',parameters1)
-    label = str(i)+ '/11. saveselectedfeatures'
-    i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
+    steps =11
+    try:
+        if layer.isValid() and layer.selectedFeatureCount() in range(1,100):
+            parameters0 = {'INPUT':layer,
+                    'OUTPUT':  "memory:polygon"}
+            selectedfeature = processing.run('qgis:saveselectedfeatures',parameters0)
 
-    
+            parameters1 = {'INPUT':selectedfeature['OUTPUT'],
+                'OUTPUT': 'memory:fix'}
+            fix = processing.run('qgis:fixgeometries',parameters1)           
+            polygon = fix['OUTPUT']                  
+    except:
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running medialaxis in QGIS console  
+        parameters1 = {'INPUT':temp,
+            'OUTPUT': 'memory:fix'}
+        fix = processing.run('qgis:fixgeometries',parameters1)
+        polygon = fix['OUTPUT']
+
+    i+=1
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label) 
     
     #densify by interval
-    parameters2 = {'INPUT': polygon['OUTPUT'],
+    parameters2 = {'INPUT': polygon,
                     'INTERVAL' :density,
                     'OUTPUT' : "memory:polygon_densify"} 
-    polygon_densify = processing.run('qgis:densifygeometriesgivenaninterval', parameters2)
-    label = str(i)+ '/11. densifygeometriesgivenaninterval'
-    i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
-		
+    polygon_densify = processing.run('qgis:densifygeometriesgivenaninterval', parameters2)    
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. densifygeometriesgivenaninterval'    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+        
     
     # extract vertices
     parameters3 = {'INPUT': polygon_densify['OUTPUT'],					
                     'OUTPUT' : "memory:points"} 
     points = processing.run('qgis:extractvertices', parameters3)	
-    label = str(i)+ '/11. extractvertices'
-    i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
-		  		
-	 
-    
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. extractvertices'    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)                 
+     
     parameters4 = {'INPUT': points['OUTPUT'],
                     'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
     voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)
-    label =  str(i)+ '/11. voronoipolygons'
-    i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
-		  		
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. voronoipolygons'    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+                  
     
     parameters5 = {'INPUT': voronoipolygon['OUTPUT'],
                     'OUTPUT' : 'memory:voronoipolyline'} 
     voronoipolyline = processing.run('qgis:polygonstolines',parameters5)
-    label =  str(i)+ '/11. polygonstolines'
-    i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
-   
-    
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. polygonstolines'
+    if status_callback:
+        status_callback(percent,label) 
+    else:
+        print(label)   
     
     parameters6 = {'INPUT': voronoipolyline['OUTPUT'],					
                     'OUTPUT' : 'memory:explode'}
     explode = processing.run('qgis:explodelines',parameters6)
-    label =  str(i)+ '/11. explodelines'
-    i+=1 
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. explodelines'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
  
     
     parameters7 = {'INPUT': explode['OUTPUT'],
                     'PREDICATE' : [6], # within					
-                    'INTERSECT': polygon['OUTPUT'],		
+                    'INTERSECT': polygon,		
                     # 'INTERSECT': layer,		
                     'METHOD' : 0,
                     'OUTPUT' : 'memory:candidate'}
     candidate= processing.run('qgis:selectbylocation',parameters7)
-    label =  str(i)+ '/11. selectbylocation'
-    i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
- 
-    
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. selectbylocation'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+   
     
     parameters8 = {'INPUT':candidate['OUTPUT'],
                     'OUTPUT':  'memory:medialaxis'}
     medialaxis = processing.run('qgis:saveselectedfeatures',parameters8)
-    label =  str(i)+ '/11. saveselectedfeatures'
-    i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
  
     
     parameters9 = {'INPUT':medialaxis['OUTPUT'],
                     'OUTPUT':  'memory:deleteduplicategeometries'}
     deleteduplicategeometries = processing.run('qgis:deleteduplicategeometries',parameters9)
-    label =  str(i)+ '/11. deleteduplicategeometries'
-    i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
+    if status_callback:
+        status_callback(percent,label)
  
     
     parameter10 =  {'INPUT':deleteduplicategeometries['OUTPUT'],
-                    'FIELD' : selectedfield,
+                    'FIELD' : field,
                     'OUTPUT':  "memory:medialaxis_dissolve"}
     medialaxis_dissolve = processing.run('qgis:dissolve',parameter10) 
-    label =  str(i)+ '/11. dissolve'
-    i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. dissolve'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
  
-    
     parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
                     'METHOD' : 0,
                     'TOLERANCE' : 1,
-                    'OUTPUT':  "memory:medialaxis"}
-    processing.runAndLoadResults('qgis:simplifygeometries',parameter11) 
-    label =  str(i)+ '/11. simplifygeometries'    
+                    'OUTPUT':  "memory:skeleton"}
+    skeleton = processing.run('qgis:simplifygeometries',parameter11) 
+    
+    output_layer = skeleton['OUTPUT']
+     # Create the output file
+    if not output:
+        message = "No output file name given"
+        print (message)
+        return message
+
+    file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
+    output_file_format = file_formats[os.path.splitext(output)[1]]
+   
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, polygon.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+
+    if error == QgsVectorFileWriter.NoError:
+        try:
+            skeleton = QgsVectorLayer(output, QFileInfo(output).baseName(), 'ogr')
+            QgsProject.instance().addMapLayer(skeleton)
+            qgis.utils.iface.setActiveLayer(skeleton)
+            qgis.utils.iface.zoomToActiveLayer()  
+        except :
+            print('output: '+ str(output))
+    else:
+        message = "Failure creating output file: " + str(error_string)
+        print (message)
+        return message 
+
     i+=1
-    percent = int((i/11)*100)
-    status_callback_withlabel(percent,label)
-    qgis.utils.iface.zoomToActiveLayer() 
-     
-         
+    label = str(i)+ '/'+ str(steps)+ '. simplifygeometries'  
+    percent = int((i/steps)*100)
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)      
+    
     #Calculate min/ max/ average width 
     # parameter12 =  {'INPUT': explode['OUTPUT'],	
                     # 'OVERLAY': polygon['OUTPUT'], 
@@ -551,36 +454,39 @@ def hcmgis_medialaxis(self, layer, selectedfield, density,status_callback_withla
     
     return
 
-def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_withlabel = None):	
-    	
-    convexhull	= None
+def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback = None):	
     ## extract gaps of polygon
     # fix geometries
-    i = 0
     if chksurround: 
-        steps = 18
-    else: steps = 17
-    
-    parameters1 = {'INPUT':layer,
+        steps = 17
+    else: steps = 16      
+    i = 0
+    try:
+        if layer.isValid():
+            parameters0 = {'INPUT':layer,
                     'OUTPUT':  "memory:polygon"}
-    polygon = processing.run('qgis:saveselectedfeatures',parameters1)    
-    
-    i+=1
-    label = str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
-    percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+            selectedfeature = processing.run('qgis:saveselectedfeatures',parameters0)
 
-
-    parameters1_1 = {'INPUT':polygon['OUTPUT'],
+            parameters1 = {'INPUT':selectedfeature['OUTPUT'],
                 'OUTPUT': 'memory:fix'}
-    fix = processing.run('qgis:fixgeometries',parameters1_1)
+            fix = processing.run('qgis:fixgeometries',parameters1)           
+            polygon = fix['OUTPUT']                  
+    except:
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console  
+        parameters1 = {'INPUT':temp,
+                    'OUTPUT': 'memory:fix'}
+        fix = processing.run('qgis:fixgeometries',parameters1)
+        polygon = fix['OUTPUT']
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
-    percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)	
-    
+    percent = int((i/steps)*100)    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+
     # aggregate polygons	
-    parameters1_2 = {'INPUT':fix['OUTPUT'],
+    parameters1_2 = {'INPUT':polygon,
                     'GROUP_BY' : 'NULL',
                     'AGGREGATES' : [],
                     'OUTPUT':  'memory:aggregate'}
@@ -588,8 +494,11 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     aggregate = processing.run('qgis:aggregate',parameters1_2)
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. aggregate'
-    percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)	
+    percent = int((i/steps)*100)    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
     
     
     # delete holes in aggregated polygons	
@@ -600,7 +509,11 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. deleteholes'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    print(label)
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
         
     # simplify geometries
     parameter1_4 = {'INPUT':deleteholes['OUTPUT'],
@@ -611,7 +524,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+'. simplifygeometries'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 	
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
     
     
     #create convexhull
@@ -621,7 +537,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. convexhull'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
         
     if chksurround:
         parameters1_6 = {'INPUT':convexhull['OUTPUT'],
@@ -636,7 +555,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
         i+=1
         label = str(i)+ '/'+ str(steps)+ '. convexhull'
         percent = int((i/steps)*100)
-        status_callback_withlabel(percent,label) 
+        if status_callback:
+            status_callback(percent,label)
+        else:
+            print(label) 
         
     
     parameters1_7 = {'INPUT': convexhull['OUTPUT'],
@@ -646,7 +568,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. symmetricaldifference'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
 
     # parameters1_7 =  {'INPUT': convexhull['OUTPUT'],
     #                    'INTERSECT':simplify['OUTPUT'],
@@ -656,7 +581,7 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     # i+=1
     # label =str(i)+ '/'+ str(steps)+ '. extractbylocation'
     # percent = int((i/steps)*100)
-    # status_callback_withlabel(percent,label) 
+    # status_callback(percent,label) 
 
 
     #densify by interval
@@ -667,7 +592,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. densifygeometriesgivenaninterval'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
     
     # extract vertices
     parameters3 = {'INPUT': gaps_densify['OUTPUT'],					
@@ -676,7 +604,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. extractvertices'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)	
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
 
         
     parameters4 = {'INPUT': points['OUTPUT'],
@@ -685,7 +616,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. voronoipolygons'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)	 
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
     
     parameters5 = {'INPUT': voronoipolygon['OUTPUT'],
                     'OUTPUT' : 'memory:voronoipolyline'} 
@@ -693,9 +627,11 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. polygonstolines'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
-    
-    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+      
     
     parameters6 = {'INPUT': voronoipolyline['OUTPUT'],					
                     'OUTPUT' : 'memory:explode'}
@@ -703,7 +639,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. explodelines'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
     
     parameters7 = {'INPUT': explode['OUTPUT'],
                     'PREDICATE' : [6], # within					
@@ -714,8 +653,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. selectbylocation'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
-    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
     
     parameters8 = {'INPUT':candidate['OUTPUT'],
                     'OUTPUT':  "memory:medialaxis"}
@@ -723,7 +664,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     label = str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
     i+=1
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
     
     parameters9 = {'INPUT':medialaxis['OUTPUT'],
                     'OUTPUT':  'memory:deleteduplicategeometries'}
@@ -731,7 +675,10 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'   
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
     
     parameter10 =  {'INPUT':deleteduplicategeometries['OUTPUT'],
                     'OUTPUT':  "memory:medialaxis_dissolve"}
@@ -739,227 +686,340 @@ def hcmgis_centerline(self,layer,density,chksurround,distance,status_callback_wi
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. dissolve'    
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)    
     
     parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
                     'METHOD' : 0,
                     'TOLERANCE' : 1,
                     'OUTPUT':  "memory:centerline"}
-    processing.runAndLoadResults('qgis:simplifygeometries',parameter11)
+    centerline = processing.run('qgis:simplifygeometries',parameter11) 
+    output_layer = centerline['OUTPUT']   
+
+    # Create the output file
+    if not output:
+        message = "No output file name given"
+        print (message)
+        return message
+
+    file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
+    output_file_format = file_formats[os.path.splitext(output)[1]]
+   
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, polygon.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+
+    if error == QgsVectorFileWriter.NoError:
+        try:
+            skeleton = QgsVectorLayer(output, QFileInfo(output).baseName(), 'ogr')
+            QgsProject.instance().addMapLayer(skeleton)
+            qgis.utils.iface.setActiveLayer(skeleton)
+            qgis.utils.iface.zoomToActiveLayer()  
+        except :
+            print('output: '+ str(output))
+    else:
+        message = "Failure creating output file: " + str(error_string)
+        print (message)
+        return message 
+
     i+=1
-    label =str(i)+ '/'+ str(steps)+ '. simplifygeometries'
+    label = str(i)+ '/'+ str(steps)+ '. simplifygeometries'  
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)  	
-    qgis.utils.iface.zoomToActiveLayer() 
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)  
     
     return
+  
 
 ################################################################
 # Finding closest/ Farthest pair of Points
 ################################################################
-def hcmgis_closestpair(self,layer,field,status_callback_withlabel = None):		
+def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None):		
     if layer is None:
         return 'No selected layer!'
     if ((field is None) or (field == '')):
         return 'Please select an unique field!'	
+    steps =6
     i = 0
-    if (layer.wkbType()== QgsWkbTypes.MultiPoint):
-        parameters0 = {'INPUT':layer,
-                      'OUTPUT':  "memory:singlepart"}
-        singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
-        point_layer = singlepart['OUTPUT']  
-        steps = 15
-        i+=1
-        label =str(i)+ '/'+ str(steps)+ '. multiparttosingleparts'
-        percent = int((i/steps)*100)
-        status_callback_withlabel(percent,label) 
-    else:
-        point_layer = layer
-        steps = 14
-
-    parameters1 = {'INPUT':point_layer,
-                    'OUTPUT':  "memory:delaunay_polygon"}
-    delaunay_polygon = processing.run('qgis:delaunaytriangulation',parameters1)
+    
+    label = 'Fiding closest pair of points'
+    if status_callback:
+        status_callback(2,label)
+    else: print(label)
+    try:
+        if layer.isValid():
+            if (layer.wkbType() == QgsWkbTypes.MultiPoint):
+                parameters0 = {'INPUT':layer,
+                              'OUTPUT':  "memory:singlepart"}
+                singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
+                point_layer = singlepart['OUTPUT']       
+            else:
+                point_layer = layer
+    except:
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console  
+        if (temp.wkbType() == QgsWkbTypes.MultiPoint):
+            parameters0 = {'INPUT':temp,
+                            'OUTPUT':  "memory:singlepart"}
+            singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
+            point_layer = singlepart['OUTPUT']       
+        else:
+            point_layer = temp
+    ##########
+    # Finding closest pair of points
+    #########
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. delaunaytriangulation'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
-
-    parameters2 = {'INPUT':delaunay_polygon['OUTPUT'],
-                    'OUTPUT':  "memory:delaunay_polyline"}
-    delaunay_polyline = processing.run('qgis:polygonstolines',parameters2)
+    if status_callback:
+        status_callback(percent,label)
+    else: print(label)
+    parameters1 = {'INPUT':point_layer,
+                    'OUTPUT':  "memory:delaunay_polygon"}
+    delaunay_polygon = processing.run('qgis:delaunaytriangulation',parameters1)
+    
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. polygonstolines'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 	
-
-    parameters3 = {'INPUT': delaunay_polyline['OUTPUT'],					
-                    'OUTPUT' : 'memory:delaunay_explode'}
-    delaunay_explode = processing.run('qgis:explodelines',parameters3)
+    if status_callback:
+        status_callback(percent,label)
+    parameters2 = {'INPUT':delaunay_polygon['OUTPUT'],
+                    'OUTPUT':  "memory:delaunay_polyline"}
+    delaunay_polyline = processing.run('qgis:polygonstolines',parameters2)
+    
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. explodelines'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 	
-
-    lengths = []
-    closest_candidates = delaunay_explode['OUTPUT']
-
-    # calculate length in meters
-    for feature in closest_candidates.getFeatures():
-        length = feature.geometry().length() 		
-        lengths.append(length)
-    
-    minlength = str(min(lengths))
-    
-
-    selection = closest_candidates.getFeatures(QgsFeatureRequest(QgsExpression('$length'  + '=' + minlength)))
-    ids = [s.id() for s in selection]
-    closest_candidates.selectByIds(ids)
-    
-    parameters3_1 = {'INPUT':closest_candidates,
-                     'OUTPUT':  'memory:min_delaunay'
-                     }
-    min_delaunay = processing.run('qgis:saveselectedfeatures',parameters3_1)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label)	
+    parameters3 = {'INPUT': delaunay_polyline['OUTPUT'],					
+                    'OUTPUT' : 'memory:delaunay_explode'}
+    delaunay_explode = processing.run('qgis:explodelines',parameters3)
+   
     i+=1
-    label =str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
+    label =str(i)+ '/'+ str(steps)+ '. multiparttosingleparts'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label)	
+    parameters4 = {'INPUT':delaunay_explode['OUTPUT'],
+                    'OUTPUT':  "memory:delaunay_singlepart"}
+    delaunay_singlepart = processing.run('qgis:multiparttosingleparts',parameters4)
+    
+    i+=1
+    label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
+    percent = int((i/steps)*100)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label)	
+    parameters5 =  {'INPUT': delaunay_singlepart['OUTPUT'],					 
+                  'OUTPUT':  "memory:clean"}
+    clean = processing.run('qgis:deleteduplicategeometries',parameters5)
+    delaunay_clean = clean['OUTPUT']
 
-    parameters3_2 = {'INPUT': point_layer,
-                    'PREDICATE' : [4],#touch
-                    'INTERSECT' : min_delaunay['OUTPUT'],
-                    'METHOD' : 0,									
-                    'OUTPUT' : 'memory:closest'
-                    }
-    closest = processing.run('qgis:selectbylocation',parameters3_2)
     i+=1
-    label =str(i)+ '/'+ str(steps)+ '. selectbylocation'
+    label =str(i)+ '/'+ str(steps)+ '. Calculate length'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
-    
-    parameters3_3 = {'INPUT': closest['OUTPUT'],
-                     'OUTPUT':  'memory:closest'
-                     }
-    closest_points = processing.run('qgis:saveselectedfeatures',parameters3_3)
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
-    percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
-    
-    
-    parameters3_4 = {'INPUT':closest_points['OUTPUT'],
-                    'INPUT_FIELD' : field,
-                     'TARGET' : closest_points['OUTPUT'],
-                     'TARGET_FIELD' : field,
-                     'MATRIX_TYPE' : 2,
-                     'NEAREST_POINTS' : 0,
-                     'OUTPUT':  'memory:closest_points'
-                    }
-    closest_points = processing.run('qgis:distancematrix',parameters3_4)
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. distancematrix'
-    percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
-    
-    parameters3_5 = {'INPUT':closest_points['OUTPUT'],
-                    'COLUMN' : ['MEAN','STDDEV','MAX'],
-                     'OUTPUT':  'memory:closest'
-                     }
-    processing.runAndLoadResults('qgis:deletecolumn',parameters3_5)
-    point_layer.removeSelection()	
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. deletecolumn'
-    percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label)	
 
+    delaunay_clean.startEditing() 
+    delaunay_clean.dataProvider().addAttributes([QgsField("length",  QVariant.Double)]) # define/add field data type
+    delaunay_clean.updateFields() # tell the vector layer to fetch changes from the provider    
+    fieldnumber =delaunay_clean.fields().count()    
+    for feature in  delaunay_clean.getFeatures():   
+        d = QgsDistanceArea()
+        length = d.convertLengthMeasurement(d.measureLength(feature.geometry()),0) #convert to meters
+        delaunay_clean.changeAttributeValue(feature.id(), fieldnumber-1,length )
 
+    for idx in range(delaunay_clean.fields().count()):
+        delaunay_clean.deleteAttributes([idx])
+    delaunay_clean.commitChanges()
+
+    if not closest:
+        message = "No closest file name given"
+        print (message)
+
+    file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
+    output_file_format = file_formats[os.path.splitext(closest)[1]]
+   
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(delaunay_clean, closest, point_layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only      
+
+    if error == QgsVectorFileWriter.NoError:
+        try:
+            closest_pair = QgsVectorLayer(closest, QFileInfo(closest).baseName(), 'ogr')
+            QgsProject.instance().addMapLayer(closest_pair)
+            qgis.utils.iface.setActiveLayer(closest_pair)
+            qgis.utils.iface.zoomToActiveLayer()  
+        except :
+            print('Closest pair: '+ str(closest))
+    else:
+        message = "Failure creating closest pair file: " + str(error_string)
+        print (message)
+       
+    ############
     #Finding farthest pair of points
-    parameters4 = {'INPUT': delaunay_polygon['OUTPUT'],								
-                    'OUTPUT' : 'memory:convexhull'}
-    convexhull = processing.run('qgis:dissolve',parameters4)
-    i+=1
+    ############
+    steps = 9
+    i = 0
+    label = 'Fiding farthest pair of points'
+    if status_callback:
+        status_callback(2,label)
+    else: print(label)
+
+ 
+    parameters6 = {'INPUT': delaunay_polygon['OUTPUT'],								
+                   'OUTPUT' : 'memory:convexhull'}
+    convexhull = processing.run('qgis:dissolve',parameters6)
+    i +=1
     label =str(i)+ '/'+ str(steps)+ '. dissolve'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
-
-    parameters5 = {'INPUT': point_layer,
-                    'PREDICATE' : [4],
-                    'INTERSECT' : convexhull['OUTPUT'],
-                    'METHOD' : 0,	# touch								
-                    'OUTPUT' : 'memory:convexhull_vertices'
-                    }
-    processing.run('qgis:selectbylocation',parameters5)
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. selectbylocation'
-    percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
-
-    parameters6 = {'INPUT':point_layer,
-                    'OUTPUT':  "memory:farthest_candidates"}
-    farthest_candidates = processing.run('qgis:saveselectedfeatures',parameters6)
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
-    percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label)	
     
-    parameters7 = {'INPUT':farthest_candidates['OUTPUT'],
-                    'INPUT_FIELD' : field,
-                     'TARGET' : farthest_candidates['OUTPUT'],
-                     'TARGET_FIELD' : field,
-                     'MATRIX_TYPE' : 2,
-                     'NEAREST_POINTS' : 0,
-                     'OUTPUT':  'memory:distance_matrix'
-                    }
-    distance_matrix = processing.run('qgis:distancematrix',parameters7)
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. distancematrix'
+    parameters7 = {'INPUT': convexhull['OUTPUT'],								
+                     'OUTPUT' : 'memory:convexhull_vertices'}
+    convexhull_vertices = processing.run('qgis:extractvertices',parameters7)
+    i +=1
+    label =str(i)+ '/'+ str(steps)+ '. extractvertices'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
-
-    farthest_candidates = distance_matrix['OUTPUT']
-
-    values = []
-    idx = farthest_candidates.dataProvider().fieldNameIndex('MAX')
-
-    for feat in farthest_candidates.getFeatures():
-        attrs = feat.attributes()
-        values.append(attrs[idx])
-
-    max_value = str(round(max(values),1))
-    selection2 = farthest_candidates.getFeatures(QgsFeatureRequest(QgsExpression('round("MAX",1)' + '=' + max_value)))
-    ids = [s.id() for s in selection2]
-    farthest_candidates.selectByIds(ids)
-
-    parameters8 = {'INPUT':farthest_candidates,
-                     'OUTPUT':  'memory:farthest_points'
-                     }
-    farthest_points = processing.run('qgis:saveselectedfeatures',parameters8)
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label)
+           
+    parameters8 = {'INPUT':convexhull_vertices['OUTPUT'],
+                    'OUTPUT':  "memory:singlepart"}
+    vertices_singlepart = processing.run('qgis:multiparttosingleparts',parameters8)
+    i +=1
+    label =str(i)+ '/'+ str(steps)+ '. multiparttosingleparts'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label)
+   
+    parameters9 =  {'INPUT': vertices_singlepart['OUTPUT'],					 
+                  'OUTPUT':  "memory:clean"}
+    clean = processing.run('qgis:deleteduplicategeometries',parameters9)
+    vertices_clean = clean['OUTPUT']  
+    i +=1
+    label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
+    percent = int((i/steps)*100)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label) 
 
+    parameters10 =  {'INPUT': convexhull['OUTPUT'],					 
+                  'OUTPUT':  "memory:convexhull_line"}
+    line = processing.run('qgis:polygonstolines',parameters10)
+    convexhull_line = line['OUTPUT']  
+    i +=1
+    label =str(i)+ '/'+ str(steps)+ '. polygonstolines'
+    percent = int((i/steps)*100)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label)  
+
+    parameters11 = {'INPUT': convexhull_line,					
+                    'OUTPUT' : 'memory:explode'}
+    explode = processing.run('qgis:explodelines',parameters11)
+    i +=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. explodelines'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
     
-    parameters9 = {'INPUT': farthest_points['OUTPUT'],
-                    'COLUMN' : ['MEAN','STDDEV','MIN'],
-                     'OUTPUT':  'memory:farthest'
-                     }
-    processing.runAndLoadResults('qgis:deletecolumn',parameters9)
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. deletecolumn'
+    convexhull_clean = explode['OUTPUT']
+    convexhull_clean.startEditing()
+    for f1 in vertices_clean.getFeatures():
+        point1 = f1.geometry().asPoint()
+        for f2 in vertices_clean.getFeatures():            
+            point2 = f2.geometry().asPoint()     
+            if ( point1 != point2):
+                seg = QgsFeature()
+                seg.setGeometry(QgsGeometry.fromPolylineXY([point1,point2]))
+                convexhull_clean.dataProvider().addFeature(seg)
+    
+    convexhull_clean.dataProvider().addAttributes([QgsField("length",  QVariant.Double)]) # define/add field data type
+    convexhull_clean.updateFields() # tell the vector layer to fetch changes from the provider    
+    fieldnumber =convexhull_clean.fields().count()    
+    for feature in  convexhull_clean.getFeatures():   
+        d = QgsDistanceArea()
+        length = d.convertLengthMeasurement(d.measureLength(feature.geometry()),0) #convert to meters
+        convexhull_clean.changeAttributeValue(feature.id(), fieldnumber-1,length )
+
+    for idx in range(delaunay_clean.fields().count()):
+        convexhull_clean.deleteAttributes([idx])    
+    convexhull_clean.commitChanges()
+
+    i +=1    
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
-    point_layer.removeSelection()  	
+    label = str(i)+ '/'+ str(steps)+ '. calculate length'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+
+    parameters11 = {'INPUT':convexhull_clean,
+                    'OUTPUT':  "memory:singlepart"}
+    singlepart = processing.run('qgis:multiparttosingleparts',parameters11)
+    i +=1
+    label =str(i)+ '/'+ str(steps)+ '. multiparttosingleparts'
+    percent = int((i/steps)*100)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label)
+   
+    parameters12 =  {'INPUT': singlepart['OUTPUT'],					 
+                  'OUTPUT':  "memory:clean"}
+    clean = processing.run('qgis:deleteduplicategeometries',parameters12)
+    convexhull_clean = clean['OUTPUT']  
+    i +=1
+    label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
+    percent = int((i/steps)*100)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print(label) 
+
+
+    if not farthest:
+        message = "No farthest file name given"
+        print (message)
+        return message
+
+    file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
+    output_file_format = file_formats[os.path.splitext(farthest)[1]]
+   
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(convexhull_clean, farthest, point_layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only      
+
+    if error == QgsVectorFileWriter.NoError:
+        try:
+            farthest_pair = QgsVectorLayer(farthest, QFileInfo(farthest).baseName(), 'ogr')
+            QgsProject.instance().addMapLayer(farthest_pair)
+            qgis.utils.iface.setActiveLayer(farthest_pair)
+            qgis.utils.iface.zoomToActiveLayer()  
+        except :
+            print('Farthest pair: '+ str(farthest))
+    else:
+        message = "Failure creating farthest pair file: " + str(error_string)
+        print (message) 
+        return message
     return
 
-def hcmgis_merge_field(self, layer, selectedfields, char,selectedfeatureonly,status_callback_withlabel = None):			
+   
+def hcmgis_merge_field(layer, fields, char,status_callback = None):			
     if layer is None:
         return u'No selected layers!'  
     if (char == u'Space'):
         char = " "
     elif (char == "Tab"):
         char = "\t"
-    if (len(selectedfields) <= 0):
+    if (len(fields) <= 0):
         return u'No selected fields!'
     char = unicode (char)
     # need to create a data provider
@@ -968,45 +1028,31 @@ def hcmgis_merge_field(self, layer, selectedfields, char,selectedfeatureonly,sta
         
     fieldnumber = 0
     for i in layer.fields():
-            fieldnumber += 1      
-    featurecount = 0           
+        fieldnumber += 1      
+    featurecount = 0        
         
-    layer.startEditing()
-    if selectedfeatureonly:
-        totalfeaturecount = layer.selectedFeatureCount()
-        for feature in  layer.SelectedFeatures():  
-            merge_value = ""                
-            for j in selectedfields:                                       
-                if (feature[layer.dataProvider().fieldNameIndex(j)]):# is not NULL
-                    if (count == len(selectedfields)-1):# last slected field
-                        merge_value += unicode(feature[layer.dataProvider().fieldNameIndex(j)]) 
-                    else:
-                        merge_value += unicode(feature[layer.dataProvider().fieldNameIndex(j)]) + char
-                    layer.changeAttributeValue(feature.id(), fieldnumber-1, merge_value)
-            featurecount += 1              
-            percent = (featurecount/float(totalfeaturecount)) * 100
-            status_callback_withlabel(percent,'')
-    else:
-            totalfeaturecount = layer.featureCount()
-            for feature in  layer.getFeatures():  
-                count = 0
-                merge_value = ""                
-                for j in selectedfields:                                       
-                    if (feature[layer.dataProvider().fieldNameIndex(j)]):# is not NULL
-                        if (count == len(selectedfields)-1):# last slected field
-                            merge_value += unicode(feature[layer.dataProvider().fieldNameIndex(j)]) 
-                        else:
-                            merge_value += unicode(feature[layer.dataProvider().fieldNameIndex(j)]) + char
-                        layer.changeAttributeValue(feature.id(), fieldnumber-1, merge_value)
-                    count +=1
-                featurecount += 1              
-                percent = (featurecount/float(totalfeaturecount)) * 100
-                status_callback_withlabel(percent,None)     
+    layer.startEditing()     
+    totalfeaturecount = layer.featureCount()
+    for feature in  layer.getFeatures():  
+        count = 0
+        merge_value = ""                
+        for j in fields:                                       
+            if (feature[layer.dataProvider().fieldNameIndex(j)]):# is not NULL
+                if (count == len(fields)-1):# last slected field
+                    merge_value += unicode(feature[layer.dataProvider().fieldNameIndex(j)]) 
+                else:
+                    merge_value += unicode(feature[layer.dataProvider().fieldNameIndex(j)]) + char
+                layer.changeAttributeValue(feature.id(), fieldnumber-1, merge_value)
+            count +=1
+        featurecount += 1              
+        percent = (featurecount/float(totalfeaturecount)) * 100
+        if status_callback:
+            status_callback(percent,None)     
     layer.commitChanges()
     #hcmgis_completion_message(qgis, unicode(featurecount) + " records updated")
     return None
 
-def hcmgis_split_field(self, layer, selectedfield, char, selectedfeatureonly,status_callback_withlabel = None):            
+def hcmgis_split_field(layer, field, char,status_callback = None):            
     if layer is None:
         return u'No selected layer!'
     if ( layer.isEditable == False): return u'Layer is read only!' 
@@ -1016,14 +1062,13 @@ def hcmgis_split_field(self, layer, selectedfield, char, selectedfeatureonly,sta
         char = " "
     elif (char == "Tab"):
         char = "\t"
-    if (len(selectedfield) <= 0):
+    if (len(field) <= 0):
         return u'No selected field!'        	        
     
-    top_occurence = hcmgis_top_occurence(layer, selectedfield,char,selectedfeatureonly)    
+    top_occurence = hcmgis_top_occurence(layer, field,char,selectedfeatureonly)    
     
     if (top_occurence == 0):
-        return u'Field ' + selectedfield + u' does not contain any split characters!'
-
+        return u'Field ' + field + u' does not contain any split characters!'
               
     for i in range(0, top_occurence+1):
         layer.dataProvider().addAttributes([QgsField("split",  QVariant.String)]) # define/add field data type
@@ -1033,34 +1078,20 @@ def hcmgis_split_field(self, layer, selectedfield, char, selectedfeatureonly,sta
     fieldnumber = 0
     
     for i in layer.fields():
-        fieldnumber += 1
-            
+        fieldnumber += 1            
                  
-    layer.startEditing()
-    if selectedfeatureonly:
-        totalfeaturecount = layer.selectedFeatureCount()
-        for feature in  layer.SelectedFeatures():                    
-            fieldupdatenumber = unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).count(char)+1
-            for i in range (fieldupdatenumber):
-                if (feature[layer.dataProvider().fieldNameIndex(selectedfield)]):# is not NULL                                                         
-                    layer.changeAttributeValue(feature.id(), (fieldnumber-1) - top_occurence + i, unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).split(char)[i])                                        
-            featurecount += 1
-            percent = (featurecount/float(totalfeaturecount)) * 100
-            status_callback_withlabel(percent,None)  
-    else:
-        totalfeaturecount = layer.featureCount()
-        for feature in layer.getFeatures():                   
-            fieldupdatenumber = unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).count(char)+1
-            for i in range (fieldupdatenumber):
-                if (feature[layer.dataProvider().fieldNameIndex(selectedfield)]):# is not NULL
-                    layer.changeAttributeValue(feature.id(), (fieldnumber-1) - top_occurence + i, unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).split(char)[i])                                        
-            featurecount += 1
-            percent = (featurecount/float(totalfeaturecount)) * 100
-            status_callback_withlabel(percent,None)             
+    layer.startEditing() 
+    totalfeaturecount = layer.featureCount()
+    for feature in layer.getFeatures():                   
+        fieldupdatenumber = unicode(feature[layer.dataProvider().fieldNameIndex(field)]).count(char)+1
+        for i in range (fieldupdatenumber):
+            if (feature[layer.dataProvider().fieldNameIndex(field)]):# is not NULL
+                layer.changeAttributeValue(feature.id(), (fieldnumber-1) - top_occurence + i, unicode(feature[layer.dataProvider().fieldNameIndex(field)]).split(char)[i])                                        
+        featurecount += 1
+        percent = (featurecount/float(totalfeaturecount)) * 100
+        if status_callback:
+            status_callback(percent,None)             
     layer.commitChanges()        
-    #hcmgis_completion_message(qgis, unicode(featurecount) + " records updated")
-
-            
     return None
 
 
@@ -1068,87 +1099,58 @@ def hcmgis_split_field(self, layer, selectedfield, char, selectedfeatureonly,sta
 #Font Converter
 ##################################
     
-def hcmgis_convertfont(qgis,input_layer, selectedfields, output_layer, sE, dE, caseI,selectedfeatureonly,status_callback_withlabel = None):      
-    if input_layer is None:
-        return u'No selected layer!'
-    if selectedfields is None:
-        return u'No selected fields!'
+def hcmgis_convertfont(layer, sE, dE, caseI, output_layer, status_callback = None):      
+    if layer is None:
+        return u'No selected layer!'    
     if output_layer is None:
-        return u'No output layer!'
+        return u'No output layer!'   
+    try:
+        if layer.isValid():
+            input_layer = layer           
+    except:
+        input_layer = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running medialaxis in QGIS console  
     
     #shapeWriter = VectorWriter(output_layer, "UTF-8", input_layer.dataProvider().fields(),input_layer.dataProvider().geometryType(), input_layer.crs())               
     shapeWriter = QgsVectorFileWriter(output_layer, "UTF-8", input_layer.dataProvider().fields(),input_layer.wkbType(), input_layer.crs(),"ESRI Shapefile")   
-    
-    featurecount = 0               
-   
-    if selectedfeatureonly:
-        totalfeaturecount = input_layer.selectedFeatureCount()
-        for feat in  input_layer.SelectedFeatures():
-            for tf in selectedfields:
-                oldValue = feat[tf]
-                if oldValue != None:
-                    if sE == _VNIWin:
-                        # Convert VNI-Win to Unicode
-                        newValue = ConvertVNIWindows(oldValue)
-                        # if targerEncode is not Unicode -> Convert to other options
-                        if dE != _Unicode:
-                            newValue = Convert(newValue,_Unicode,dE)
-                    else:
-                        newValue = Convert(oldValue,sE,dE)
-                    # Character Case-setting                                
-                    if caseI !=  "none":
-                        newValue = ChangeCase(newValue, caseI)
-                               
-                    # update new value
-                    feat[tf] = newValue						
-                else: pass									                        
-            shapeWriter.addFeature(feat)
-            featurecount += 1		                                              
-            percent = (featurecount/float(totalfeaturecount)) * 100
-            status_callback_withlabel(percent,None)                              
-            if (((featurecount % 50) == 0) or (featurecount == totalfeaturecount)):
-                hcmgis_status_message(qgis, "Writing feature " + unicode(featurecount) + " of " + unicode(totalfeaturecount))
-        del shapeWriter
+    featurecount = 0          
+    totalfeaturecount = input_layer.featureCount()
+    fields = []
+    for field in input_layer.fields():
+        if field.typeName() == 'String':
+            fields.append (field.name())
+    for feat in  input_layer.getFeatures():
+        for tf in fields:
+            oldValue = feat[tf]
+            if oldValue != None:
+                if sE == _VNIWin:
+                    # Convert VNI-Win to Unicode
+                    newValue = ConvertVNIWindows(oldValue)
+                    # if targerEncode is not Unicode -> Convert to other options
+                    if dE !=  _Unicode:
+                        newValue = Convert(newValue,_Unicode,dE)
+                else:
+                    newValue = Convert(oldValue,sE,dE)
+                # Character Case-setting                                
+                if caseI !=  "none":
+                    newValue = ChangeCase(newValue, caseI)                        
+                # update new value
+                feat[tf] = newValue						
+            else: pass									                        
+        shapeWriter.addFeature(feat)
+        featurecount += 1		                                              
+        percent = (featurecount/float(totalfeaturecount)) * 100
+        if status_callback:
+            label = "Writing feature " + str(featurecount) + " of " + str(totalfeaturecount)
+            status_callback(percent,label)                                      
+    del shapeWriter
+    try:
         layer = QgsVectorLayer(output_layer, QFileInfo(output_layer).baseName(), 'ogr')
         layer.setProviderEncoding(u'System')
         layer.dataProvider().setEncoding(u'UTF-8')
         if layer.isValid():
-            QgsProject.instance().addMapLayer(layer)   
-        #hcmgis_completion_message(qgis, unicode(featurecount) + " records font converted")
-    else:
-        totalfeaturecount = input_layer.featureCount()
-        for feat in  input_layer.getFeatures():
-            for tf in selectedfields:
-                oldValue = feat[tf]
-                if oldValue != None:
-                    if sE == _VNIWin:
-                        # Convert VNI-Win to Unicode
-                        newValue = ConvertVNIWindows(oldValue)
-                        # if targerEncode is not Unicode -> Convert to other options
-                        if dE !=  _Unicode:
-                            newValue = Convert(newValue,_Unicode,dE)
-                    else:
-                        newValue = Convert(oldValue,sE,dE)
-                    # Character Case-setting                                
-                    if caseI !=  "none":
-                        newValue = ChangeCase(newValue, caseI)
-                           
-                    # update new value
-                    feat[tf] = newValue						
-                else: pass									                        
-            shapeWriter.addFeature(feat)
-            featurecount += 1		                                              
-            percent = (featurecount/float(totalfeaturecount)) * 100
-            status_callback_withlabel(percent,None)                              
-            if (((featurecount % 50) == 0) or (featurecount == totalfeaturecount)):
-                hcmgis_status_message(qgis, "Writing feature " + unicode(featurecount) + " of " + unicode(totalfeaturecount))
-        del shapeWriter
-        layer = QgsVectorLayer(output_layer, QFileInfo(output_layer).baseName(), 'ogr')
-        layer.setProviderEncoding(u'System')
-        layer.dataProvider().setEncoding(u'UTF-8')
-        if layer.isValid():
-            QgsProject.instance().addMapLayer(layer)   
-        #hcmgis_completion_message(qgis, unicode(featurecount) + " records font converted")
+            QgsProject.instance().addMapLayer(layer)      
+    except:
+        print('Completed: ' + output_layer)   
     return None
                 
 def Convert(txt,s,d):    
@@ -1260,17 +1262,17 @@ def ChangeCase(str, caseIndex):
         result = str.title()
     return result
 
-def hcmgis_top_occurence(layer, selectedfield, char, selectedfeatureonly):	
+def hcmgis_top_occurence(layer, field, char, selectedfeatureonly):	
     max = 0
     if selectedfeatureonly:
         for feature in layer.SelectedFeatures():
-            fieldvalue = unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).strip()
+            fieldvalue = unicode(feature[layer.dataProvider().fieldNameIndex(field)]).strip()
             occurence = fieldvalue.count(char)
             if (occurence > max):
                 max = occurence
     else:
         for feature in layer.getFeatures():
-            fieldvalue = unicode(feature[layer.dataProvider().fieldNameIndex(selectedfield)]).strip()
+            fieldvalue = unicode(feature[layer.dataProvider().fieldNameIndex(field)]).strip()
             occurence = fieldvalue.count(char)
             if (occurence > max):
                 max = occurence
@@ -1294,38 +1296,37 @@ def hcmgis_find_layer(layer_name):
         return layers[0]
 
 
-def hcmgis_status_message(qgis, message):
-    qgis.statusBarIface().showMessage(message)
-
-
-def hcmgis_completion_message(qgis, message):
-    hcmgis_status_message(qgis, message)
-
 # --------------------------------------------------------
 # hcmgis_lec - Largest Empty Circle inside the convexhull of a point set based on Voronoi Diagram
 # 	 
 # --------------------------------------------------------
 
-def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = None):	
+def hcmgis_lec(layer,field,output,status_callback = None):	
     if layer is None:
         return 'No selected layer!'
-    if ((selectedfield is None) or (selectedfield == '')):
+    if ((field is None) or (field == '')):
        return 'Please select an unique field!'	
     i = 0
-    if (layer.wkbType() == QgsWkbTypes.MultiPoint):
-        parameters0 = {'INPUT':layer,
-                      'OUTPUT':  "memory:singlepart"}
-        singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
-        point_layer = singlepart['OUTPUT']  
-        steps = 12
-        i+=1
-        label =str(i)+ '/'+ str(steps)+ '. multiparttosingleparts'
-        percent = int((i/steps)*100)
-        status_callback_withlabel(percent,label) 
-    else:
-        point_layer = layer
-        steps = 11
-    
+    steps = 11     
+    try:
+        if layer.isValid():
+            if (layer.wkbType() == QgsWkbTypes.MultiPoint):
+                parameters0 = {'INPUT':layer,
+                            'OUTPUT':  "memory:singlepart"}
+                singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
+                point_layer = singlepart['OUTPUT']       
+            else:
+                point_layer = layer
+    except:
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console  
+        if (temp.wkbType() == QgsWkbTypes.MultiPoint):
+            parameters0 = {'INPUT':temp,
+                                'OUTPUT':  "memory:singlepart"}
+            singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
+            point_layer = singlepart['OUTPUT']       
+        else:
+            point_layer = temp
+     
     parameters1 = {'INPUT': point_layer,
                   'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'
                   } 
@@ -1333,7 +1334,9 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. voronoipolygons'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
   
 
     parameters2 = {'INPUT': point_layer,
@@ -1344,7 +1347,9 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. minimumboundinggeometry'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
   
 
     parameter2_1 =  {'INPUT': convexhull['OUTPUT'],					 
@@ -1353,7 +1358,9 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. extractvertices'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
 
     parameter2_2 =  {'INPUT': convexhull_vertices['OUTPUT'],					 
                   'OUTPUT':  "memory:convexhull_vertices_clean"}
@@ -1361,7 +1368,9 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
 
  
     parameter3 =  {'INPUT': voronoipolygon['OUTPUT'],	
@@ -1371,7 +1380,9 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. clip'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
 
     parameter4 =  {'INPUT': voronoi_clip['OUTPUT'],					 
                   'OUTPUT':  "memory:voronoi_vertices"}
@@ -1379,7 +1390,9 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. extractvertices'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label)  
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
 
     parameter5 =  {'INPUT': voronoi_vertices['OUTPUT'],					 
                   'OUTPUT':  "memory:voronoi_vertices_clean"}
@@ -1387,7 +1400,9 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
 
     # parameter6 =  {'INPUT': voronoi_vertices_clean['OUTPUT'],
     #                'OVERLAY': 	convexhull_vertices_clean['OUTPUT'],				 
@@ -1396,7 +1411,7 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     # i+=1
     # label =str(i)+ '/'+ str(steps)+ '. symmetricaldifference'
     # percent = int((i/steps)*100)
-    # status_callback_withlabel(percent,label) 
+    # status_callback(percent,label) 
 
     parameter6 =  {'INPUT': voronoi_vertices_clean['OUTPUT'],
                    'INTERSECT':convexhull_vertices_clean['OUTPUT'],
@@ -1406,12 +1421,12 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. extractbylocation'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
-
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
      
-
     parameter7 =  {'INPUT': candidates['OUTPUT'],
-                    'FIELD': selectedfield,
+                    'FIELD': field,
                     'HUBS' : point_layer,
                     'UNIT' : 0,
                     'OUTPUT':  "memory:distances"}
@@ -1419,8 +1434,10 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. distancetonearesthubpoints'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
-    
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
+   
     values = []
     centers = max_distances['OUTPUT']
     idx =  centers.dataProvider().fieldNameIndex("HubDist")
@@ -1428,7 +1445,6 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
         attrs = feat.attributes()
         values.append(attrs[idx])
     
-    maxvalue = max(values)
     maxvaluestr = str(max(values))	
     
     selection = centers.getFeatures(QgsFeatureRequest(QgsExpression('"HubDist"' + '=' + maxvaluestr)))
@@ -1441,7 +1457,9 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
 
     parameter9 =  {'INPUT': center['OUTPUT'],					 
                   'OUTPUT':  "memory:lec"}
@@ -1449,12 +1467,14 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
-    status_callback_withlabel(percent,label) 
+    if status_callback:
+        status_callback(percent,label) 
+    else: print (label)
+    
     parameter10 =  {'INPUT': center['OUTPUT'],					 
                   'OUTPUT':  "memory:lec"}
     final = processing.run('qgis:deleteduplicategeometries',parameter10) 
     
-   
     input_layer = final['OUTPUT']
     selected_only = False
     radius_attribute = 'HubDist'
@@ -1469,431 +1489,434 @@ def hcmgis_lec(self, layer, output, selectedfield,status_callback_withlabel = No
     message = hcmgis_buffers(input_layer, selected_only, radius_attribute, radius, radius_unit, \
         edges_attribute, edge_count, rotation_attribute, rotation_degrees, \
         output_file_name)
-    
+
     if message:
         QMessageBox.critical(None, "Create LEC", message)
     else:
         layer = QgsVectorLayer(output_file_name, QFileInfo(output_file_name).baseName(), 'ogr')       
         layer.setProviderEncoding(u'System')
         layer.dataProvider().setEncoding(u'UTF-8')
-        if layer.isValid():
-            QgsProject.instance().addMapLayer(layer)
-            qgis.utils.iface.setActiveLayer(layer)
-            qgis.utils.iface.zoomToActiveLayer()  
+        if layer.isValid():            
+            try:
+                QgsProject.instance().addMapLayer(layer)
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()  
+            except :
+                print('output: '+ str(output_file_name))
+           
 
-    
-    
-   
 ######### hcmgis_buffer
 def hcmgis_bearing(start, end):
-	# Assumes points are WGS 84 lat/long
-	# http://www.movable-type.co.uk/scripts/latlong.html
+    # Assumes points are WGS 84 lat/long
+    # http://www.movable-type.co.uk/scripts/latlong.html
 
-	start_lon = start.x() * pi / 180
-	start_lat = start.y() * pi / 180
-	end_lon = end.x() * pi / 180
-	end_lat = end.y() * pi / 180
+    start_lon = start.x() * pi / 180
+    start_lat = start.y() * pi / 180
+    end_lon = end.x() * pi / 180
+    end_lat = end.y() * pi / 180
 
-	return atan2(sin(end_lon - start_lon) * cos(end_lat), \
-		(cos(start_lat) * sin(end_lat)) - \
-		(sin(start_lat) * cos(end_lat) * cos(end_lon - start_lon))) \
-		* 180 / pi
+    return atan2(sin(end_lon - start_lon) * cos(end_lat), \
+        (cos(start_lat) * sin(end_lat)) - \
+        (sin(start_lat) * cos(end_lat) * cos(end_lon - start_lon))) \
+        * 180 / pi
 
 def hcmgis_endpoint(start, distance, degrees):
-	# Assumes points are WGS 84 lat/long, distance in meters,
-	# bearing in degrees with north = 0, east = 90, west = -90
-	# Uses the haversine formula for calculation:
-	# http://www.movable-type.co.uk/scripts/latlong.html
-	radius = 6378137.0 # meters
+    # Assumes points are WGS 84 lat/long, distance in meters,
+    # bearing in degrees with north = 0, east = 90, west = -90
+    # Uses the haversine formula for calculation:
+    # http://www.movable-type.co.uk/scripts/latlong.html
+    radius = 6378137.0 # meters
 
-	start_lon = start.x() * pi / 180
-	start_lat = start.y() * pi / 180
-	bearing = degrees * pi / 180
+    start_lon = start.x() * pi / 180
+    start_lat = start.y() * pi / 180
+    bearing = degrees * pi / 180
 
-	end_lat = asin((sin(start_lat) * cos(distance / radius)) +
-		(cos(start_lat) * sin(distance / radius) * cos(bearing)))
-	end_lon = start_lon + atan2( \
-		sin(bearing) * sin(distance / radius) * cos(start_lat),
-		cos(distance / radius) - (sin(start_lat) * sin(end_lat)))
+    end_lat = asin((sin(start_lat) * cos(distance / radius)) +
+        (cos(start_lat) * sin(distance / radius) * cos(bearing)))
+    end_lon = start_lon + atan2( \
+        sin(bearing) * sin(distance / radius) * cos(start_lat),
+        cos(distance / radius) - (sin(start_lat) * sin(end_lat)))
 
-	return QgsPointXY(end_lon * 180 / pi, end_lat * 180 / pi)
+    return QgsPointXY(end_lon * 180 / pi, end_lat * 180 / pi)
 
 
 def hcmgis_buffer_geometry(geometry, meters):
-	if meters <= 0:
-		return None
+    if meters <= 0:
+        return None
 
-	# To approximate meaningful meter distances independent of the original CRS,
-	# the geometry is transformed to an azimuthal equidistant projection
-	# with the center of the polygon as the origin. After buffer creation,
-	# the buffer is transformed to WGS 84 and returned. While this may introduce
-	# some deviation from the original CRS, buffering is assumed in practice
-	# to be a fairly inexact operation that can tolerate such deviation
+    # To approximate meaningful meter distances independent of the original CRS,
+    # the geometry is transformed to an azimuthal equidistant projection
+    # with the center of the polygon as the origin. After buffer creation,
+    # the buffer is transformed to WGS 84 and returned. While this may introduce
+    # some deviation from the original CRS, buffering is assumed in practice
+    # to be a fairly inexact operation that can tolerate such deviation
 
-	wgs84 = QgsCoordinateReferenceSystem("PROJ4:+proj=longlat +datum=WGS84 +no_defs")
+    wgs84 = QgsCoordinateReferenceSystem("PROJ4:+proj=longlat +datum=WGS84 +no_defs")
 
-	latitude = str(geometry.centroid().asPoint().y())
-	longitude = str(geometry.centroid().asPoint().x())
+    latitude = str(geometry.centroid().asPoint().y())
+    longitude = str(geometry.centroid().asPoint().x())
 
-	#proj4 = "+proj=aeqd +lat_0=" + str(geometry.centroid().asPoint().y()) + \
-	#	" +lon_0=" + str(geometry.centroid().asPoint().x()) + \
-	#	" +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+    #proj4 = "+proj=aeqd +lat_0=" + str(geometry.centroid().asPoint().y()) + \
+    #	" +lon_0=" + str(geometry.centroid().asPoint().x()) + \
+    #	" +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
 
-	# For some reason, Azimuthal Equidistant transformation noticed to not be
-	# working on 10 July 2014. World Equidistant Conic works, but there may be errors.
-	proj4 = "+proj=eqdc +lat_0=0 +lon_0=0 +lat_1=60 +lat_2=60 " + \
-		"+x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+    # For some reason, Azimuthal Equidistant transformation noticed to not be
+    # working on 10 July 2014. World Equidistant Conic works, but there may be errors.
+    proj4 = "+proj=eqdc +lat_0=0 +lon_0=0 +lat_1=60 +lat_2=60 " + \
+        "+x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 
-	azimuthal_equidistant = QgsCoordinateReferenceSystem()
-	azimuthal_equidistant.createFromProj4(proj4)
-	
-	transform = QgsCoordinateTransform(wgs84, azimuthal_equidistant, QgsProject.instance())
-	geometry.transform(transform)
+    azimuthal_equidistant = QgsCoordinateReferenceSystem()
+    azimuthal_equidistant.createFromProj4(proj4)
+    
+    transform = QgsCoordinateTransform(wgs84, azimuthal_equidistant, QgsProject.instance())
+    geometry.transform(transform)
 
-	newgeometry = geometry.buffer(meters, 7)
+    newgeometry = geometry.buffer(meters, 7)
 
-	wgs84 = QgsCoordinateReferenceSystem()
-	wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
+    wgs84 = QgsCoordinateReferenceSystem()
+    wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
 
-	transform = QgsCoordinateTransform(azimuthal_equidistant, wgs84, QgsProject.instance())
-	newgeometry.transform(transform)
+    transform = QgsCoordinateTransform(azimuthal_equidistant, wgs84, QgsProject.instance())
+    newgeometry.transform(transform)
 
-	return newgeometry
+    return newgeometry
 
 
 def hcmgis_buffer_point(point, meters, edges, rotation_degrees):
-	if (meters <= 0) or (edges < 3):
-		return None
+    if (meters <= 0) or (edges < 3):
+        return None
 
-	# Points are treated separately from other geometries so that discrete
-	# edges can be supplied for non-circular buffers that are not supported
-	# by the QgsGeometry.buffer() function
+    # Points are treated separately from other geometries so that discrete
+    # edges can be supplied for non-circular buffers that are not supported
+    # by the QgsGeometry.buffer() function
 
-	wgs84 = QgsCoordinateReferenceSystem()
-	wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
+    wgs84 = QgsCoordinateReferenceSystem()
+    wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
 
-	# print "Point " + str(point.x()) + ", " + str(point.y()) + " meters " + str(meters)
+    # print "Point " + str(point.x()) + ", " + str(point.y()) + " meters " + str(meters)
 
-	polyline = []
-	for edge in range(0, edges + 1):
-		degrees = ((float(edge) * 360.0 / float(edges)) + rotation_degrees) % 360
-		polyline.append(hcmgis_endpoint(QgsPointXY(point), meters, degrees))
+    polyline = []
+    for edge in range(0, edges + 1):
+        degrees = ((float(edge) * 360.0 / float(edges)) + rotation_degrees) % 360
+        polyline.append(hcmgis_endpoint(QgsPointXY(point), meters, degrees))
 
-	return QgsGeometry.fromPolygonXY([polyline])
+    return QgsGeometry.fromPolygonXY([polyline])
 
 
 def hcmgis_buffer_line_side(geometry, width, direction):
-	# width in meters
-	# direction should be 0 for north side, 90 for east, 180 for south, 270 for west
+    # width in meters
+    # direction should be 0 for north side, 90 for east, 180 for south, 270 for west
 
-	# print "\nhcmgis_buffer_line_side(" + str(direction) + ")"
+    # print "\nhcmgis_buffer_line_side(" + str(direction) + ")"
 
-	if (geometry.wkbType() == QgsWkbTypes.MultiLineString) or \
-	   (geometry.wkbType() == QgsWkbTypes.MultiLineString25D):
-		multipolygon = None
-		for line in geometry.asMultiPolyline():
-			segment = hcmgis_buffer_line_side(QgsGeometry.fromPolylineXY(line), width, direction)
-			if multipolygon == None:
-				multipolygon = segment
-			else:
-				multipolygon = multipolygon.combine(segment)
-			# print "  Build multipolygon " + str(multipolygon.isGeosValid())
+    if (geometry.wkbType() == QgsWkbTypes.MultiLineString) or \
+       (geometry.wkbType() == QgsWkbTypes.MultiLineString25D):
+        multipolygon = None
+        for line in geometry.asMultiPolyline():
+            segment = hcmgis_buffer_line_side(QgsGeometry.fromPolylineXY(line), width, direction)
+            if multipolygon == None:
+                multipolygon = segment
+            else:
+                multipolygon = multipolygon.combine(segment)
+            # print "  Build multipolygon " + str(multipolygon.isGeosValid())
 
-		# Multiline always has multipolygon buffer even if buffers merge into one polygon
-		if multipolygon.wkbType() == QgsWkbTypes.Polygon:
-			multipolygon = QgsGeometry.fromMultiPolygonXY([multipolygon.asPolygon()])
+        # Multiline always has multipolygon buffer even if buffers merge into one polygon
+        if multipolygon.wkbType() == QgsWkbTypes.Polygon:
+            multipolygon = QgsGeometry.fromMultiPolygonXY([multipolygon.asPolygon()])
 
-		# print "Final Multipolygon " + str(multipolygon.isGeosValid())
-		return multipolygon
+        # print "Final Multipolygon " + str(multipolygon.isGeosValid())
+        return multipolygon
 
-	if (geometry.wkbType() != QgsWkbTypes.LineString) and \
-	   (geometry.wkbType() != QgsWkbTypes.LineString25D):
-		return geometry
+    if (geometry.wkbType() != QgsWkbTypes.LineString) and \
+       (geometry.wkbType() != QgsWkbTypes.LineString25D):
+        return geometry
 
-	points = geometry.asPolyline()
-	line_bearing = hcmgis_bearing(points[0], points[-1]) % 360
+    points = geometry.asPolyline()
+    line_bearing = hcmgis_bearing(points[0], points[-1]) % 360
 
-	# Determine side of line to buffer based on angle from start point to end point
-	# "bearing" will be 90 for right side buffer, -90 for left side buffer
-	direction = round((direction % 360) / 90) * 90
-	if (direction == 0): # North
-		if (line_bearing >= 180):
-			bearing = 90 # Right
-		else:
-			bearing = -90 # Left
+    # Determine side of line to buffer based on angle from start point to end point
+    # "bearing" will be 90 for right side buffer, -90 for left side buffer
+    direction = round((direction % 360) / 90) * 90
+    if (direction == 0): # North
+        if (line_bearing >= 180):
+            bearing = 90 # Right
+        else:
+            bearing = -90 # Left
 
-	elif (direction == 90): # East
-		if (line_bearing >= 270) or (line_bearing < 90):
-			bearing = 90 # Right
-		else:
-			bearing = -90 # Left
+    elif (direction == 90): # East
+        if (line_bearing >= 270) or (line_bearing < 90):
+            bearing = 90 # Right
+        else:
+            bearing = -90 # Left
 
-	elif (direction == 180): # South
-		if (line_bearing < 180):
-			bearing = 90 # Right
-		else:
-			bearing = -90 # Left
+    elif (direction == 180): # South
+        if (line_bearing < 180):
+            bearing = 90 # Right
+        else:
+            bearing = -90 # Left
 
-	else: # West
-		if (line_bearing >= 90) and (line_bearing < 270):
-			bearing = 90 # Right
-		else:
-			bearing = -90 # Left
+    else: # West
+        if (line_bearing >= 90) and (line_bearing < 270):
+            bearing = 90 # Right
+        else:
+            bearing = -90 # Left
 
-	# Buffer individual segments
-	polygon = None
-	for z in range(0, len(points) - 1):
-		b1 = hcmgis_bearing(points[z], points[z + 1]) % 360
+    # Buffer individual segments
+    polygon = None
+    for z in range(0, len(points) - 1):
+        b1 = hcmgis_bearing(points[z], points[z + 1]) % 360
 
-		# Form rectangle beside line 
-		# 2% offset mitigates topology floating-point errors
-		linestring = [QgsPointXY(points[z])]
-		if (z == 0):
-			linestring.append(hcmgis_endpoint(points[z], width, b1 + bearing))
-		else:
-			linestring.append(hcmgis_endpoint(points[z], width, b1 + (1.02 * bearing)))
-		linestring.append(hcmgis_endpoint(points[z + 1], width, b1 + bearing))
+        # Form rectangle beside line 
+        # 2% offset mitigates topology floating-point errors
+        linestring = [QgsPointXY(points[z])]
+        if (z == 0):
+            linestring.append(hcmgis_endpoint(points[z], width, b1 + bearing))
+        else:
+            linestring.append(hcmgis_endpoint(points[z], width, b1 + (1.02 * bearing)))
+        linestring.append(hcmgis_endpoint(points[z + 1], width, b1 + bearing))
 
-		# Determine if rounded convex elbow is needed
-		if (z < (len(points) - 2)):
-			b2 = hcmgis_bearing(points[z + 1], points[z + 2]) % 360
-			elbow = b2 - b1
-			if (elbow < -180):
-				elbow = elbow + 360
-			elif (elbow > 180):
-				elbow = elbow - 360
+        # Determine if rounded convex elbow is needed
+        if (z < (len(points) - 2)):
+            b2 = hcmgis_bearing(points[z + 1], points[z + 2]) % 360
+            elbow = b2 - b1
+            if (elbow < -180):
+                elbow = elbow + 360
+            elif (elbow > 180):
+                elbow = elbow - 360
 
-			# print str(b1) + ", " + str(b2) + " = " + str(elbow)
+            # print str(b1) + ", " + str(b2) + " = " + str(elbow)
 
-			# 8-step interpolation of arc
-			if (((bearing > 0) and (elbow < 0)) or \
-			    ((bearing < 0) and (elbow > 0))): 
-				for a in range(1,8):
-					b = b1 + (elbow * a / 8.0) + bearing
-					linestring.append(hcmgis_endpoint(points[z + 1], width, b))
-					# print "  arc: " + str(b)
+            # 8-step interpolation of arc
+            if (((bearing > 0) and (elbow < 0)) or \
+                ((bearing < 0) and (elbow > 0))): 
+                for a in range(1,8):
+                    b = b1 + (elbow * a / 8.0) + bearing
+                    linestring.append(hcmgis_endpoint(points[z + 1], width, b))
+                    # print "  arc: " + str(b)
 
-				linestring.append(hcmgis_endpoint(points[z + 1], width, b2 + bearing))
+                linestring.append(hcmgis_endpoint(points[z + 1], width, b2 + bearing))
 
-		# Close polygon
-		linestring.append(QgsPointXY(points[z + 1]))
-		linestring.append(QgsPointXY(points[z]))	
-		segment = QgsGeometry.fromPolygonXY([linestring])
-		# print linestring
-		# print "  Line to polygon " + str(segment.isGeosValid())
+        # Close polygon
+        linestring.append(QgsPointXY(points[z + 1]))
+        linestring.append(QgsPointXY(points[z]))	
+        segment = QgsGeometry.fromPolygonXY([linestring])
+        # print linestring
+        # print "  Line to polygon " + str(segment.isGeosValid())
 
-		if (polygon == None):
-			polygon = segment
-		else:
-			polygon = polygon.combine(segment)
+        if (polygon == None):
+            polygon = segment
+        else:
+            polygon = polygon.combine(segment)
 
-		#print "  Polygon build " + str(polygon.isGeosValid())
-		#if not polygon.isGeosValid():
-		#	print polygon.asPolygon()
+        #print "  Polygon build " + str(polygon.isGeosValid())
+        #if not polygon.isGeosValid():
+        #	print polygon.asPolygon()
 
-	# print "  Final polygon " + str(polygon.isGeosValid())
+    # print "  Final polygon " + str(polygon.isGeosValid())
 
-	return polygon
+    return polygon
 
 
 def hcmgis_buffers(input_layer, selected_only, radius_attribute, radius, radius_unit, \
-	edge_attribute, edge_count, rotation_attribute, rotation_degrees, \
-	output_file_name, status_callback = None):
+    edge_attribute, edge_count, rotation_attribute, rotation_degrees, \
+    output_file_name, status_callback = None):
 
-	# Error checking
+    # Error checking
 
-	try:
-		if (input_layer.type() != QgsMapLayer.VectorLayer):
-			return "Invalid layer type for buffering: " + str(input_layer.type())
+    try:
+        if (input_layer.type() != QgsMapLayer.VectorLayer):
+            return "Invalid layer type for buffering: " + str(input_layer.type())
 
-	except Exception as e:
-		return "Invalid layer: " + str(e)
+    except Exception as e:
+        return "Invalid layer: " + str(e)
 
-	# Radius
-	radius_attribute_index = -1
-	if radius_attribute:
-		radius_attribute_index = input_layer.dataProvider().fieldNameIndex(radius_attribute)
+    # Radius
+    radius_attribute_index = -1
+    if radius_attribute:
+        radius_attribute_index = input_layer.dataProvider().fieldNameIndex(radius_attribute)
 
-		if (radius_attribute_index < 0):
-			return "Invalid radius attribute name: " + str(radius_attribute)
+        if (radius_attribute_index < 0):
+            return "Invalid radius attribute name: " + str(radius_attribute)
 
-	else:
-		try:
-			radius = float(radius)
+    else:
+        try:
+            radius = float(radius)
 
-		except Exception as e:
-			return "Invalid radius: " + str(radius)
+        except Exception as e:
+            return "Invalid radius: " + str(radius)
 
-		if (radius <= 0):
-			return "Radius must be greater than zero (" + str(radius) + ")"
+        if (radius <= 0):
+            return "Radius must be greater than zero (" + str(radius) + ")"
 
-	# Edges
-	edge_attribute_index = -1
-	if (input_layer.wkbType() in [QgsWkbTypes.Point, QgsWkbTypes.Point25D, \
-			QgsWkbTypes.MultiPoint, QgsWkbTypes.MultiPoint25D]):
-		if edge_attribute:
-			edge_attribute_index = input_layer.dataProvider().fieldNameIndex(edge_attribute)
+    # Edges
+    edge_attribute_index = -1
+    if (input_layer.wkbType() in [QgsWkbTypes.Point, QgsWkbTypes.Point25D, \
+            QgsWkbTypes.MultiPoint, QgsWkbTypes.MultiPoint25D]):
+        if edge_attribute:
+            edge_attribute_index = input_layer.dataProvider().fieldNameIndex(edge_attribute)
 
-			if (edge_attribute_index < 0):
-				return "Invalid edge attribute name: " + str(edge_attribute)
+            if (edge_attribute_index < 0):
+                return "Invalid edge attribute name: " + str(edge_attribute)
 
-		else:
-			try:
-				edge_count = int(edge_count)
-			except Exception as e:
-				return "Invalid edge count: " + str(edge_count)
+        else:
+            try:
+                edge_count = int(edge_count)
+            except Exception as e:
+                return "Invalid edge count: " + str(edge_count)
 
-			if (edge_count <= 0):
-				return "Number of edges must be greater than zero (" + str(edge_count) + ")"
+            if (edge_count <= 0):
+                return "Number of edges must be greater than zero (" + str(edge_count) + ")"
 
-	# Rotation
-	rotation_attribute_index = -1
-	if rotation_attribute:
-		rotation_attribute_index = input_layer.dataProvider().fieldNameIndex(rotation_attribute)
+    # Rotation
+    rotation_attribute_index = -1
+    if rotation_attribute:
+        rotation_attribute_index = input_layer.dataProvider().fieldNameIndex(rotation_attribute)
 
-		if (rotation_attribute_index < 0):
-			return "Invalid rotation attribute name: " + str(rotation_attribute)
+        if (rotation_attribute_index < 0):
+            return "Invalid rotation attribute name: " + str(rotation_attribute)
 
-	else:
-		try:
-			rotation_degrees = float(rotation_degrees)
-		except Exception as e:
-			return "Invalid rotation degrees: " + str(rotation_degrees)
-		
+    else:
+        try:
+            rotation_degrees = float(rotation_degrees)
+        except Exception as e:
+            return "Invalid rotation degrees: " + str(rotation_degrees)
+        
 
-	# Create the output file
+    # Create the output file
 
-	wgs84 = QgsCoordinateReferenceSystem()
-	wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
-	transform = QgsCoordinateTransform(input_layer.crs(), wgs84, QgsProject.instance())
-	# print layer.crs().toProj4() + " -> " + wgs84.toProj4()
-	
-	if not output_file_name:
-		return "No output file name given"
+    wgs84 = QgsCoordinateReferenceSystem()
+    wgs84.createFromProj4("+proj=longlat +datum=WGS84 +no_defs")
+    #wgs84.createFromString("EPSG:4326")
+    transform = QgsCoordinateTransform(input_layer.crs(), wgs84, QgsProject.instance())
+    # print layer.crs().toProj4() + " -> " + wgs84.toProj4()
+    
+    if not output_file_name:
+        return "No output file name given"
 
-	file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
+    file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
 
-	if os.path.splitext(output_file_name)[1] not in file_formats:
-		return "Unsupported output file format: " + str(output_file_name)
+    if os.path.splitext(output_file_name)[1] not in file_formats:
+        return "Unsupported output file format: " + str(output_file_name)
 
-	output_file_format = file_formats[os.path.splitext(output_file_name)[1]]
+    output_file_format = file_formats[os.path.splitext(output_file_name)[1]]
 
-	outfile = QgsVectorFileWriter(output_file_name, "utf-8", input_layer.fields(), \
-		QgsWkbTypes.Polygon, wgs84, output_file_format)
+    outfile = QgsVectorFileWriter(output_file_name, "utf-8", input_layer.fields(), \
+        QgsWkbTypes.Polygon, wgs84, output_file_format)
 
-	if (outfile.hasError() != QgsVectorFileWriter.NoError):
-		return str(outfile.errorMessage())
 
-	# Create buffers for each feature
-	buffercount = 0
-	feature_count = input_layer.featureCount();
-	if selected_only:
-		feature_list = input_layer.selectedFeatures()
-	else:
-		feature_list = input_layer.getFeatures()
+    if (outfile.hasError() != QgsVectorFileWriter.NoError):
+        return str(outfile.errorMessage())
 
-	for feature_index, feature in enumerate(feature_list):
-		if status_callback:
-			if status_callback(100 * feature.id() / feature_count, \
-					"Feature " + str(feature.id()) + " of " + str(feature_count)):
-				return "Buffering cancelled on feature " + str(feature.id()) + " of " + str(feature_count)
+    # Create buffers for each feature
+    buffercount = 0
+    feature_count = input_layer.featureCount()
+    if selected_only:
+        feature_list = input_layer.selectedFeatures()
+    else:
+        feature_list = input_layer.getFeatures()
 
-		if radius_attribute_index < 0:
-			feature_radius = radius
-		else:
-			try:
-				feature_radius = float(feature.attributes()[radius_attribute_index])
-			except:
-				feature_radius = 0.0
+    for feature_index, feature in enumerate(feature_list):
+        if status_callback:
+            if status_callback(100 * feature.id() / feature_count, \
+                    "Feature " + str(feature.id()) + " of " + str(feature_count)):
+                return "Buffering cancelled on feature " + str(feature.id()) + " of " + str(feature_count)
 
-		if feature_radius <= 0:
-			continue
+        if radius_attribute_index < 0:
+            feature_radius = radius
+        else:
+            try:
+                feature_radius = float(feature.attributes()[radius_attribute_index])
+            except:
+                feature_radius = 0.0
 
-		# Buffer radii are always in meters
-		if radius_unit == "Kilometers":
-			feature_radius = feature_radius * 1000
+        if feature_radius <= 0:
+            continue
 
-		elif radius_unit == "Feet":
-			feature_radius = feature_radius / 3.2808399
+        # Buffer radii are always in meters
+        if radius_unit == "Kilometers":
+            feature_radius = feature_radius * 1000
 
-		elif radius_unit == "Miles":
-			feature_radius = feature_radius * 1609.344
+        elif radius_unit == "Feet":
+            feature_radius = feature_radius / 3.2808399
 
-		elif radius_unit == "Nautical Miles":
-			feature_radius = feature_radius * 1852
+        elif radius_unit == "Miles":
+            feature_radius = feature_radius * 1609.344
 
-		if feature_radius <= 0:
-			continue
+        elif radius_unit == "Nautical Miles":
+            feature_radius = feature_radius * 1852
 
-		if edge_attribute_index < 0:
-			feature_edges = edge_count
-		else:
-			try:
-				feature_edges = int(feature.attributes()[edge_attribute_index])
-			except:
-				feature_edges = 32 # default to circle
+        if feature_radius <= 0:
+            continue
 
-		if rotation_attribute_index < 0:
-			feature_rotation = rotation_degrees
-		else:
-			try:
-				feature_rotation = float(feature.attributes()[rotation_attribute_index])
-			except:
-				feature_rotation = 0.0
+        if edge_attribute_index < 0:
+            feature_edges = edge_count
+        else:
+            try:
+                feature_edges = int(feature.attributes()[edge_attribute_index])
+            except:
+                feature_edges = 32 # default to circle
 
-		geometry = feature.geometry()
-		geometry.transform(transform) # Needs to be WGS 84 to use Haversine distance calculation
-		# print "Transform " + str(x) + ": " + str(geometry.centroid().asPoint().x())
+        if rotation_attribute_index < 0:
+            feature_rotation = rotation_degrees
+        else:
+            try:
+                feature_rotation = float(feature.attributes()[rotation_attribute_index])
+            except:
+                feature_rotation = 0.0
 
-		if (geometry.wkbType() in [QgsWkbTypes.Point, QgsWkbTypes.Point25D, \
-				QgsWkbTypes.MultiPoint, QgsWkbTypes.MultiPoint25D]):
+        geometry = feature.geometry()
+        geometry.transform(transform) # Needs to be WGS 84 to use Haversine distance calculation
+        # print "Transform " + str(x) + ": " + str(geometry.centroid().asPoint().x())
 
-			newgeometry = hcmgis_buffer_point(geometry.asPoint(), feature_radius, feature_edges, feature_rotation)
+        if (geometry.wkbType() in [QgsWkbTypes.Point, QgsWkbTypes.Point25D, \
+                QgsWkbTypes.MultiPoint, QgsWkbTypes.MultiPoint25D]):
 
-		elif (geometry.wkbType() in [QgsWkbTypes.LineString, QgsWkbTypes.LineString25D, \
-						QgsWkbTypes.MultiLineString, QgsWkbTypes.MultiLineString25D]):
+            newgeometry = hcmgis_buffer_point(geometry.asPoint(), feature_radius, feature_edges, feature_rotation)
 
-			if (edge_attribute == "Flat End"):
-				# newgeometry = hcmgis_buffer_line_flat_end(geometry, feature_radius)
-				north = hcmgis_buffer_line_side(QgsGeometry(geometry), feature_radius, 0)
-				south = hcmgis_buffer_line_side(QgsGeometry(geometry), feature_radius, 180)
-				newgeometry = north.combine(south)
+        elif (geometry.wkbType() in [QgsWkbTypes.LineString, QgsWkbTypes.LineString25D, \
+                        QgsWkbTypes.MultiLineString, QgsWkbTypes.MultiLineString25D]):
 
-			elif (edge_attribute == "North Side"):
-				newgeometry = hcmgis_buffer_line_side(geometry, feature_radius, 0)
+            if (edge_attribute == "Flat End"):
+                # newgeometry = hcmgis_buffer_line_flat_end(geometry, feature_radius)
+                north = hcmgis_buffer_line_side(QgsGeometry(geometry), feature_radius, 0)
+                south = hcmgis_buffer_line_side(QgsGeometry(geometry), feature_radius, 180)
+                newgeometry = north.combine(south)
 
-			elif (edge_attribute == "East Side"):
-				newgeometry = hcmgis_buffer_line_side(geometry, feature_radius, 90)
+            elif (edge_attribute == "North Side"):
+                newgeometry = hcmgis_buffer_line_side(geometry, feature_radius, 0)
 
-			elif (edge_attribute == "South Side"):
-				newgeometry = hcmgis_buffer_line_side(geometry, feature_radius, 180)
+            elif (edge_attribute == "East Side"):
+                newgeometry = hcmgis_buffer_line_side(geometry, feature_radius, 90)
 
-			elif (edge_attribute == "West Side"):
-				newgeometry = hcmgis_buffer_line_side(geometry, feature_radius, 270)
+            elif (edge_attribute == "South Side"):
+                newgeometry = hcmgis_buffer_line_side(geometry, feature_radius, 180)
 
-			else: # "Rounded"
-				newgeometry = hcmgis_buffer_geometry(geometry, feature_radius)
+            elif (edge_attribute == "West Side"):
+                newgeometry = hcmgis_buffer_line_side(geometry, feature_radius, 270)
 
-		else:
-			newgeometry = hcmgis_buffer_geometry(geometry, feature_radius)
+            else: # "Rounded"
+                newgeometry = hcmgis_buffer_geometry(geometry, feature_radius)
 
-		if newgeometry == None:
-			return "Failure converting geometry for feature " + str(buffercount)
+        else:
+            newgeometry = hcmgis_buffer_geometry(geometry, feature_radius)
 
-		else:
-			newfeature = QgsFeature()
-			newfeature.setGeometry(newgeometry)
-			newfeature.setAttributes(feature.attributes())
-			outfile.addFeature(newfeature)
-	
-		buffercount = buffercount + 1
+        if newgeometry == None:
+            return "Failure converting geometry for feature " + str(buffercount)
 
-	del outfile
+        else:
+            newfeature = QgsFeature()
+            newfeature.setGeometry(newgeometry)
+            newfeature.setAttributes(feature.attributes())
+            outfile.addFeature(newfeature)
+    
+        buffercount = buffercount + 1
 
-	if status_callback:
-		status_callback(100, str(buffercount) + " buffers created for " + str(feature_count) + " features")
+    del outfile
 
-	return None
+    if status_callback:
+        status_callback(100, str(buffercount) + " buffers created for " + str(feature_count) + " features")
+
+    return None
 
 
 #hcmgis_format_convert
@@ -2089,14 +2112,19 @@ def hcmgis_geofabrik(region, country, outdir,status_callback = None):
                 if status_callback: 
                     status_callback(i,None)
                 i+=1
-            status_callback(100,None)            
+            if status_callback: 
+                status_callback(100,None)            
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
             for child in shapeGroup.children():
                 if isinstance(child, QgsLayerTreeLayer):
                     layer = child.layer()
                     break 
-            qgis.utils.iface.setActiveLayer(layer)
-            qgis.utils.iface.zoomToActiveLayer()  
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()  
+            except :
+                pass
+            
     else:
         zip = requests.get(download_url_pbf, headers=headers, stream=True, allow_redirects=True)    
         total_size = int(zip.headers.get('content-length'))
@@ -2140,14 +2168,19 @@ def hcmgis_geofabrik(region, country, outdir,status_callback = None):
                 if status_callback: 
                     status_callback(i,None)
                 i+=1
-            status_callback(100,None)  
+            if status_callback: 
+                status_callback(100,None)  
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
             for child in shapeGroup.children():
                 if isinstance(child, QgsLayerTreeLayer):
                     layer = child.layer()
                     break 
-            qgis.utils.iface.setActiveLayer(layer)
-            qgis.utils.iface.zoomToActiveLayer()  
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()  
+            except :
+                pass
+             
   
 def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
     #temp_dir = tempfile.mkdtemp()
@@ -2203,14 +2236,19 @@ def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
                 if status_callback: 
                     status_callback(i,None)
                 i+=1
-            status_callback(100,None)            
+            if status_callback: 
+                status_callback(100,None)            
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')  
             for child in shapeGroup.children():
                 if isinstance(child, QgsLayerTreeLayer):
                     layer = child.layer()
                     break 
-            qgis.utils.iface.setActiveLayer(layer)
-            qgis.utils.iface.zoomToActiveLayer()  
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()  
+            except :
+                pass
+           
     else:
         zip = requests.get(download_url_pbf, headers=headers, stream=True, allow_redirects=True)    
         total_size = int(zip.headers.get('content-length'))
@@ -2261,8 +2299,12 @@ def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
                 if isinstance(child, QgsLayerTreeLayer):
                     layer = child.layer()
                     break 
-            qgis.utils.iface.setActiveLayer(layer)
-            qgis.utils.iface.zoomToActiveLayer()
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()  
+            except :
+                pass
+           
 
 
 def hcmgis_gadm(country, country_short, outdir,status_callback = None):  
@@ -2292,7 +2334,8 @@ def hcmgis_gadm(country, country_short, outdir,status_callback = None):
                 i+=1               
             f.close()        
             QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
-            status_callback(0,None)
+            if status_callback: 
+                status_callback(0,None)
             if not os.path.exists (unzip_folder_shp):
                 os.mkdir(unzip_folder_shp)
             
@@ -2310,18 +2353,24 @@ def hcmgis_gadm(country, country_short, outdir,status_callback = None):
                         filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
                         QgsProject.instance().addMapLayer(filename,False)
                         shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
-                percen_complete = i/len(wholelist)*100                
-                status_callback(i,None)
+                percen_complete = i/len(wholelist)*100 
+                if status_callback:                
+                    status_callback(i,None)
                 i+=1
-            status_callback(100,None)            
+            if status_callback: 
+                status_callback(100,None)            
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
             # zoom to group extent
             for child in shapeGroup.children():
                 if isinstance(child, QgsLayerTreeLayer):
                     layer = child.layer()
                     break 
-            qgis.utils.iface.setActiveLayer(layer)
-            qgis.utils.iface.zoomToActiveLayer()
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()  
+            except :
+                pass
+           
 
 
     else:

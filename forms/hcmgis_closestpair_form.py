@@ -13,7 +13,7 @@ class Ui_hcmgis_closestpair_form(object):
         hcmgis_closestpair_form.setObjectName("hcmgis_closestpair_form")
         hcmgis_closestpair_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_closestpair_form.setEnabled(True)
-        hcmgis_closestpair_form.resize(441, 210)
+        hcmgis_closestpair_form.resize(422, 319)
         hcmgis_closestpair_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_closestpair_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -29,6 +29,18 @@ class Ui_hcmgis_closestpair_form(object):
         self.CboField = QgsFieldComboBox(hcmgis_closestpair_form)
         self.CboField.setObjectName("CboField")
         self.verticalLayout.addWidget(self.CboField)
+        self.LblOutput = QtWidgets.QLabel(hcmgis_closestpair_form)
+        self.LblOutput.setObjectName("LblOutput")
+        self.verticalLayout.addWidget(self.LblOutput)
+        self.closest = QgsFileWidget(hcmgis_closestpair_form)
+        self.closest.setObjectName("closest")
+        self.verticalLayout.addWidget(self.closest)
+        self.label = QtWidgets.QLabel(hcmgis_closestpair_form)
+        self.label.setObjectName("label")
+        self.verticalLayout.addWidget(self.label)
+        self.farthest = QgsFileWidget(hcmgis_closestpair_form)
+        self.farthest.setObjectName("farthest")
+        self.verticalLayout.addWidget(self.farthest)
         self.LblStatus = QtWidgets.QLabel(hcmgis_closestpair_form)
         self.LblStatus.setText("")
         self.LblStatus.setObjectName("LblStatus")
@@ -52,8 +64,11 @@ class Ui_hcmgis_closestpair_form(object):
         hcmgis_closestpair_form.setWindowTitle(_translate("hcmgis_closestpair_form", "Closest/farthest pair of Points"))
         self.LblInput.setText(_translate("hcmgis_closestpair_form", "Input Point Layer"))
         self.LblInput_2.setText(_translate("hcmgis_closestpair_form", "Unique Field"))
+        self.LblOutput.setText(_translate("hcmgis_closestpair_form", "Closest pair of point"))
+        self.label.setText(_translate("hcmgis_closestpair_form", "Farthest pair of point"))
 
 from qgsfieldcombobox import QgsFieldComboBox
+from qgsfilewidget import QgsFileWidget
 from qgsmaplayercombobox import QgsMapLayerComboBox
 
 if __name__ == "__main__":

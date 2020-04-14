@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>371</width>
-    <height>509</height>
+    <width>387</width>
+    <height>327</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -24,101 +24,28 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="LblInput">
-     <property name="text">
-      <string>Input Layer</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QgsMapLayerComboBox" name="CboInput"/>
-   </item>
-   <item>
-    <widget class="QLabel" name="LblOutput_2">
-     <property name="text">
-      <string>Fields</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QListWidget" name="ListFields">
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::ExtendedSelection</enum>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QGridLayout" name="gridLayout">
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="LblSourceFont">
+     <item row="0" column="0" colspan="3">
+      <widget class="QLabel" name="LblInput">
        <property name="text">
-        <string>Source Charset</string>
+        <string>Input Layer</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QComboBox" name="CboSourceFont">
-       <item>
-        <property name="text">
-         <string/>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>TCVN3</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Unicode</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>VNI-Windows</string>
-        </property>
-       </item>
+     <item row="1" column="0" colspan="3">
+      <widget class="QgsMapLayerComboBox" name="CboInput"/>
+     </item>
+     <item row="2" column="1" colspan="2">
+      <widget class="QLabel" name="LblDestFont">
+       <property name="text">
+        <string>Target Charset</string>
+       </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QComboBox" name="CboDestFont">
-       <item>
-        <property name="text">
-         <string/>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Unicode</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>TCVN3</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>VNI-Windows</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>ANSI (Khong dau)</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="3" column="0">
+     <item row="5" column="0">
       <widget class="QComboBox" name="CboOption">
        <item>
         <property name="text">
@@ -147,63 +74,98 @@
        </item>
       </widget>
      </item>
-     <item row="3" column="1" colspan="2">
-      <widget class="QCheckBox" name="ChkSelectedFeaturesOnly">
-       <property name="text">
-        <string>Selected features only</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0" colspan="2">
-      <widget class="QLineEdit" name="LinOutput">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="2">
-      <widget class="QPushButton" name="BtnBrowseOutput">
-       <property name="text">
-        <string>...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QLabel" name="LblDestFont">
-       <property name="text">
-        <string>Target Charset</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0" colspan="3">
+     <item row="4" column="0" colspan="3">
       <widget class="QLabel" name="LblOption">
        <property name="text">
         <string>Options</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="0" colspan="3">
+     <item row="6" column="0" colspan="3">
       <widget class="QLabel" name="LblOutput">
        <property name="text">
-        <string>Output Shapefile</string>
+        <string>Output</string>
        </property>
       </widget>
      </item>
+     <item row="9" column="0" colspan="3">
+      <widget class="QProgressBar" name="status">
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1" colspan="2">
+      <widget class="QComboBox" name="CboDestFont">
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Unicode</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>TCVN3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>VNI-Windows</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ANSI (Khong dau)</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="3">
+      <widget class="QLabel" name="LblStatus">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="LblSourceFont">
+       <property name="text">
+        <string>Source Charset</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QComboBox" name="CboSourceFont">
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>TCVN3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Unicode</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>VNI-Windows</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="3">
+      <widget class="QgsFileWidget" name="output_file_name"/>
+     </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QLabel" name="LblStatus">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QProgressBar" name="status">
-     <property name="value">
-      <number>24</number>
-     </property>
-    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="BtnApplyClose">
@@ -215,6 +177,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>QgsFileWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsfilewidget.h</header>
+  </customwidget>
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>

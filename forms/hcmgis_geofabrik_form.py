@@ -62,10 +62,10 @@ class Ui_hcmgis_geofabrik_form(object):
         self.status.setProperty("value", 24)
         self.status.setObjectName("status")
         self.gridLayout_2.addWidget(self.status, 3, 0, 1, 2)
-        self.lblStatus = QtWidgets.QLabel(hcmgis_geofabrik_form)
-        self.lblStatus.setText("")
-        self.lblStatus.setObjectName("lblStatus")
-        self.gridLayout_2.addWidget(self.lblStatus, 2, 0, 1, 2)
+        self.LblStatus = QtWidgets.QLabel(hcmgis_geofabrik_form)
+        self.LblStatus.setText("")
+        self.LblStatus.setObjectName("LblStatus")
+        self.gridLayout_2.addWidget(self.LblStatus, 2, 0, 1, 2)
         self.verticalLayout.addLayout(self.gridLayout_2)
         self.BtnApplyClose = QtWidgets.QDialogButtonBox(hcmgis_geofabrik_form)
         self.BtnApplyClose.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Close)
@@ -85,7 +85,7 @@ class Ui_hcmgis_geofabrik_form(object):
         self.label_2.setText(_translate("hcmgis_geofabrik_form", "Select Region"))
         self.label_4.setText(_translate("hcmgis_geofabrik_form", "Slect State/ Province"))
         self.Label.setText(_translate("hcmgis_geofabrik_form", "Select folder to save shapefile"))
-        self.BtnOutputFolder.setText(_translate("hcmgis_geofabrik_form", "Browse..."))
+        self.BtnOutputFolder.setText(_translate("hcmgis_geofabrik_form", "..."))
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>523</width>
-    <height>467</height>
+    <height>484</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -143,13 +143,6 @@
        <string>&amp;</string>
       </property>
      </item>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="ChkSelectedFeaturesOnly">
-     <property name="text">
-      <string>Selected features only</string>
-     </property>
     </widget>
    </item>
    <item>

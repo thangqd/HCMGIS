@@ -18,11 +18,11 @@ from hcmgis_library import *
 
 #######################################
 ## in QGIS Pyghon Console: just type from HCMGIS.hcmgis_library import * without any imports above
-#from HCMGIS.hcmgis_library import *
+##from HCMGIS.hcmgis_library import *
 
 ## in your PyGIS code, just copy hcmgis_library.py to your folder
 ## or adding through sys.path.append("C:\\Users\DELLG7\\AppData\\Roaming\\QGIS\\QGIS3\\profiles\\default\\python\\plugins\\HCMGIS") # Location of HCMGIS Plugin on your computer
-# an then import by "from hcmgis_library import".
+## and then import by "from hcmgis_library import".
 #######################################
 
 #########################################################

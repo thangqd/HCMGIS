@@ -50,6 +50,8 @@ from hcmgis_format_convert_form import *
 from hcmgis_csv2shp_form import *
 from hcmgis_txt2csv_form import *
 from hcmgis_xls2csv_form import *
+from hcmgis_mapbox_form import *
+
 
 # ------------------------------------------------------------------------------
 #    hcmgis_dialog - base class for hcmgis dialogs containing utility functions
@@ -1902,3 +1904,47 @@ class hcmgis_xls2csv_dialog(hcmgis_dialog, Ui_hcmgis_xls2csv_form):
         self.LinInputFolder.setEnabled(True)
         self.BtnInputFolder.setEnabled(True)	
         self.status_bar.setEnabled(True)
+
+class hcmgis_mapbox_dialog(hcmgis_dialog, Ui_hcmgis_mapbox_form):	
+    def __init__(self, iface):		
+        hcmgis_dialog.__init__(self, iface)		
+        self.setupUi(self)    
+        self.CboStyleType.currentIndexChanged.connect(self.StyleTypeChange)
+        self.CboMapboxStyle.currentIndexChanged.connect(self.MapboxStyleChange)
+        self.LblView.openExternalLinks()
+        self.CboMapboxStyle.setCurrentIndex(-1)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)            
+        self.LinAccessToken.setText('pk.eyJ1IjoidGhhbmdxZCIsImEiOiJucHFlNFVvIn0.j5yb-N8ZR3d4SJAYZz-TZA')   
+        self.TxtStyleWMTS.clear()
+       
+    def StyleTypeChange(self):
+        self.TxtStyleWMTS.clear()
+        if (self.CboStyleType.currentIndex() == 0 ): #Mapbox default Style
+            self.CboMapboxStyle.setEnabled(True)
+            self.TxtStyleWMTS.setReadOnly(True)
+        else: 
+            self.CboMapboxStyle.setCurrentIndex(-1)
+            self.CboMapboxStyle.setEnabled(False)
+            self.TxtStyleWMTS.setReadOnly(False)
+
+    def MapboxStyleChange(self):
+        self.TxtStyleWMTS.clear()
+        if self.CboStyleType.currentIndex() == 0: #Mapbox default Style
+            ViewURL = 'https://api.mapbox.com/styles/v1/mapbox/' + self.CboMapboxStyle.currentText()
+            ViewURL += '.html?fresh=true&title=copy&access_token='+ self.LinAccessToken.text()      
+     
+            StyleWMTS = 'https://api.mapbox.com/styles/v1/mapbox/' + self.CboMapboxStyle.currentText()
+            StyleWMTS += '/wmts?service=WMTS&request=GetCapabilities&access_token='+ self.LinAccessToken.text()   
+            self.TxtStyleWMTS.setPlainText(StyleWMTS)
+        else:
+            if (self.TxtStyleWMTS.toPlainText() != None):
+                StyleWMTS =  self.TxtStyleWMTS.toPlainText()
+                ViewURL = StyleWMTS.replace('/wms?','.html?fresh=true&title=view')
+   
+        
+    def run(self):
+        hcmgis_mapbox(self.TxtStyleWMTS.toPlainText())	
+        return		
+
+
+ 

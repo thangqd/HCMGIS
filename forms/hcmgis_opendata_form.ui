@@ -35,47 +35,7 @@
    </item>
    <item row="9" column="0" colspan="2">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="18" column="0" colspan="2">
-      <widget class="QCheckBox" name="ChkSaveShapefile">
-       <property name="text">
-        <string>Save layers to disk</string>
-       </property>
-      </widget>
-     </item>
-     <item row="15" column="0">
-      <widget class="QPlainTextEdit" name="TxtTitle">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>80</height>
-        </size>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="14" column="0">
-      <widget class="QLabel" name="LblTitle">
-       <property name="text">
-        <string>Title</string>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Server Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="19" column="2">
+     <item row="7" column="2">
       <widget class="QPushButton" name="BtnOutputFolder">
        <property name="enabled">
         <bool>false</bool>
@@ -106,7 +66,7 @@
        </property>
       </widget>
      </item>
-     <item row="19" column="0" colspan="2">
+     <item row="7" column="0" colspan="2">
       <widget class="QLineEdit" name="LinOutputFolder">
        <property name="enabled">
         <bool>false</bool>
@@ -128,10 +88,36 @@
        </property>
       </widget>
      </item>
-     <item row="13" column="1" colspan="2">
+     <item row="3" column="0">
+      <widget class="QPlainTextEdit" name="TxtTitle">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="LblTitle">
+       <property name="text">
+        <string>Title</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
       <widget class="QComboBox" name="cboServerName"/>
      </item>
-     <item row="15" column="1" colspan="2">
+     <item row="3" column="1" colspan="2">
       <widget class="QPlainTextEdit" name="TxtAbstract">
        <property name="maximumSize">
         <size>
@@ -144,42 +130,48 @@
        </property>
       </widget>
      </item>
-     <item row="17" column="0" colspan="3">
-      <widget class="QTableWidget" name="TblWFSLayers">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Server Name</string>
        </property>
+      </widget>
+     </item>
+     <item row="6" column="0" colspan="2">
+      <widget class="QCheckBox" name="ChkSaveShapefile">
+       <property name="text">
+        <string>Save layers to disk</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="LblServerType">
+       <property name="text">
+        <string>Server Type</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0" colspan="3">
+      <widget class="QLabel" name="LblStatus">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="2">
+      <widget class="QLabel" name="LblFormat">
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
-       <property name="dragDropMode">
-        <enum>QAbstractItemView::NoDragDrop</enum>
+       <property name="text">
+        <string>Format</string>
        </property>
-       <property name="sortingEnabled">
-        <bool>true</bool>
-       </property>
-       <attribute name="horizontalHeaderCascadingSectionResizes">
-        <bool>false</bool>
-       </attribute>
-       <attribute name="horizontalHeaderStretchLastSection">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Title</string>
-        </property>
-       </column>
       </widget>
      </item>
-     <item row="20" column="2">
+     <item row="0" column="1" colspan="2">
+      <widget class="QComboBox" name="cboServerType"/>
+     </item>
+     <item row="8" column="2">
       <widget class="QComboBox" name="CboFormat">
        <property name="enabled">
         <bool>false</bool>
@@ -232,24 +224,42 @@
        </item>
       </widget>
      </item>
-     <item row="20" column="0" colspan="2">
-      <widget class="QLabel" name="LblFormat">
+     <item row="5" column="0" colspan="3">
+      <widget class="QTableWidget" name="TblWFSLayers">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
-       <property name="text">
-        <string>Format</string>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::NoDragDrop</enum>
        </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Title</string>
+        </property>
+       </column>
       </widget>
      </item>
-     <item row="14" column="1" colspan="2">
-      <widget class="QLabel" name="lblAbstract">
-       <property name="text">
-        <string>Abstract</string>
-       </property>
-      </widget>
-     </item>
-     <item row="16" column="0" colspan="3">
+     <item row="4" column="0" colspan="3">
       <widget class="QLabel" name="label_4">
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -262,29 +272,19 @@
        </property>
       </widget>
      </item>
-     <item row="22" column="0" colspan="3">
+     <item row="10" column="0" colspan="3">
       <widget class="QProgressBar" name="status">
        <property name="value">
         <number>24</number>
        </property>
       </widget>
      </item>
-     <item row="21" column="0" colspan="3">
-      <widget class="QLabel" name="LblStatus">
+     <item row="2" column="1" colspan="2">
+      <widget class="QLabel" name="lblAbstract">
        <property name="text">
-        <string/>
+        <string>Abstract</string>
        </property>
       </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="LblServerType">
-       <property name="text">
-        <string>Server Type</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QComboBox" name="cboServerType"/>
      </item>
     </layout>
    </item>

@@ -195,6 +195,14 @@ class hcmgis_menu ():
         self.basemap_menu.addAction(self.f4map_action)
 
         ##############################
+        # Mapbox
+        #############################
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_mapbox.png")
+        # self.mapbox_action = QAction(icon, u'Mapbox', self.iface.mainWindow())
+        # self.mapbox_action.triggered.connect(self.mapbox)		
+        # self.basemap_menu.addAction(self.mapbox_action)
+
+        ##############################
         # OpenTopoMap
         #############################
         # """ icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opentopomap.png")
@@ -525,5 +533,8 @@ class hcmgis_menu ():
     def xls2csv(self):
         dialog = hcmgis_xls2csv_dialog(self.iface)
         dialog.exec_()
-        
+            
+    def mapbox(self):
+        dialog = hcmgis_mapbox_dialog(self.iface)
+        dialog.exec_()
 

@@ -1998,8 +1998,7 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
     
         point = QgsPointXY(float(row.attributes()[longitude_index]), float(row.attributes()[latitude_index]))
 
-        # Each node is a separate feature in a point file
-        
+        # Each node is a separate feature in a point file        
         newfeature = QgsFeature()
         newfeature.setAttributes(row.attributes())
         geometry = QgsGeometry.fromPointXY(point)
@@ -4071,3 +4070,5 @@ def TranslateLayer( psInfo, poSrcDS, poSrcLayer, poDstDS,  \
 #         sys.exit(1)
 #     else:
 #         sys.exit(0)
+def hcmgis_mapbox(WMTSUrl):
+    qgis.utils.iface.addRasterLayer(WMTSUrl,'Mapbox WMTS', 'WMS')

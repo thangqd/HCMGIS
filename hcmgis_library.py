@@ -166,8 +166,12 @@ def hcmgis_basemap(basemap_name):
 def hcmgis_covid19():  
         uri_live_update = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Coronavirus_2019_nCoV_Cases/FeatureServer/2/query?where=1%3D1&outFields=*&outSR=4326&f=geojson'
         layer_name= 'global_covid19_live_update'
-        json_name_live_update = os.path.join(os.getcwd(), layer_name + '.json')
-
+        project = QgsProject.instance()
+        home_path = project.homePath()
+        if not home_path:
+           home_path = os.path.expanduser('~')
+        #json_name_live_update = os.path.join(os.getcwd(), layer_name + '.json')
+        json_name_live_update = os.path.join(home_path, layer_name + '.json')
         urllib.request.urlretrieve(uri_live_update, json_name_live_update)
         print ('Download completed: '+ str(json_name_live_update))
         json_file_live_update  = QgsVectorLayer(json_name_live_update,layer_name,"ogr")
@@ -196,8 +200,12 @@ def hcmgis_covid19_timeseries():
     # driver = ogr.GetDriverByName('ESRI Shapefile')
     # driver.DeleteDataSource('path_to_your_shape.shp')
     for i in range(length):
-        csv_name = os.path.join(os.getcwd(), layername[i] + '.csv')
-        shapefile_name = os.path.join(os.getcwd(), layername[i] + '.shp')
+        project = QgsProject.instance()
+        home_path = project.homePath()
+        if not home_path:
+           home_path = os.path.expanduser('~')
+        csv_name = os.path.join(home_path, layername[i] + '.csv')
+        shapefile_name = os.path.join(home_path, layername[i] + '.shp')
         
         urllib.request.urlretrieve(uri[i], csv_name)
         hcmgis_csv2shp(csv_name, 'Lat', 'Long', shapefile_name)	
@@ -226,7 +234,11 @@ def hcmgis_covid19_vietnam0():
 def hcmgis_covid19_vietnam():
     uri_live_update = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam&format=application/json'
     layer_name= 'vietnam_covid19_live_update'
-    json_name_live_update = os.path.join(os.getcwd(), layer_name + '.json')
+    project = QgsProject.instance()
+    home_path = project.homePath()
+    if not home_path:
+       home_path = os.path.expanduser('~')        
+    json_name_live_update = os.path.join(home_path, layer_name + '.json')
 
     urllib.request.urlretrieve(uri_live_update, json_name_live_update)
     print ('Download completed: '+ str(json_name_live_update))
@@ -1632,7 +1644,7 @@ def hcmgis_buffer_line_side(geometry, width, direction):
         return geometry
 
     points = geometry.asPolyline()
-    line_bearing = hcmgis_bearing(points[0], points[-1]) % 360
+    line_bearing = hcmgis_bearing(points[0], points[-1][-1]) % 360
 
     # Determine side of line to buffer based on angle from start point to end point
     # "bearing" will be 90 for right side buffer, -90 for left side buffer
@@ -2058,12 +2070,11 @@ def hcmgis_geofabrik(region, country, outdir,status_callback = None):
     #temp_dir = tempfile.mkdtemp()
     download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '-latest-free.shp.zip'	
     #print (download_url_shp)
-    zip_filename_shp = outdir + '\\'+ country +  '-latest-free.shp.zip'
-    #unzip_folder_shp = zip_filename_shp.replace('.zip','')
-    unzip_folder_shp = zip_filename_shp.split('.')[-1]
+    zip_filename_shp = outdir + '/'+ country +  '-latest-free.shp.zip'
+    unzip_folder_shp = zip_filename_shp.replace('.zip','')    
     #print (zip_filename_shp)
     download_url_pbf = r'https://download.geofabrik.de/' + region + '/'+ country+ '-latest.osm.pbf'	
-    filename_pbf = outdir + '\\'+ country +  '-latest.osm.pbf'
+    filename_pbf = outdir + '/'+ country +  '-latest.osm.pbf'
     #print (download_url_pbf)    
     headers = ""
     zip = requests.get(download_url_shp, headers=headers, stream=True, allow_redirects=True)    
@@ -2086,13 +2097,13 @@ def hcmgis_geofabrik(region, country, outdir,status_callback = None):
                 i+=1
                
             f.close()
-            print (unzip_folder_shp)
             QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
             if status_callback: 
                 status_callback(0,None)
             if not os.path.exists (unzip_folder_shp):
                 os.mkdir(unzip_folder_shp)
-            
+            print (unzip_folder_shp)
+
             with zipfile.ZipFile(zip_filename_shp) as zip_ref:
                 zip_ref.extractall(unzip_folder_shp)	
             #os.chdir(zip_folder)
@@ -2103,7 +2114,7 @@ def hcmgis_geofabrik(region, country, outdir,status_callback = None):
             for file in wholelist:
                 if ".shp" in file:
                     if "xml" not in file:
-                        fileroute=unzip_folder_shp+'\\'+file
+                        fileroute=unzip_folder_shp+'/'+file
                         filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
                         QgsProject.instance().addMapLayer(filename,False)
                         shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
@@ -2185,12 +2196,12 @@ def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
     #temp_dir = tempfile.mkdtemp()
     download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '/' + state + '-latest-free.shp.zip'	
     print (download_url_shp)
-    zip_filename_shp = outdir + '\\'+ country + '-'+ state + '-latest-free.shp.zip'
+    zip_filename_shp = outdir + '/'+ country + '-'+ state + '-latest-free.shp.zip'
     unzip_folder_shp = zip_filename_shp.replace('.zip','')
 
     download_url_pbf = r'https://download.geofabrik.de/' + region + '/'+ country+ '/' + state+'-latest.osm.pbf'	
     print (download_url_pbf)
-    filename_pbf = outdir + '\\'+ country + '-'+ state + '-latest.osm.pbf'   
+    filename_pbf = outdir + '/'+ country + '-'+ state + '-latest.osm.pbf'   
     headers = ""
     zip = requests.get(download_url_shp, headers=headers, stream=True, allow_redirects=True)    
     total_size = int(zip.headers.get('content-length'))
@@ -2210,13 +2221,13 @@ def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
                     status_callback(i,None)
                 i+=1               
             f.close()
-            print (unzip_folder_shp)
             QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
             if status_callback: 
                 status_callback(0,None)
             if not os.path.exists (unzip_folder_shp):
                 os.mkdir(unzip_folder_shp)
-            
+            print (unzip_folder_shp)
+
             with zipfile.ZipFile(zip_filename_shp) as zip_ref:
                 zip_ref.extractall(unzip_folder_shp)	
             #os.chdir(zip_folder)
@@ -2227,7 +2238,7 @@ def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
             for file in wholelist:
                 if ".shp" in file:
                     if "xml" not in file:
-                        fileroute=unzip_folder_shp+'\\'+file
+                        fileroute=unzip_folder_shp+'/'+file
                         filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
                         QgsProject.instance().addMapLayer(filename,False)
                         shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
@@ -2310,7 +2321,7 @@ def hcmgis_gadm(country, country_short, outdir,status_callback = None):
     pre = 'https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_'
     suf = '_shp.zip'
     download_url_shp = pre + country_short + suf
-    zip_filename_shp = outdir + '\\'+ country_short +  suf
+    zip_filename_shp = outdir + '/'+ country_short +  suf
     unzip_folder_shp = zip_filename_shp.replace('.zip','')
     
     headers = ""
@@ -2348,7 +2359,7 @@ def hcmgis_gadm(country, country_short, outdir,status_callback = None):
             for file in wholelist:
                 if ".shp" in file:
                     if "xml" not in file:
-                        fileroute=unzip_folder_shp+'\\'+file
+                        fileroute=unzip_folder_shp+'/'+file
                         filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
                         QgsProject.instance().addMapLayer(filename,False)
                         shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))

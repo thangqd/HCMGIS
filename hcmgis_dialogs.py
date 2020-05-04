@@ -70,12 +70,15 @@ class hcmgis_dialog(QtWidgets.QDialog):
             "Spatialite (*.sqlite);;GPKG (*.gpkg)")
 
     def hcmgis_temp_file_name(self, name, ext):
-        home_path = os.getcwd()
+        project = QgsProject.instance()
+        home_path = project.homePath()
+        if not home_path:
+            home_path = os.path.expanduser('~')
         for x in range(1, 10):
-            file_name = home_path + "\\" +name + str(x) + ext
+            file_name = home_path + "/" +name + str(x) + ext
             if not os.path.isfile(file_name):
                 return file_name
-        return home_path + "\\"+ name + ext
+        return home_path + "/"+ name + ext
 
 
     def hcmgis_read_csv_header(self, input_csv_name):
@@ -197,7 +200,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 'INDE',
                 'ISRIC Data Hub',
                 'World Food Programme',
-                'PUMA - World Bank Group'                
+                'PUMA - World Bank Group' ,
                 ]
 
     wfs_urls = [
@@ -215,7 +218,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
         'https://geoservicos.inde.gov.br/geoserver',
         'https://data.isric.org/geoserver',
         'https://geonode.wfp.org/geoserver',
-        'https://puma.worldbank.org/geoserver',
+        'https://puma.worldbank.org/geoserver'
          ]
   
     def hcmgis_fill_table_widget_with_wfs_layers0(self,table_widget, idx, TxtTitle, TxtAbstract, status_callback = None):	
@@ -230,7 +233,11 @@ class hcmgis_dialog(QtWidgets.QDialog):
             uri = self.wfs_urls[idx] +'/wfs?version=2.0.0&request=GetCapabilities'
             print (uri)
             wfs = requests.get(uri, stream=True, allow_redirects=True, verify = False)
-            filename = os.getcwd() + "\\"+ str(self.wfs_servers[idx])  + ".xml"   
+            project = QgsProject.instance()
+            home_path = project.homePath()
+            if not home_path:
+                home_path = os.path.expanduser('~')
+            filename = home_path + "/"+ str(self.wfs_servers[idx])  + ".xml"   
             print (filename)
             if  (wfs.status_code == 200):               
                 f = open(filename, 'wb')                           
@@ -337,7 +344,11 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.TblWFSLayers.doubleClicked.connect(self.run)
         self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
-        self.LinOutputFolder.setText(os.getcwd())                                             
+        project = QgsProject.instance()
+        home_path = project.homePath()
+        if not home_path:
+            home_path = os.path.expanduser('~')
+        self.LinOutputFolder.setText(home_path)                                             
         self.ChkSaveShapefile.stateChanged.connect(self.toggleouputfolder)
         
         columns = ['Name', 'Title']            
@@ -448,7 +459,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                     uri += '&outputFormat='
                     uri += wfs_format
                     try:
-                        # filename = outdir + "\\"+ str(layer_name).replace(":","_") + ext
+                        # filename = outdir + "/"+ str(layer_name).replace(":","_") + ext
                         # ssl._create_default_https_context = ssl._create_unverified_context
                         # #urllib.request.urlretrieve(uri,filename,context=ssl._create_unverified_context())
                         # urllib.request.urlretrieve(uri,filename)
@@ -464,7 +475,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                         #     self.status.setFormat(message)  
                         headers = ""
                         contents = requests.get(uri, headers=headers, stream=True, allow_redirects=True, verify = False)
-                        filename = outdir + "\\"+ str(layer_name).replace(":","_") + ext    
+                        filename = outdir + "/"+ str(layer_name).replace(":","_") + ext    
                         # total_size = int(len(contents.content))
                         # total_size_MB = round(total_size*10**(-6),2)
                         # chunk_size = int(total_size/100)                        
@@ -508,7 +519,11 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
-        self.LinOutputFolder.setText(os.getcwd())    
+        project = QgsProject.instance()
+        home_path = project.homePath()
+        if not home_path:
+            home_path = os.path.expanduser('~')
+        self.LinOutputFolder.setText(home_path)    
         self.cboRegion.addItems(self.region)
         self.cboRegion.currentIndexChanged.connect(self.loadcountry)   
         self.cboRegion.setCurrentIndex(-1) 
@@ -804,7 +819,11 @@ class hcmgis_gadm_dialog(hcmgis_dialog, Ui_hcmgis_gadm_form):
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
-        self.LinOutputFolder.setText(os.getcwd())    
+        project = QgsProject.instance()
+        home_path = project.homePath()
+        if not home_path:
+            home_path = os.path.expanduser('~')
+        self.LinOutputFolder.setText(home_path)    
         self.cboCountry.addItems(self.country)
         self.cboCountry.currentIndexChanged.connect(self.updateLOD)   
         self.cboCountry.setCurrentIndex(-1) 
@@ -1633,7 +1652,7 @@ class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form)
             self.txtError.clear()
             self.hcmgis_set_status_bar(self.status,self.LblStatus)
         else:            
-            QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:\\')
+            QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:/')
         
     def run(self):      
         item_count = 0
@@ -1733,7 +1752,7 @@ class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
             self.LblStatus.clear()
             self.hcmgis_set_status_bar(self.status,self.LblStatus)
         else:
-            QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:\\')
+            QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:/')
 
         
     def run(self):             		
@@ -1805,7 +1824,7 @@ class hcmgis_txt2csv_dialog(hcmgis_dialog, Ui_hcmgis_txt2csv_form):
             self.LblStatus.clear()
             self.hcmgis_set_status_bar(self.status,self.LblStatus)
         else:
-            QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:\\')
+            QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:/')
         
     def run(self):             		
         item_count = 0
@@ -1869,7 +1888,7 @@ class hcmgis_xls2csv_dialog(hcmgis_dialog, Ui_hcmgis_xls2csv_form):
             self.LblStatus.clear()
             self.hcmgis_set_status_bar(self.status,self.LblStatus)
         else:
-            QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:\\')
+            QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:/')
         
         
     def run(self):             		

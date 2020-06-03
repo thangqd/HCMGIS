@@ -187,8 +187,8 @@ class hcmgis_dialog(QtWidgets.QDialog):
     arcgis_servers = []
     arcgis_urls = []
     wfs_servers = ['HCMGIS OpenData',
-                'OpenDevelopmet Mekong',
-                'OpenDevelopmet Cambodia',
+                'OpenDevelopment Mekong',
+                'OpenDevelopment Cambodia',
                 'OpenDevelopment Lao',
                 'OpenDevelopment Myanmar',
                 'OpenDevelopment Vietnam',

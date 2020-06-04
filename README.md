@@ -1,5 +1,5 @@
-## How to call HCMGIS Library in QGIS Python Console](https://thangqd.github.io/blog/call-hcmgis-library-qgis-python-console)
-## Call HCMGIS Library in Standalone PyQGIS Application](https://thangqd.github.io/blog/call-hcmgis-library-standalone-pyqgis)
+## [How to call HCMGIS Library in QGIS Python Console](https://thangqd.github.io/blog/call-hcmgis-library-qgis-python-console)
+## [How to call HCMGIS Library in Standalone PyQGIS Application](https://thangqd.github.io/blog/call-hcmgis-library-standalone-pyqgis)
 ---
 
 # HCMGIS - Basemap, Download CO-VID19 Data, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3

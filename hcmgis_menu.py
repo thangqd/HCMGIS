@@ -308,10 +308,10 @@ class hcmgis_menu ():
         self.batch_converter_menu.addAction(self.csv2shp_action)
 
         # TXT to CSV
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-        self.txt2csv_action = QAction(icon, u'TXT to CSV', self.iface.mainWindow())
-        self.txt2csv_action.triggered.connect(self.txt2csv)
-        self.batch_converter_menu.addAction(self.txt2csv_action)
+        #icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+        #self.txt2csv_action = QAction(icon, u'TXT to CSV', self.iface.mainWindow())
+        #self.txt2csv_action.triggered.connect(self.txt2csv)
+        #self.batch_converter_menu.addAction(self.txt2csv_action)
 
         
         # # XLS to CSV

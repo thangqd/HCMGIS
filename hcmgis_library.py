@@ -2007,8 +2007,10 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
 
         if (latitude_index >= len(row.attributes())) or (latitude_index >= len(row.attributes())):
             return "Node file missing lat/long at row " + str(row_number + 1)
-    
-        point = QgsPointXY(float(row.attributes()[longitude_index]), float(row.attributes()[latitude_index]))
+        try:
+            point = QgsPointXY(float(row.attributes()[longitude_index]), float(row.attributes()[latitude_index]))
+        except:
+            pass
 
         # Each node is a separate feature in a point file        
         newfeature = QgsFeature()

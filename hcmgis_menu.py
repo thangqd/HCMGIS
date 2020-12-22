@@ -358,12 +358,19 @@ class hcmgis_menu ():
         self.geofabrik_action.triggered.connect(self.geofabrik)		
         self.opendata_menu.addAction(self.geofabrik_action)
 
-        #OSM Data from Geofabrik 
+        #Global Administrative Areas by Country from GADM
         self.hcmgis_add_submenu(self.opendata_menu)
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_gadm.png")
         self.gadm_action = QAction(icon, u'Global Administrative Areas by Country from GADM', self.iface.mainWindow())
         self.gadm_action.triggered.connect(self.gadm)		
         self.opendata_menu.addAction(self.gadm_action)
+
+        #Building Footprints from Microsoft
+        self.hcmgis_add_submenu(self.opendata_menu)
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_bing.png")
+        self.microsoft_action = QAction(icon, u'Building Footprints from Microsoft', self.iface.mainWindow())
+        self.microsoft_action.triggered.connect(self.microsoft)		
+        self.opendata_menu.addAction(self.microsoft_action)
 
         #HCMGIS OpenData
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
@@ -450,7 +457,7 @@ class hcmgis_menu ():
             self.iface.removePluginMenu("&hcmgis", self.basemap_menu.menuAction())
             self.iface.removePluginMenu("&hcmgis", self.batch_converter_menu.menuAction())
             self.iface.removePluginMenu("&hcmgis", self.covid19_menu.menuAction())						
-            self.iface.removePluginMenu("&hcmgis", self.openddata_menu.menuAction())
+            self.iface.removePluginMenu("&hcmgis", self.opendata_menu.menuAction())
             self.iface.removePluginMenu("&hcmgis", self.projections_menu.menuAction())			
             self.iface.removePluginMenu("&hcmgis", self.geoprocessing_menu.menuAction())
             self.iface.removePluginMenu("&hcmgis", self.tool_menu.menuAction())
@@ -472,6 +479,11 @@ class hcmgis_menu ():
     
     def gadm(self):
         dialog = hcmgis_gadm_dialog(self.iface)
+        dialog.exec_()    
+
+    
+    def microsoft(self):
+        dialog = hcmgis_microsoft_dialog(self.iface)
         dialog.exec_()    
         
             

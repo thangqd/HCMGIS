@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'hcmgis_lec_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_hcmgis_lec_form(object):
     def setupUi(self, hcmgis_lec_form):
@@ -62,10 +64,10 @@ class Ui_hcmgis_lec_form(object):
         self.LblOutput_2.setText(_translate("hcmgis_lec_form", "Unique field"))
         self.LblInput.setText(_translate("hcmgis_lec_form", "Input Point Layer"))
         self.LblOutput.setText(_translate("hcmgis_lec_form", "Output"))
-
 from qgsfieldcombobox import QgsFieldComboBox
 from qgsfilewidget import QgsFileWidget
 from qgsmaplayercombobox import QgsMapLayerComboBox
+
 
 if __name__ == "__main__":
     import sys
@@ -75,4 +77,3 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_lec_form)
     hcmgis_lec_form.show()
     sys.exit(app.exec_())
-

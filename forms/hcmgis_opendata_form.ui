@@ -133,7 +133,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Server Name</string>
+        <string>Service Provider</string>
        </property>
       </widget>
      </item>
@@ -147,7 +147,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="LblServerType">
        <property name="text">
-        <string>Server Type</string>
+        <string>Service Type</string>
        </property>
       </widget>
      </item>

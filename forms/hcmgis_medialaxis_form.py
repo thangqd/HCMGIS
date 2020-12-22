@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'hcmgis_medialaxis_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_hcmgis_medialaxis_form(object):
     def setupUi(self, hcmgis_medialaxis_form):
@@ -83,10 +85,10 @@ class Ui_hcmgis_medialaxis_form(object):
         self.label.setText(_translate("hcmgis_medialaxis_form", "(Notice: Output should be refined after running)"))
         self.LblInput.setText(_translate("hcmgis_medialaxis_form", "Input Polygon (1..100 selected features limit!) - Layer must be in Projected CRS"))
         self.LblInput_3.setText(_translate("hcmgis_medialaxis_form", "Unique field"))
-
 from qgsfieldcombobox import QgsFieldComboBox
 from qgsfilewidget import QgsFileWidget
 from qgsmaplayercombobox import QgsMapLayerComboBox
+
 
 if __name__ == "__main__":
     import sys
@@ -96,4 +98,3 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_medialaxis_form)
     hcmgis_medialaxis_form.show()
     sys.exit(app.exec_())
-

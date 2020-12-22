@@ -38,6 +38,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/forms")
 from hcmgis_opendata_form import *
 from hcmgis_geofabrik_form import *
 from hcmgis_gadm_form import *
+from hcmgis_microsoft_form import *
 from hcmgis_font_convert_form import *
 from hcmgis_split_field_form import *
 from hcmgis_merge_field_form import *
@@ -903,6 +904,137 @@ class hcmgis_gadm_dialog(hcmgis_dialog, Ui_hcmgis_gadm_form):
         hcmgis_gadm(self.country[idx],self.country_short[idx], outdir,self.hcmgis_status_callback)				
         return		
 
+
+class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):	
+    def __init__(self, iface):		
+        hcmgis_dialog.__init__(self, iface)        
+        self.setupUi(self)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+        self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+        project = QgsProject.instance()
+        home_path = project.homePath()
+        if not home_path:
+            home_path = os.path.expanduser('~')
+        self.LinOutputFolder.setText(home_path)    
+        self.cboCountry.addItems(self.country)
+        self.cboCountry.currentIndexChanged.connect(self.loadprovince)   
+        self.cboCountry.setCurrentIndex(-1) 
+        self.cboProvince.setCurrentIndex(-1) 
+        self.cboProvince.setEnabled(False)
+        self.cboProvince.currentIndexChanged.connect(self.updateinfo)
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)	   
+        self.LblHyperlink.setOpenExternalLinks(True)	     
+    import locale
+    locale.setlocale(locale.LC_ALL, 'en_US')
+   
+    #locale.getlocale()
+
+    country = ['Australia','Canada', 'United States', 'Uganda', 'Tanzania']    
+    us_state = ['Alabama','Alaska','Arizona','Arkansas','California',\
+                'Colorado','Connecticut','Delaware','District of Columbia','Florida',\
+                'Georgia','Hawaii','Idaho','Illinois','Indiana',\
+                'Iowa','Kansas','Kentucky','Louisiana','Maine',\
+                'Maryland','Massachusetts','Michigan','Minnesota','Mississippi',\
+                'Missouri','Montana','Nebraska','Nevada','New Hampshire',\
+                'New Jersey','New Mexico','New York','North Carolina','North Dakota',\
+                'Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island',\
+                'South Carolina','South Dakota','Tennessee','Texas','Utah',\
+                'Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming']    
+    us_buildings= [2460404,110746,2555395,1508657,10988525,\
+                   2080808,1190229,345907,58329,6903772,\
+                   3873560,252891,883594,4855794,3268325,\
+                   2035688,1596495,2384214,2057368,752054,\
+                   1622849,2033018,4900472,2815784,1495864,\
+                   3141265,762288,1158081,932025,563487,\
+                   2480332,1011373,4844438,4561262,559161,\
+                   5449419,2091131,1809555,4850273,366779,\
+                   2180513,649737,3002503,9891540,1004734,\
+                   345911,3057019,2993361,1020031,3054452,380772]
+    us_size= [526,26,584,321,2537,466,258,75,13,1521,\
+              825,56,198,1033,700,427,339,500,448,160,\
+              344,438,1045,606,321,662,168,245,212,122,\
+              528,231,1035,963,121,1164,455,408,1034,78,\
+              463,138,638,2141,226,75,643,675,213,654,83]
+
+    canada_state = ['Alberta',	'British Columbia',	'Manitoba',	'New Brunswick', 'Newfoundland And Labrador','Northwest Territories',\
+        	        'Nova Scotia',	'Nunavut',	'Ontario',	'Prince Edward Island',	'Quebec','Saskatchewan','Yukon']
+    canada_buildings = [1777439,1359628,632982,350989,255568,13161,\
+                        402358,2875,3781847,76590,2495801,681553,11395]
+    canada_size = [389,301,135,71,51,3,\
+                   81,1,808,16,512,146,3]    
+    
+    us_state_code = [x.replace(" ", "") for x in us_state]
+    canada_state_code = [x.replace(" ", "") for x in canada_state]
+
+
+    def browse_outfile(self):
+        newname = QFileDialog.getExistingDirectory(None, "Output Folder",self.LinOutputFolder.displayText())
+        if newname != None:
+            self.LinOutputFolder.setText(newname)
+                    
+    def loadprovince(self):
+        self.cboProvince.clear()
+        self.LblHyperlink.clear()
+        self.cboProvince.setEnabled(True)  
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)      
+        if 	(self.cboCountry.currentText() == 'United States'):
+            self.cboProvince.addItems(self.us_state)
+        elif (self.cboCountry.currentText() == 'Canada'):
+            self.cboProvince.addItems(self.canada_state)
+
+        if (self.cboCountry.currentText() == 'Australia'):
+            self.LinBuidings.setText(locale.format_string("%d", 11334866, grouping=True))
+            self.LinSize.setText(locale.format_string("%d", 6410, grouping=True))
+            self.LblHyperlink.setText('File size is too big. Please download directly at '+'<a href=https://usbuildingdata.blob.core.windows.net/australia-buildings/Australia_2020-06-21.geojson.zip>Australia Building Footprints</a>' +' instead!')
+
+        elif (self.cboCountry.currentText() == 'Uganda'):
+            self.LinBuidings.setText(locale.format_string("%d", 6928078, grouping=True))
+            self.LinSize.setText(locale.format_string("%d", 1139, grouping=True))
+            self.LblHyperlink.setText('File size is too big. Please download directly at '+'<a href=https://usbuildingdata.blob.core.windows.net/tanzania-uganda-buildings/Uganda_2019-09-16.zip>Uganda Building Footprints</a>' +' instead!')
+
+        elif (self.cboCountry.currentText() == 'Tanzania'):
+            self.LinBuidings.setText(locale.format_string("%d", 11014267, grouping=True))
+            self.LinSize.setText(locale.format_string("%d", 2202, grouping=True))
+            self.LblHyperlink.setText('File size is too big. Please download directly at '+ '<a href=https://usbuildingdata.blob.core.windows.net/tanzania-uganda-buildings/Tanzania_2019-09-16.zip>Tanzania Building Footprints</a>' +' instead!')
+     
+        self.cboProvince.setCurrentIndex(-1)
+
+    def updateinfo(self):
+        self.LinBuidings.clear()
+        self.LinSize.clear()
+        self.LblHyperlink.clear()        
+        province_index = self.cboProvince.currentIndex()          
+        if (province_index >=0):      
+            self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(True)     
+            if (self.cboCountry.currentText() == 'United States'):                
+                self.LinBuidings.setText(locale.format_string("%d", self.us_buildings[province_index], grouping=True))
+                self.LinSize.setText(locale.format_string("%d", self.us_size[province_index], grouping=True))
+                if (self.us_size[province_index]>=500):
+                    link_message = 'File size is too big. Please download directly at '+ '<a href='+ 'https://usbuildingdata.blob.core.windows.net/usbuildings-v1-1/'+str(self.us_state_code[province_index])+'.zip>'+str (self.cboProvince.currentText()) +' Building Footprints</a>' +' instead!'
+                    self.LblHyperlink.setText(link_message)
+                    self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)               
+            elif (self.cboCountry.currentText() == 'Canada'):
+                self.LinBuidings.setText(locale.format_string("%d", self.canada_buildings[province_index], grouping=True))
+                self.LinSize.setText(locale.format_string("%d", self.canada_size[province_index], grouping=True))
+                if (self.canada_size[province_index]>=500):
+                    link_message = 'File size is too big. Please download directly at '+ '<a href='+ 'https://usbuildingdata.blob.core.windows.net/canadian-buildings-v2/'+str(self.canada_state_code[province_index])+'.zip>'+str (self.cboProvince.currentText()) +' Building Footprints</a>' +' instead!'
+                    self.LblHyperlink.setText(link_message)
+                    self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)        
+        else:   self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)    
+           
+    def run(self):
+        outdir = unicode(self.LinOutputFolder.displayText())
+        country_idx = self.cboCountry.currentIndex()
+        province_idx = self.cboProvince.currentIndex()
+        if (self.country[country_idx] == 'United States'):
+            hcmgis_microsoft(self.country[country_idx],self.us_state_code[province_idx], outdir,self.hcmgis_status_callback)				
+        elif  (self.country[country_idx] == 'Canada'):
+            hcmgis_microsoft(self.country[country_idx],self.canada_state_code[province_idx], outdir,self.hcmgis_status_callback)	
+        else: 	hcmgis_microsoft(self.country[country_idx],None, outdir,self.hcmgis_status_callback)			
+
+        return		
+
+
 # --------------------------------------------------------
 #    VN-2000 Projections
 # --------------------------------------------------------
@@ -1393,7 +1525,7 @@ class hcmgis_medialaxis_dialog(hcmgis_dialog, Ui_hcmgis_medialaxis_form):
         field = self.CboField.currentText()
         density = self.spinBox.value()
         output = str(self.output_file_name.filePath())
-        if layer.selectedFeatureCount() in range (1,100):
+        if layer.selectedFeatureCount() in range (1,3000):
             message = hcmgis_medialaxis(layer,field, density,output,self.hcmgis_status_callback)
             if message != None:
                 QMessageBox.critical(self.iface.mainWindow(), "Skeleton/ Media Axis", message)	

@@ -1,7 +1,3 @@
-### [How to call HCMGIS Library in QGIS Python Console](https://thangqd.github.io/blog/call-hcmgis-library-qgis-python-console)
-### [How to call HCMGIS Library in Standalone PyQGIS Application](https://thangqd.github.io/blog/call-hcmgis-library-standalone-pyqgis)
----
-
 # HCMGIS - Basemap, Download CO-VID19 Data, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
 **- Basemap**: Add dozens of global basemaps from Google, Carto, ESRI, OSM Stamen, etc.
@@ -10,9 +6,9 @@
 
 **- Download CO-VID19 Data**:  Global COVID-19 Live Update and Time Series from Johns Holfkins CSSE, Vietnam COVID-19 Live Update from HCMGIS OpenData
 
-**- Download OpenData**:  Download Open Data from OSM Geofabrik, GADM, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University and more
+**- Download OpenData**:  Download Open Data from OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University and more
 
-**- Vn-2000 Projections**:  Lookup EPSG Code for Vn-2000/ TM3 Projection for all Provinces in Vietnam
+**- Vn-2000 Projections**:  Lookup EPSG Code for Vn-200/ TM3 Projection for all Provinces in Vietnam
 
 
 **- Spatial Processing**: 
@@ -35,7 +31,7 @@
 
 **- Download CO-VID19 Data**:  Dữ liệu cập nhật diễn biến dịch bệnh COVID-19 trên thế giới và tại Việt Nam
 
-**- Download OpenData**:  Download dữ liệu GIS mở: OSM Geofabrik, GADM, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University,...
+**- Download OpenData**:  Download dữ liệu GIS mở: OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University,...
 
 **- Vn-2000 Projections**:  Tra cứu EPSG Code cho múi chiếu 3 độ, kinh tuyến trục địa phương các tỉnh thành Việt Nam
 

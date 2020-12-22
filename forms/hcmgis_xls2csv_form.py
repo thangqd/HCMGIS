@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'hcmgis_xls2csv_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_hcmgis_xls2csv_form(object):
     def setupUi(self, hcmgis_xls2csv_form):
@@ -103,4 +105,3 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_xls2csv_form)
     hcmgis_xls2csv_form.show()
     sys.exit(app.exec_())
-

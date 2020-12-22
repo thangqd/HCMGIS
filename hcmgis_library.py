@@ -262,7 +262,7 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
     i = 0
     steps =11
     try:
-        if layer.isValid() and layer.selectedFeatureCount() in range(1,100):
+        if layer.isValid() and layer.selectedFeatureCount() in range(1,3000):
             parameters0 = {'INPUT':layer,
                     'OUTPUT':  "memory:polygon"}
             selectedfeature = processing.run('qgis:saveselectedfeatures',parameters0)
@@ -2381,10 +2381,98 @@ def hcmgis_gadm(country, country_short, outdir,status_callback = None):
                 qgis.utils.iface.setActiveLayer(layer)
                 qgis.utils.iface.zoomToActiveLayer()  
             except :
+                pass           
+    else:
+        QMessageBox.warning(None, "Attention",u'Link not found!')
+    return
+
+def hcmgis_microsoft(country, state, outdir,status_callback = None):  
+    pre = ''
+    suf = ''
+    download_url= ''
+    zip_filename =''
+    unzip_folder = ''
+    if (country == 'United States'):
+        pre = 'https://usbuildingdata.blob.core.windows.net/usbuildings-v1-1/'
+        suf = '.zip'
+        download_url = pre + state + suf
+        zip_filename = outdir + '/'+ state +  suf
+        unzip_folder = zip_filename.replace('.zip','')    
+    elif (country == 'Canada'):
+        pre = 'https://usbuildingdata.blob.core.windows.net/canadian-buildings-v2/'
+        suf = '.zip'        
+        download_url = pre + state + suf
+        zip_filename = outdir + '/'+ state +  suf
+        unzip_folder = zip_filename.replace('.zip','')    
+    elif (country == 'Australia'):
+        download_url = 'https://usbuildingdata.blob.core.windows.net/australia-buildings/Australia_2020-06-21.geojson.zip'
+        zip_filename = outdir + '/'+ 'Australia_2020-06-21.geojson.zip'
+        unzip_folder = 'Australia'    
+    elif (country == 'Uganda'):
+        download_url = 'https://usbuildingdata.blob.core.windows.net/tanzania-uganda-buildings/Uganda_2019-09-16.zip'
+        zip_filename = outdir + '/'+ 'Uganda_2019-09-16.zip'
+        unzip_folder = 'Uganda'
+    elif (country == 'Tanzania'):
+        download_url = 'https://usbuildingdata.blob.core.windows.net/tanzania-uganda-buildings/Tanzania_2019-09-16.zip'
+        zip_filename = outdir + '/'+ 'Tanzania_2019-09-16.zip'
+        unzip_folder = 'Tanzania'
+    
+    headers = ""
+    zip = requests.get(download_url, headers=headers, stream=True, allow_redirects=True)    
+    total_size = int(zip.headers.get('content-length'))
+    total_size_MB = round(total_size*10**(-6),2)
+    chunk_size = int(total_size/100)    
+    if  (zip.status_code == 200):
+        print ('total_length MB:', total_size_MB)
+        confirmed = QMessageBox.question(None, "Attention",'Estimated file size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+        if confirmed == QMessageBox.Yes:
+            i = 0
+            f = open(zip_filename, 'wb')
+            for chunk in zip.iter_content(chunk_size = chunk_size):
+                if not chunk:
+                    break
+                f.write(chunk)
+                if status_callback: 
+                    status_callback(i,None)
+                i+=1               
+            f.close()        
+            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
+            if status_callback: 
+                status_callback(0,None)
+            if not os.path.exists (unzip_folder):
+                os.mkdir(unzip_folder)
+            
+            with zipfile.ZipFile(zip_filename) as zip_ref:
+                zip_ref.extractall(unzip_folder)
+            #os.chdir(zip_folder)
+            wholelist = os.listdir(unzip_folder)
+            root = QgsProject.instance().layerTreeRoot()
+            shapeGroup = root.addGroup(country)
+            i = 0
+            for file in wholelist:
+                if ".geojson" in file:
+                    fileroute= unzip_folder+'/'+file
+                    filename = QgsVectorLayer(fileroute,file[:-8],"ogr")
+                    QgsProject.instance().addMapLayer(filename,False)
+                    shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+                percen_complete = i/len(wholelist)*100 
+                if status_callback:                
+                    status_callback(i,None)
+                i+=1
+            if status_callback: 
+                status_callback(100,None)            
+            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            # zoom to group extent
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break 
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()  
+            except :
                 pass
            
-
-
     else:
         QMessageBox.warning(None, "Attention",u'Link not found!')
     return

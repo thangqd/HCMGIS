@@ -1,0 +1,117 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'hcmgis_microsoft_form.ui'
+#
+# Created by: PyQt5 UI code generator 5.13.2
+#
+# WARNING! All changes made in this file will be lost!
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_hcmgis_microsoft_form(object):
+    def setupUi(self, hcmgis_microsoft_form):
+        hcmgis_microsoft_form.setObjectName("hcmgis_microsoft_form")
+        hcmgis_microsoft_form.setWindowModality(QtCore.Qt.ApplicationModal)
+        hcmgis_microsoft_form.setEnabled(True)
+        hcmgis_microsoft_form.resize(451, 330)
+        hcmgis_microsoft_form.setMouseTracking(False)
+        self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_microsoft_form)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setVerticalSpacing(25)
+        self.gridLayout.setObjectName("gridLayout")
+        self.cboCountry = QtWidgets.QComboBox(hcmgis_microsoft_form)
+        self.cboCountry.setObjectName("cboCountry")
+        self.gridLayout.addWidget(self.cboCountry, 5, 1, 1, 3)
+        self.cboProvince = QtWidgets.QComboBox(hcmgis_microsoft_form)
+        self.cboProvince.setObjectName("cboProvince")
+        self.gridLayout.addWidget(self.cboProvince, 6, 1, 1, 3)
+        self.LblSize = QtWidgets.QLabel(hcmgis_microsoft_form)
+        self.LblSize.setObjectName("LblSize")
+        self.gridLayout.addWidget(self.LblSize, 7, 2, 1, 1)
+        self.label = QtWidgets.QLabel(hcmgis_microsoft_form)
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 4)
+        self.LblBuildings = QtWidgets.QLabel(hcmgis_microsoft_form)
+        self.LblBuildings.setObjectName("LblBuildings")
+        self.gridLayout.addWidget(self.LblBuildings, 7, 0, 1, 1)
+        self.label_3 = QtWidgets.QLabel(hcmgis_microsoft_form)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout.addWidget(self.label_3, 5, 0, 1, 1)
+        self.label_4 = QtWidgets.QLabel(hcmgis_microsoft_form)
+        self.label_4.setObjectName("label_4")
+        self.gridLayout.addWidget(self.label_4, 6, 0, 1, 1)
+        self.LinBuidings = QtWidgets.QLineEdit(hcmgis_microsoft_form)
+        self.LinBuidings.setReadOnly(True)
+        self.LinBuidings.setObjectName("LinBuidings")
+        self.gridLayout.addWidget(self.LinBuidings, 7, 1, 1, 1)
+        self.LinSize = QtWidgets.QLineEdit(hcmgis_microsoft_form)
+        self.LinSize.setReadOnly(True)
+        self.LinSize.setObjectName("LinSize")
+        self.gridLayout.addWidget(self.LinSize, 7, 3, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout)
+        self.LblHyperlink = QtWidgets.QLabel(hcmgis_microsoft_form)
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.LblHyperlink.setFont(font)
+        self.LblHyperlink.setText("")
+        self.LblHyperlink.setObjectName("LblHyperlink")
+        self.verticalLayout.addWidget(self.LblHyperlink)
+        self.gridLayout_2 = QtWidgets.QGridLayout()
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.status = QtWidgets.QProgressBar(hcmgis_microsoft_form)
+        self.status.setProperty("value", 24)
+        self.status.setObjectName("status")
+        self.gridLayout_2.addWidget(self.status, 3, 0, 1, 2)
+        self.LinOutputFolder = QtWidgets.QLineEdit(hcmgis_microsoft_form)
+        self.LinOutputFolder.setReadOnly(True)
+        self.LinOutputFolder.setObjectName("LinOutputFolder")
+        self.gridLayout_2.addWidget(self.LinOutputFolder, 1, 0, 1, 1)
+        self.Label = QtWidgets.QLabel(hcmgis_microsoft_form)
+        self.Label.setObjectName("Label")
+        self.gridLayout_2.addWidget(self.Label, 0, 0, 1, 2)
+        self.LblStatus = QtWidgets.QLabel(hcmgis_microsoft_form)
+        self.LblStatus.setText("")
+        self.LblStatus.setObjectName("LblStatus")
+        self.gridLayout_2.addWidget(self.LblStatus, 2, 0, 1, 2)
+        self.BtnOutputFolder = QtWidgets.QPushButton(hcmgis_microsoft_form)
+        self.BtnOutputFolder.setObjectName("BtnOutputFolder")
+        self.gridLayout_2.addWidget(self.BtnOutputFolder, 1, 1, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout_2)
+        self.BtnApplyClose = QtWidgets.QDialogButtonBox(hcmgis_microsoft_form)
+        self.BtnApplyClose.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Close)
+        self.BtnApplyClose.setObjectName("BtnApplyClose")
+        self.verticalLayout.addWidget(self.BtnApplyClose)
+
+        self.retranslateUi(hcmgis_microsoft_form)
+        self.BtnApplyClose.accepted.connect(hcmgis_microsoft_form.accept)
+        self.BtnApplyClose.rejected.connect(hcmgis_microsoft_form.reject)
+        QtCore.QMetaObject.connectSlotsByName(hcmgis_microsoft_form)
+
+    def retranslateUi(self, hcmgis_microsoft_form):
+        _translate = QtCore.QCoreApplication.translate
+        hcmgis_microsoft_form.setWindowTitle(_translate("hcmgis_microsoft_form", "Download Building Footprints from Microsoft"))
+        self.LblSize.setText(_translate("hcmgis_microsoft_form", "Unzipped size (MB)"))
+        self.label.setText(_translate("hcmgis_microsoft_form", "Download Building Footprints from Microsoft (GeoJSON format)"))
+        self.LblBuildings.setText(_translate("hcmgis_microsoft_form", "Number of Buildings"))
+        self.label_3.setText(_translate("hcmgis_microsoft_form", "Select Country"))
+        self.label_4.setText(_translate("hcmgis_microsoft_form", "Slect State/ Province"))
+        self.Label.setText(_translate("hcmgis_microsoft_form", "Select folder to save shapefile"))
+        self.BtnOutputFolder.setText(_translate("hcmgis_microsoft_form", "..."))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    hcmgis_microsoft_form = QtWidgets.QDialog()
+    ui = Ui_hcmgis_microsoft_form()
+    ui.setupUi(hcmgis_microsoft_form)
+    hcmgis_microsoft_form.show()
+    sys.exit(app.exec_())

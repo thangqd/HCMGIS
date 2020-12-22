@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'hcmgis_opendata_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_hcmgis_opendata_form(object):
     def setupUi(self, hcmgis_opendata_form):
@@ -144,9 +146,9 @@ class Ui_hcmgis_opendata_form(object):
         hcmgis_opendata_form.setWindowTitle(_translate("hcmgis_opendata_form", "Download OpenData"))
         self.BtnOutputFolder.setText(_translate("hcmgis_opendata_form", "Browse..."))
         self.LblTitle.setText(_translate("hcmgis_opendata_form", "Title"))
-        self.label.setText(_translate("hcmgis_opendata_form", "Server Name"))
+        self.label.setText(_translate("hcmgis_opendata_form", "Service Provider"))
         self.ChkSaveShapefile.setText(_translate("hcmgis_opendata_form", "Save layers to disk"))
-        self.LblServerType.setText(_translate("hcmgis_opendata_form", "Server Type"))
+        self.LblServerType.setText(_translate("hcmgis_opendata_form", "Service Type"))
         self.LblFormat.setText(_translate("hcmgis_opendata_form", "Format"))
         self.CboFormat.setItemText(0, _translate("hcmgis_opendata_form", "SHAPE-ZIP"))
         self.CboFormat.setItemText(1, _translate("hcmgis_opendata_form", "JSON"))
@@ -173,4 +175,3 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_opendata_form)
     hcmgis_opendata_form.show()
     sys.exit(app.exec_())
-

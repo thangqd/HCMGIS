@@ -6,7 +6,7 @@
 
 **- Download CO-VID19 Data**:  Global COVID-19 Live Update and Time Series from Johns Holfkins CSSE, Vietnam COVID-19 Live Update from HCMGIS OpenData
 
-**- Download OpenData**:  Download Open Data from OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University and more
+**- Download OpenData**:  Download Open Data from OSM Geofabrik, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University and more
 
 **- Vn-2000 Projections**:  Lookup EPSG Code for Vn-200/ TM3 Projection for all Provinces in Vietnam
 
@@ -31,7 +31,7 @@
 
 **- Download CO-VID19 Data**:  Dữ liệu cập nhật diễn biến dịch bệnh COVID-19 trên thế giới và tại Việt Nam
 
-**- Download OpenData**:  Download dữ liệu GIS mở: OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University,...
+**- Download OpenData**:  Download dữ liệu GIS mở: OSM Geofabrik, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University,...
 
 **- Vn-2000 Projections**:  Tra cứu EPSG Code cho múi chiếu 3 độ, kinh tuyến trục địa phương các tỉnh thành Việt Nam
 

@@ -925,9 +925,9 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
         self.hcmgis_set_status_bar(self.status,self.LblStatus)	   
         self.LblHyperlink.setOpenExternalLinks(True)	     
     import locale
-    locale.setlocale(locale.LC_ALL, 'en_US')
+    #locale.setlocale(locale.LC_ALL, 'en_US')
    
-    #locale.getlocale()
+    locale.getlocale()
 
     country = ['Australia','Canada', 'United States', 'Uganda', 'Tanzania']    
     us_state = ['Alabama','Alaska','Arizona','Arkansas','California',\

@@ -957,7 +957,7 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
               463,138,638,2141,226,75,643,675,213,654,83]
 
     canada_state = ['Alberta',	'British Columbia',	'Manitoba',	'New Brunswick', 'Newfoundland And Labrador','Northwest Territories',\
-        	        'Nova Scotia',	'Nunavut',	'Ontario',	'Prince Edward Island',	'Quebec','Saskatchewan','Yukon']
+        	        'Nova Scotia',	'Nunavut',	'Ontario',	'Prince Edward Island',	'Quebec','Saskatchewan','Yukon Territory']
     canada_buildings = [1777439,1359628,632982,350989,255568,13161,\
                         402358,2875,3781847,76590,2495801,681553,11395]
     canada_size = [389,301,135,71,51,3,\

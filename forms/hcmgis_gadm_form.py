@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'hcmgis_gadm_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_gadm_form(object):
     def setupUi(self, hcmgis_gadm_form):
@@ -92,3 +90,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_gadm_form)
     hcmgis_gadm_form.show()
     sys.exit(app.exec_())
+

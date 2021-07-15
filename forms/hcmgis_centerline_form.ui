@@ -57,7 +57,7 @@
      <item row="4" column="0" colspan="2">
       <widget class="QCheckBox" name="chksurround">
        <property name="text">
-        <string>Also create line surround the polygon</string>
+        <string>Also create line surrounding the polygon</string>
        </property>
        <property name="checked">
         <bool>false</bool>
@@ -74,7 +74,7 @@
      <item row="8" column="0" colspan="2">
       <widget class="QLabel" name="LblOutput">
        <property name="text">
-        <string>OutPut</string>
+        <string>Output</string>
        </property>
       </widget>
      </item>

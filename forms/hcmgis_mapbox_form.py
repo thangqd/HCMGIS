@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'hcmgis_mapbox_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_mapbox_form(object):
     def setupUi(self, hcmgis_mapbox_form):
@@ -109,3 +107,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_mapbox_form)
     hcmgis_mapbox_form.show()
     sys.exit(app.exec_())
+

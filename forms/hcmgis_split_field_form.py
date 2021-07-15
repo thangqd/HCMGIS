@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'hcmgis_split_field_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_split_field_form(object):
     def setupUi(self, hcmgis_split_field_form):
@@ -125,9 +123,9 @@ class Ui_hcmgis_split_field_form(object):
         self.CboChar.setItemText(27, _translate("hcmgis_split_field_form", "\""))
         self.CboChar.setItemText(28, _translate("hcmgis_split_field_form", "<"))
         self.CboChar.setItemText(29, _translate("hcmgis_split_field_form", ">"))
+
 from qgsfieldcombobox import QgsFieldComboBox
 from qgsmaplayercombobox import QgsMapLayerComboBox
-
 
 if __name__ == "__main__":
     import sys
@@ -137,3 +135,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_split_field_form)
     hcmgis_split_field_form.show()
     sys.exit(app.exec_())
+

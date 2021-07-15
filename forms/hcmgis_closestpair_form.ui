@@ -46,7 +46,7 @@
    <item>
     <widget class="QLabel" name="LblOutput">
      <property name="text">
-      <string>Closest pair of point</string>
+      <string>Closest pair of Points</string>
      </property>
     </widget>
    </item>
@@ -56,7 +56,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Farthest pair of point</string>
+      <string>Farthest pair of Points</string>
      </property>
     </widget>
    </item>

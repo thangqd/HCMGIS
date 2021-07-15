@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'hcmgis_font_convert_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_font_convert_form(object):
     def setupUi(self, hcmgis_font_convert_form):
@@ -107,9 +105,9 @@ class Ui_hcmgis_font_convert_form(object):
         self.CboSourceFont.setItemText(1, _translate("hcmgis_font_convert_form", "TCVN3"))
         self.CboSourceFont.setItemText(2, _translate("hcmgis_font_convert_form", "Unicode"))
         self.CboSourceFont.setItemText(3, _translate("hcmgis_font_convert_form", "VNI-Windows"))
+
 from qgsfilewidget import QgsFileWidget
 from qgsmaplayercombobox import QgsMapLayerComboBox
-
 
 if __name__ == "__main__":
     import sys
@@ -119,3 +117,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_font_convert_form)
     hcmgis_font_convert_form.show()
     sys.exit(app.exec_())
+

@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'hcmgis_merge_field_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_merge_field_form(object):
     def setupUi(self, hcmgis_merge_field_form):
@@ -96,8 +94,8 @@ class Ui_hcmgis_merge_field_form(object):
         self.CboChar.setItemText(8, _translate("hcmgis_merge_field_form", ":"))
         self.CboChar.setItemText(9, _translate("hcmgis_merge_field_form", ";"))
         self.CboChar.setItemText(10, _translate("hcmgis_merge_field_form", "&"))
-from qgsmaplayercombobox import QgsMapLayerComboBox
 
+from qgsmaplayercombobox import QgsMapLayerComboBox
 
 if __name__ == "__main__":
     import sys
@@ -107,3 +105,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_merge_field_form)
     hcmgis_merge_field_form.show()
     sys.exit(app.exec_())
+

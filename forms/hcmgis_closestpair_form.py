@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'hcmgis_closestpair_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_closestpair_form(object):
     def setupUi(self, hcmgis_closestpair_form):
@@ -66,12 +64,12 @@ class Ui_hcmgis_closestpair_form(object):
         hcmgis_closestpair_form.setWindowTitle(_translate("hcmgis_closestpair_form", "Closest/farthest pair of Points"))
         self.LblInput.setText(_translate("hcmgis_closestpair_form", "Input Point Layer"))
         self.LblInput_2.setText(_translate("hcmgis_closestpair_form", "Unique Field"))
-        self.LblOutput.setText(_translate("hcmgis_closestpair_form", "Closest pair of point"))
-        self.label.setText(_translate("hcmgis_closestpair_form", "Farthest pair of point"))
+        self.LblOutput.setText(_translate("hcmgis_closestpair_form", "Closest pair of Points"))
+        self.label.setText(_translate("hcmgis_closestpair_form", "Farthest pair of Points"))
+
 from qgsfieldcombobox import QgsFieldComboBox
 from qgsfilewidget import QgsFileWidget
 from qgsmaplayercombobox import QgsMapLayerComboBox
-
 
 if __name__ == "__main__":
     import sys
@@ -81,3 +79,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_closestpair_form)
     hcmgis_closestpair_form.show()
     sys.exit(app.exec_())
+

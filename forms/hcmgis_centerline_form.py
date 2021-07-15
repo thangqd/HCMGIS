@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'hcmgis_centerline_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_centerline_form(object):
     def setupUi(self, hcmgis_centerline_form):
@@ -90,14 +88,14 @@ class Ui_hcmgis_centerline_form(object):
         _translate = QtCore.QCoreApplication.translate
         hcmgis_centerline_form.setWindowTitle(_translate("hcmgis_centerline_form", "Centerline in the gaps between polygons"))
         self.lblsurround.setText(_translate("hcmgis_centerline_form", "Distance to the bounding box of polygon (m)"))
-        self.chksurround.setText(_translate("hcmgis_centerline_form", "Also create line surround the polygon"))
-        self.LblOutput.setText(_translate("hcmgis_centerline_form", "OutPut"))
+        self.chksurround.setText(_translate("hcmgis_centerline_form", "Also create line surrounding the polygon"))
+        self.LblOutput.setText(_translate("hcmgis_centerline_form", "Output"))
         self.LblInput_2.setText(_translate("hcmgis_centerline_form", "Density (m)"))
         self.label.setText(_translate("hcmgis_centerline_form", "(Notice: Output should be refined after running)"))
         self.LblInput.setText(_translate("hcmgis_centerline_form", "Input Polygon (Ex: Block of Buildings) - Layer must be in Projected CRS"))
+
 from qgsfilewidget import QgsFileWidget
 from qgsmaplayercombobox import QgsMapLayerComboBox
-
 
 if __name__ == "__main__":
     import sys
@@ -107,3 +105,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_centerline_form)
     hcmgis_centerline_form.show()
     sys.exit(app.exec_())
+

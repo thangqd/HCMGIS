@@ -279,17 +279,19 @@ class hcmgis_menu ():
     # 	self.basemap_menu.addAction(self.wikimediahikebike_action)
     # 	 """
 
+        #Vietnam OSM Mapss
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+        self.hcmgis_osm_action = QAction(icon, u'Vietnam OSM Maps', self.iface.mainWindow())
+        self.hcmgis_osm_action.triggered.connect(lambda: hcmgis_basemap('Vietnam OSM Maps'))		
+        self.basemap_menu.addAction(self.hcmgis_osm_action)
+
         #Viet Ban do
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vbd.png")
         self.hcmgis_vbd_action = QAction(icon, u'Vietbando Maps', self.iface.mainWindow())
         self.hcmgis_vbd_action.triggered.connect(lambda: hcmgis_basemap('Vietbando Maps'))	
         self.basemap_menu.addAction(self.hcmgis_vbd_action)
 
-        #HCMGIS Aerial Image
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-        self.hcmgisaerial_action = QAction(icon, u'HCMGIS Aerial Images', self.iface.mainWindow())
-        self.hcmgisaerial_action.triggered.connect(lambda: hcmgis_basemap('HCMGIS Aerial Images'))		
-        self.basemap_menu.addAction(self.hcmgisaerial_action)
+
         
         # Batch Converter Submenu
         self.batch_converter_menu = QMenu(u'Batch Converter')	

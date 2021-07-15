@@ -2,20 +2,18 @@
 
 # Form implementation generated from reading ui file 'hcmgis_microsoft_form.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_hcmgis_microsoft_form(object):
     def setupUi(self, hcmgis_microsoft_form):
         hcmgis_microsoft_form.setObjectName("hcmgis_microsoft_form")
         hcmgis_microsoft_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_microsoft_form.setEnabled(True)
-        hcmgis_microsoft_form.resize(451, 330)
+        hcmgis_microsoft_form.resize(451, 353)
         hcmgis_microsoft_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_microsoft_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -102,7 +100,7 @@ class Ui_hcmgis_microsoft_form(object):
         self.label.setText(_translate("hcmgis_microsoft_form", "Download Building Footprints from Microsoft (GeoJSON format)"))
         self.LblBuildings.setText(_translate("hcmgis_microsoft_form", "Number of Buildings"))
         self.label_3.setText(_translate("hcmgis_microsoft_form", "Select Country"))
-        self.label_4.setText(_translate("hcmgis_microsoft_form", "Slect State/ Province"))
+        self.label_4.setText(_translate("hcmgis_microsoft_form", "Select State/ Province"))
         self.Label.setText(_translate("hcmgis_microsoft_form", "Select folder to save shapefile"))
         self.BtnOutputFolder.setText(_translate("hcmgis_microsoft_form", "..."))
 
@@ -115,3 +113,4 @@ if __name__ == "__main__":
     ui.setupUi(hcmgis_microsoft_form)
     hcmgis_microsoft_form.show()
     sys.exit(app.exec_())
+

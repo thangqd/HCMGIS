@@ -770,7 +770,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
                 message = hcmgis_geofabrik('north-america',self.northamerica_name[country_idx], outdir,self.hcmgis_status_callback)
             elif (self.cboRegion.currentText() == 'South America'):
                 country_idx = self.southamerica.index(self.cboCountry.currentText())
-                message = hcmgis_geofabrik2('south-america',self.southamerica_name[country_idx], outdir,self.hcmgis_status_callback)
+                message = hcmgis_geofabrik('south-america',self.southamerica_name[country_idx], outdir,self.hcmgis_status_callback)
         else:
             if (self.cboCountry.currentText() == 'Japan'):
                 state_idx = self.japan_state.index(self.cboProvince.currentText())

@@ -256,57 +256,22 @@ def hcmgis_covid19_vietnam():
 # --------------------------------------------------------
 
 #for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
-
 def hcmgis_medialaxis(layer, field, density,output,status_callback = None):		
-    ## create skeleton/ media axis  
+    ## create skeleton/ media axis 
+    tolerance = 0.2 # for simplify geometry
+    if layer.crs().isGeographic():
+        density = density*10**(-5) # meter to degree 
+        tolerance = tolerance*10**(-5)
     i = 0
-    steps =11
-    try:
-        if layer.isValid() and layer.selectedFeatureCount() in range(1,3000):
-            parameters0 = {'INPUT':layer,
-                    'OUTPUT':  "memory:polygon"}
-            selectedfeature = processing.run('qgis:saveselectedfeatures',parameters0)
-
-            parameters1 = {'INPUT':selectedfeature['OUTPUT'],
-                'OUTPUT': 'memory:fix'}
-            fix = processing.run('qgis:fixgeometries',parameters1)           
-            polygon = fix['OUTPUT']                  
-    except:
-        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running medialaxis in QGIS console  
-        parameters1 = {'INPUT':temp,
-            'OUTPUT': 'memory:fix'}
-        fix = processing.run('qgis:fixgeometries',parameters1)
-        polygon = fix['OUTPUT']
-
-    i+=1
-    percent = int((i/steps)*100)
-    label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
-    if status_callback:
-        status_callback(percent,label)
-    else:
-        print(label) 
-    
-    #densify by interval
-    parameters2 = {'INPUT': polygon,
-                    'INTERVAL' :density,
-                    'OUTPUT' : "memory:polygon_densify"} 
-    polygon_densify = processing.run('qgis:densifygeometriesgivenaninterval', parameters2)    
+    steps =9      
+    # points along geometries
+    parameters3 = {'INPUT': QgsProcessingFeatureSourceDefinition(layer.id(), selectedFeaturesOnly=True, featureLimit=100, geometryCheck=QgsFeatureRequest.GeometryAbortOnInvalid),
+                   'DISTANCE' :	density,
+                   'OUTPUT' : "memory:points"} 
+    points = processing.run('qgis:pointsalonglines', parameters3)	
     i+=1    
     percent = int((i/steps)*100)
-    label = str(i)+ '/'+ str(steps)+ '. densifygeometriesgivenaninterval'    
-    if status_callback:
-        status_callback(percent,label)
-    else:
-        print(label)
-        
-    
-    # extract vertices
-    parameters3 = {'INPUT': polygon_densify['OUTPUT'],					
-                    'OUTPUT' : "memory:points"} 
-    points = processing.run('qgis:extractvertices', parameters3)	
-    i+=1    
-    percent = int((i/steps)*100)
-    label = str(i)+ '/'+ str(steps)+ '. extractvertices'    
+    label = str(i)+ '/'+ str(steps)+ '. pointsalonglines'    
     if status_callback:
         status_callback(percent,label)
     else:
@@ -349,7 +314,7 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
     
     parameters7 = {'INPUT': explode['OUTPUT'],
                     'PREDICATE' : [6], # within					
-                    'INTERSECT': polygon,		
+                    'INTERSECT':  QgsProcessingFeatureSourceDefinition(layer.id(), selectedFeaturesOnly=True, featureLimit=100, geometryCheck=QgsFeatureRequest.GeometryAbortOnInvalid),		
                     # 'INTERSECT': layer,		
                     'METHOD' : 0,
                     'OUTPUT' : 'memory:candidate'}
@@ -396,10 +361,10 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
         status_callback(percent,label)
     else:
         print(label)
- 
+    
     parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
                     'METHOD' : 0,
-                    'TOLERANCE' : 1,
+                    'TOLERANCE' : tolerance, # 0.1m
                     'OUTPUT':  "memory:skeleton"}
     skeleton = processing.run('qgis:simplifygeometries',parameter11) 
     
@@ -413,7 +378,7 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(output)[1]]
    
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, polygon.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), layer.crs(), output_file_format, False)# Bool: slected feature only      
 
     if error == QgsVectorFileWriter.NoError:
         try:
@@ -429,76 +394,32 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
         return message 
 
     i+=1
-    label = str(i)+ '/'+ str(steps)+ '. simplifygeometries'  
+    label = str(i)+ '/'+ str(steps)+ '. save skeleton'  
     percent = int((i/steps)*100)
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)      
     
-    #Calculate min/ max/ average width 
-    # parameter12 =  {'INPUT': explode['OUTPUT'],	
-                    # 'OVERLAY': polygon['OUTPUT'], 
-                    # 'OUTPUT':  "memory:clip"}
-    # clip = processing.runAndLoadResults('qgis:clip',parameter12) 
-    
-    # parameter13 = { 'INPUT' : clip['OUTPUT'], 
-                    # 'OUTPUT' : 'memory:' }
-    # clip_clean = processing.runAndLoadResults('qgis:deleteduplicategeometries',parameter13) 
-
-    
-    # parameter14 = {'INPUT': clip_clean['OUTPUT'],
-                    # 'PREDICATE' : [4], # touch					
-                    # 'INTERSECT': medialaxis_collect['OUTPUT'],		
-                    # 'METHOD' : 0, 
-                    # 'OUTPUT' : 'memory:width'}
-    # width_list= processing.run('qgis:selectbylocation',parameter14)
-    
-    # parameters15 = {'INPUT':width_list['OUTPUT'],
-                    # 'OUTPUT':  "memory:width_list"}
-    # width_list = processing.runAndLoadResults('qgis:saveselectedfeatures',parameters15)
-
-    ################################################################
-    #case 
-    # when degrees(azimuth(end_point($geometry), start_point($geometry))) > 180 then degrees(azimuth(end_point($geometry), start_point($geometry))) - 180
-    #else degrees(azimuth(end_point($geometry), start_point($geometry)))
-    #end
     
     return
 
+# Centerline of a polygon block
 def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback = None):	
     ## extract gaps of polygon
     # fix geometries
     if chksurround: 
-        steps = 17
-    else: steps = 16      
+        steps = 14
+    else: steps = 13 
+    tolerance = 0.1 # for simplify geometry
+    if layer.crs().isGeographic():
+        density = density*10**(-5) # meter to degree 
+        distance = distance*10**(-5)
+        tolerance = tolerance*10**(-5)
+             
     i = 0
-    try:
-        if layer.isValid():
-            parameters0 = {'INPUT':layer,
-                    'OUTPUT':  "memory:polygon"}
-            selectedfeature = processing.run('qgis:saveselectedfeatures',parameters0)
-
-            parameters1 = {'INPUT':selectedfeature['OUTPUT'],
-                'OUTPUT': 'memory:fix'}
-            fix = processing.run('qgis:fixgeometries',parameters1)           
-            polygon = fix['OUTPUT']                  
-    except:
-        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console  
-        parameters1 = {'INPUT':temp,
-                    'OUTPUT': 'memory:fix'}
-        fix = processing.run('qgis:fixgeometries',parameters1)
-        polygon = fix['OUTPUT']
-    i+=1
-    label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
-    percent = int((i/steps)*100)    
-    if status_callback:
-        status_callback(percent,label)
-    else:
-        print(label)
-
-    # aggregate polygons	
-    parameters1_2 = {'INPUT':polygon,
+    # aggregate selected polygons	
+    parameters1_2 = {'INPUT': QgsProcessingFeatureSourceDefinition(layer.id(), selectedFeaturesOnly=True, featureLimit=-1, geometryCheck=QgsFeatureRequest.GeometryAbortOnInvalid),
                     'GROUP_BY' : 'NULL',
                     'AGGREGATES' : [],
                     'OUTPUT':  'memory:aggregate'}
@@ -530,7 +451,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     # simplify geometries
     parameter1_4 = {'INPUT':deleteholes['OUTPUT'],
                     'METHOD' : 0,
-                    'TOLERANCE' : 1,
+                    'TOLERANCE' : tolerance,
                     'OUTPUT':  "memory:simplify"}
     simplify = processing.run('qgis:simplifygeometries',parameter1_4)
     i+=1
@@ -585,42 +506,20 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     else:
         print(label)
 
-    # parameters1_7 =  {'INPUT': convexhull['OUTPUT'],
-    #                    'INTERSECT':simplify['OUTPUT'],
-    #                  'PREDICATE' : [2],			#disjoin	 
-    #                'OUTPUT':  "memory:polygon"}
-    # gaps = processing.run('qgis:extractbylocation',parameters1_7) 
-    # i+=1
-    # label =str(i)+ '/'+ str(steps)+ '. extractbylocation'
-    # percent = int((i/steps)*100)
-    # status_callback(percent,label) 
 
+    # points along geometries
+    parameters2_3 = {'INPUT': gaps['OUTPUT'],
+                   'DISTANCE' :	density,
+                   'OUTPUT' : "memory:points"} 
+    points = processing.run('qgis:pointsalonglines', parameters2_3)
 
-    #densify by interval
-    parameters2 = {'INPUT': gaps['OUTPUT'],
-                    'INTERVAL' : 1,
-                    'OUTPUT' : "memory:gaps_densify"} 
-    gaps_densify = processing.run('qgis:densifygeometriesgivenaninterval', parameters2)
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. densifygeometriesgivenaninterval'
+    i+=1    
     percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. pointsalonglines'    
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
-    
-    # extract vertices
-    parameters3 = {'INPUT': gaps_densify['OUTPUT'],					
-                    'OUTPUT' : "memory:points"} 
-    points = processing.run('qgis:extractvertices', parameters3)    
-    i+=1
-    label =str(i)+ '/'+ str(steps)+ '. extractvertices'
-    percent = int((i/steps)*100)
-    if status_callback:
-        status_callback(percent,label)
-    else:
-        print(label)
-
         
     parameters4 = {'INPUT': points['OUTPUT'],
                      'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
@@ -705,7 +604,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     
     parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
                     'METHOD' : 0,
-                    'TOLERANCE' : 1,
+                    'TOLERANCE' : tolerance,
                     'OUTPUT':  "memory:centerline"}
     centerline = processing.run('qgis:simplifygeometries',parameter11) 
     output_layer = centerline['OUTPUT']   
@@ -719,7 +618,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(output)[1]]
    
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, polygon.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), layer.crs(), output_file_format, False)# Bool: slected feature only      
 
     if error == QgsVectorFileWriter.NoError:
         try:
@@ -743,7 +642,6 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         print(label)  
     
     return
-  
 
 ################################################################
 # Finding closest/ Farthest pair of Points

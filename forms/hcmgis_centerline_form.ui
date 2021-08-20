@@ -25,25 +25,25 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="9" column="0" colspan="2">
-      <widget class="QgsFileWidget" name="output_file_name"/>
-     </item>
-     <item row="6" column="0" colspan="2">
-      <widget class="QSpinBox" name="distance">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
+     <item row="3" column="0" colspan="2">
+      <widget class="QgsDoubleSpinBox" name="spinBox">
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
-       <property name="minimum">
+       <property name="decimals">
         <number>1</number>
        </property>
+       <property name="minimum">
+        <double>0.100000000000000</double>
+       </property>
        <property name="maximum">
-        <number>1000</number>
+        <double>10.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
        </property>
        <property name="value">
-        <number>2</number>
+        <double>0.500000000000000</double>
        </property>
       </widget>
      </item>
@@ -51,6 +51,16 @@
       <widget class="QLabel" name="lblsurround">
        <property name="text">
         <string>Distance to the bounding box of polygon (m)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0" colspan="2">
+      <widget class="QgsFileWidget" name="output_file_name"/>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="LblInput">
+       <property name="text">
+        <string>Input Polygon (Ex: Block of Buildings)</string>
        </property>
       </widget>
      </item>
@@ -71,43 +81,13 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QgsMapLayerComboBox" name="CboInput"/>
+     </item>
      <item row="8" column="0" colspan="2">
       <widget class="QLabel" name="LblOutput">
        <property name="text">
         <string>Output</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QgsMapLayerComboBox" name="CboInput"/>
-     </item>
-     <item row="3" column="0" colspan="2">
-      <widget class="QSpinBox" name="spinBox">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>10</number>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0" colspan="2">
-      <widget class="QLabel" name="LblStatus">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0" colspan="2">
-      <widget class="QLabel" name="LblInput_2">
-       <property name="text">
-        <string>Density (m)</string>
        </property>
       </widget>
      </item>
@@ -126,10 +106,36 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0" colspan="2">
-      <widget class="QLabel" name="LblInput">
+     <item row="10" column="0" colspan="2">
+      <widget class="QLabel" name="LblStatus">
        <property name="text">
-        <string>Input Polygon (Ex: Block of Buildings) - Layer must be in Projected CRS</string>
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QLabel" name="LblInput_2">
+       <property name="text">
+        <string>Density (m)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0" colspan="2">
+      <widget class="QgsDoubleSpinBox" name="distance">
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="minimum">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -145,6 +151,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>QgsDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>qgsdoublespinbox.h</header>
+  </customwidget>
   <customwidget>
    <class>QgsFileWidget</class>
    <extends>QWidget</extends>

@@ -257,15 +257,42 @@ def hcmgis_covid19_vietnam():
 
 #for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
 def hcmgis_medialaxis(layer, field, density,output,status_callback = None):		
-    ## create skeleton/ media axis 
-    tolerance = 0.2 # for simplify geometry
-    if layer.crs().isGeographic():
+    ## create skeleton/ media axis     
+    i = 0
+    steps =10      
+    try:
+        if layer.isValid() and layer.selectedFeatureCount() in range(1,100):
+            parameters0 = {'INPUT':layer,
+                    'OUTPUT':  "memory:polygon"}
+            selectedfeature = processing.run('qgis:saveselectedfeatures',parameters0)
+
+            parameters1 = {'INPUT':selectedfeature['OUTPUT'],
+                'OUTPUT': 'memory:fix'}
+            fix = processing.run('qgis:fixgeometries',parameters1)           
+            polygon = fix['OUTPUT']                  
+    except:
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running medialaxis in QGIS console  
+        
+        parameters1 = {'INPUT':temp,
+                        'OUTPUT': 'memory:fix'}
+        fix = processing.run('qgis:fixgeometries',parameters1)
+        polygon = fix['OUTPUT']
+    
+    tolerance = 0.1 # for simplify geometry
+    if polygon.crs().isGeographic():
         density = density*10**(-5) # meter to degree 
         tolerance = tolerance*10**(-5)
-    i = 0
-    steps =9      
+
+    i+=1
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label) 
+
     # points along geometries
-    parameters3 = {'INPUT': QgsProcessingFeatureSourceDefinition(layer.id(), selectedFeaturesOnly=True, featureLimit=100, geometryCheck=QgsFeatureRequest.GeometryAbortOnInvalid),
+    parameters3 = {'INPUT': polygon,
                    'DISTANCE' :	density,
                    'OUTPUT' : "memory:points"} 
     points = processing.run('qgis:pointsalonglines', parameters3)	
@@ -314,7 +341,7 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
     
     parameters7 = {'INPUT': explode['OUTPUT'],
                     'PREDICATE' : [6], # within					
-                    'INTERSECT':  QgsProcessingFeatureSourceDefinition(layer.id(), selectedFeaturesOnly=True, featureLimit=100, geometryCheck=QgsFeatureRequest.GeometryAbortOnInvalid),		
+                    'INTERSECT':  polygon,		
                     # 'INTERSECT': layer,		
                     'METHOD' : 0,
                     'OUTPUT' : 'memory:candidate'}
@@ -378,7 +405,7 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(output)[1]]
    
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), layer.crs(), output_file_format, False)# Bool: slected feature only      
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, polygon.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
 
     if error == QgsVectorFileWriter.NoError:
         try:
@@ -394,14 +421,13 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
         return message 
 
     i+=1
-    label = str(i)+ '/'+ str(steps)+ '. save skeleton'  
+    label = str(i)+ '/'+ str(steps)+ '.simplifygeometries'  
     percent = int((i/steps)*100)
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)      
-    
-    
+        
     return
 
 # Centerline of a polygon block
@@ -409,17 +435,43 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     ## extract gaps of polygon
     # fix geometries
     if chksurround: 
-        steps = 14
-    else: steps = 13 
+        steps = 16
+    else: steps = 15 
+    i = 0
+    # fix geometries
+    try:
+        if layer.isValid():
+            parameters0 = {'INPUT':layer,
+                    'OUTPUT':  "memory:polygon"}
+            selectedfeature = processing.run('qgis:saveselectedfeatures',parameters0)
+
+            parameters1 = {'INPUT':selectedfeature['OUTPUT'],
+                'OUTPUT': 'memory:fix'}
+            fix = processing.run('qgis:fixgeometries',parameters1)           
+            polygon = fix['OUTPUT']                  
+    except:
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console  
+        parameters1 = {'INPUT':temp,
+                    'OUTPUT': 'memory:fix'}
+        fix = processing.run('qgis:fixgeometries',parameters1)
+        polygon = fix['OUTPUT']
+    
     tolerance = 0.1 # for simplify geometry
-    if layer.crs().isGeographic():
+    if polygon.crs().isGeographic():
         density = density*10**(-5) # meter to degree 
         distance = distance*10**(-5)
         tolerance = tolerance*10**(-5)
-             
-    i = 0
+
+    i+=1
+    label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
+    percent = int((i/steps)*100)    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+    #QgsProcessingFeatureSourceDefinition(layer.id(), selectedFeaturesOnly=True, featureLimit=-1, geometryCheck=QgsFeatureRequest.GeometryAbortOnInvalid),
     # aggregate selected polygons	
-    parameters1_2 = {'INPUT': QgsProcessingFeatureSourceDefinition(layer.id(), selectedFeaturesOnly=True, featureLimit=-1, geometryCheck=QgsFeatureRequest.GeometryAbortOnInvalid),
+    parameters1_2 = {'INPUT': polygon,                    
                     'GROUP_BY' : 'NULL',
                     'AGGREGATES' : [],
                     'OUTPUT':  'memory:aggregate'}
@@ -433,7 +485,6 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     else:
         print(label)
     
-    
     # delete holes in aggregated polygons	
     parameter1_3 = {'INPUT':aggregate['OUTPUT'],
                     'MIN_AREA' : 0,
@@ -442,7 +493,6 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. deleteholes'
     percent = int((i/steps)*100)
-    print(label)
     if status_callback:
         status_callback(percent,label)
     else:
@@ -486,7 +536,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
                     'OUTPUT':  "memory:convexhull"}
         convexhull = processing.run('qgis:buffer',parameters1_6)
         i+=1
-        label = str(i)+ '/'+ str(steps)+ '. convexhull'
+        label = str(i)+ '/'+ str(steps)+ '. buffer'
         percent = int((i/steps)*100)
         if status_callback:
             status_callback(percent,label)
@@ -505,7 +555,6 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         status_callback(percent,label)
     else:
         print(label)
-
 
     # points along geometries
     parameters2_3 = {'INPUT': gaps['OUTPUT'],
@@ -618,7 +667,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(output)[1]]
    
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), layer.crs(), output_file_format, False)# Bool: slected feature only      
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, polygon.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
 
     if error == QgsVectorFileWriter.NoError:
         try:

@@ -186,8 +186,8 @@ def hcmgis_covid19():
     
 def hcmgis_covid19_timeseries():
     uri = ['https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
-    'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
-    'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
+     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
+     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
     ]
     layername = [
         'global_time_series_covid19_confirmed',
@@ -205,10 +205,10 @@ def hcmgis_covid19_timeseries():
         if not home_path:
            home_path = os.path.expanduser('~')
         csv_name = os.path.join(home_path, layername[i] + '.csv')
-        shapefile_name = os.path.join(home_path, layername[i] + '.shp')
+        shapefile_name = os.path.join(home_path, layername[i] + '.geojson')
         
-        urllib.request.urlretrieve(uri[i], csv_name)
-        hcmgis_csv2shp(csv_name, 'Lat', 'Long', shapefile_name)	
+        #urllib.request.urlretrieve(uri[i], csv_name)
+        hcmgis_csv2shp(uri[i], "Lat", "Long", shapefile_name)	
         print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))		
         covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
         try:
@@ -219,6 +219,36 @@ def hcmgis_covid19_timeseries():
         except:
             pass
        
+def hcmgis_covid19_vaccination_timeseries():
+    uri = ['https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/global_data/time_series_covid19_vaccine_doses_admin_global.csv'
+        ]
+    layername = [
+        'global_time_series_covid19_vaccination',
+        ]
+    length = len(uri)
+
+    from osgeo import ogr
+    # driver = ogr.GetDriverByName('ESRI Shapefile')
+    # driver.DeleteDataSource('path_to_your_shape.shp')
+    for i in range(length):
+        project = QgsProject.instance()
+        home_path = project.homePath()
+        if not home_path:
+           home_path = os.path.expanduser('~')
+        csv_name = os.path.join(home_path, layername[i] + '.csv')
+        shapefile_name = os.path.join(home_path, layername[i] + '.geojson')
+        
+        #urllib.request.urlretrieve(uri[i], csv_name)
+        hcmgis_csv2shp(uri[i], "Lat", "Long_", shapefile_name)	
+        print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))		
+        covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
+        try:
+            if not covidlayer.isValid():
+                QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')			
+            else:
+                QgsProject.instance().addMapLayer(covidlayer)		        
+        except:
+            pass
 
 def hcmgis_covid19_vietnam0():
     uri_vietnam = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam'
@@ -1919,54 +1949,61 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
     wkb_type = QgsWkbTypes.Point
 
     # Create the output shapefile
-
     fields = QgsFields()	
     for field in input_csv.fields():
+        #print (str(field))
         fields.append(field)
 
     # Assume WGS 84?
-    crs = QgsCoordinateReferenceSystem()
-    crs.createFromSrid(4326) # WGS 84
+    #crs = QgsCoordinateReferenceSystem()
+    crs = QgsCoordinateReferenceSystem("EPSG:4326")
+    #crs.createFromSrid(4326) # WGS 84
 
     if not output_file_name:
         return "No output file name given"
 
-    file_formats = { ".shp":"ESRI Shapefile"}
+    #file_formats = { ".shp":"ESRI Shapefile"}
+    file_formats = { ".geojson":"GeoJSON"}
 
     if os.path.splitext(output_file_name)[1] not in file_formats:
         return "Unsupported output file format: " + str(output_file_name)
 
     output_file_format = file_formats[os.path.splitext(output_file_name)[1]]
 
-    outfile = QgsVectorFileWriter(output_file_name, "utf-8", fields, wkb_type, crs, output_file_format)
+    #outfile = QgsVectorFileWriter(output_file_name, "UTF-8", fields, wkb_type, crs, output_file_format)
+    crs = QgsCoordinateReferenceSystem("EPSG:4326") # WGS84
+    context = QgsCoordinateTransformContext()
+    options = QgsVectorFileWriter.SaveVectorOptions()
+    options.driverName = output_file_format
+    outfile = QgsVectorFileWriter.create(output_file_name,  fields, QgsWkbTypes.Point, crs, context, options)
 
+   
     if (outfile.hasError() != QgsVectorFileWriter.NoError):
         return "Failure creating output file: " + str(outfile.errorMessage())
 
     shape_count = 0
-    current_shape_id = False
-
     for row_number, row in enumerate(input_csv.getFeatures()):
         if status_callback and ((row_number % 10) == 0):
             if status_callback(100 * row_number / input_csv.featureCount(), 
                     "Point " + str(row_number) + " of " + str(input_csv.featureCount())):
                 return "Canceled at point " + str(row_number)
 
-        if (latitude_index >= len(row.attributes())) or (latitude_index >= len(row.attributes())):
+        if (latitude_index >= len(row.attributes())) or (longitude_index >= len(row.attributes())):
             return "Node file missing lat/long at row " + str(row_number + 1)
-        try:
-            point = QgsPointXY(float(row.attributes()[longitude_index]), float(row.attributes()[latitude_index]))
-        except:
-            pass
-
+   
         # Each node is a separate feature in a point file        
         newfeature = QgsFeature()
         newfeature.setAttributes(row.attributes())
-        geometry = QgsGeometry.fromPointXY(point)
-        newfeature.setGeometry(geometry)
+        try:
+            point = QgsPointXY(float(row.attributes()[longitude_index]), float(row.attributes()[latitude_index]))
+            geometry = QgsGeometry.fromPointXY(point)
+            newfeature.setGeometry(geometry)        
+        except:
+            pass       
+        
         outfile.addFeature(newfeature)
         shape_count += 1
-        continue		
+        		
         
     del outfile
 
@@ -1974,6 +2011,7 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
         #status_callback(100, str(shape_count) + " shapes, " + str(input_csv.featureCount()) + " nodes")
         status_callback(100, None)
 
+    #return None
     return None
 
 def hcmgis_txt2csv(input_txt_name, output_file_name, status_callback = None):    

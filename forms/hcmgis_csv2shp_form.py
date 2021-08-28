@@ -104,7 +104,7 @@ class Ui_hcmgis_csv2shp_form(object):
 
     def retranslateUi(self, hcmgis_csv2shp_form):
         _translate = QtCore.QCoreApplication.translate
-        hcmgis_csv2shp_form.setWindowTitle(_translate("hcmgis_csv2shp_form", "Batch Convert CSV Point to Shapefile"))
+        hcmgis_csv2shp_form.setWindowTitle(_translate("hcmgis_csv2shp_form", "Batch Convert CSV to Point"))
         self.label_2.setText(_translate("hcmgis_csv2shp_form", "Input CSV Point Folder"))
         self.BtnInputFolder.setText(_translate("hcmgis_csv2shp_form", "Browse..."))
         self.label_7.setText(_translate("hcmgis_csv2shp_form", "Longitude Field"))

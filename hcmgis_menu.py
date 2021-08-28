@@ -341,12 +341,23 @@ class hcmgis_menu ():
         self.covid19_timeseries_action.triggered.connect(lambda:hcmgis_covid19_timeseries())		
         self.covid19_menu.addAction(self.covid19_timeseries_action)
 
+        
+        #Global CoVID-19 Vaccination Timeseries
+        self.hcmgis_add_submenu(self.covid19_menu)
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_covid19_vaccine.png")
+        self.covid19_vaccination_timeseries_action = QAction(icon, u'Global CoVID-19 Vaccination Timeseries - Johns Hopkins GovEx', self.iface.mainWindow())
+        self.covid19_vaccination_timeseries_action.triggered.connect(lambda:hcmgis_covid19_vaccination_timeseries())		
+        self.covid19_menu.addAction(self.covid19_vaccination_timeseries_action)
+
+
         #Vietnam CoVID-19 live update 
         self.hcmgis_add_submenu(self.covid19_menu)
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
         self.covid19_vietnam_action = QAction(icon, u'Vietnam COVID-19 Live Update - HCMGIS OpenData', self.iface.mainWindow())
         self.covid19_vietnam_action.triggered.connect(lambda:hcmgis_covid19_vietnam())		
         self.covid19_menu.addAction(self.covid19_vietnam_action)
+
+
 
 
         #HCMGIS OpenData submenu

@@ -1856,16 +1856,17 @@ class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
         self.latitude_field.addItems(header)
 
         for index, field in enumerate(header):
-            if (field.lower().find("x") >= 0):
+            #if (field.lower().find("x") >= 0):
+            if (field.lower().startswith("x") ):
                 self.longitude_field.setCurrentIndex(index)
 
-            elif (field.lower().find("y") >= 0):
+            elif (field.lower().startswith("y") ):
                 self.latitude_field.setCurrentIndex(index)
 
-            elif (field.lower().find('lon') >= 0):
+            elif (field.lower().startswith('lon')):
                 self.longitude_field.setCurrentIndex(index)
 
-            elif (field.lower().find('lat') >= 0):
+            elif (field.lower().startswith('lat')):
                 self.latitude_field.setCurrentIndex(index)
 
     def read_csv(self):
@@ -1908,7 +1909,7 @@ class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
             latitude_field = str(self.latitude_field.currentText())
 
             temp_file_name = item.text()
-            output_file_name = temp_file_name.replace(".csv", ".shp", 1)
+            output_file_name = temp_file_name.replace(".csv", ".geojson", 1)
 
             message = hcmgis_csv2shp(input_csv_name,  latitude_field, longitude_field, \
                 output_file_name, self.hcmgis_status_callback)

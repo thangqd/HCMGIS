@@ -1,1 +1,0 @@
-HCMGIS Plugin

@@ -1,4 +1,4 @@
-# HCMGIS - Basemap, Download CO-VID19 Data, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
+# HCMGIS - Basemap, Download COVID-19 Data, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
 **- Basemap**: Add dozens of global basemaps from Google, Carto, ESRI, OSM Stamen, etc.
 

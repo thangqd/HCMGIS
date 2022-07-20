@@ -4,8 +4,6 @@
 
 **- Batch Converter**: Batch convert CSV to Point Shapefile and between other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;
 
-**- Download COVID-19 Data**:  Global COVID-19 Live Update and Time Series from Johns Holfkins CSSE, Vietnam COVID-19 Live Update from HCMGIS OpenData
-
 **- Download OpenData**:  Download Open Data from OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University and more
 
 **- Vn-2000 Projections**:  Look up EPSG Code for Vn-2000/ TM3 Projection for all Provinces in Vietnam
@@ -28,8 +26,6 @@
 **- Batch Converter**: Chuyển đổi tất cả các file XY (CSV) sang dạng điểm (shapefile) và giua các định dạng GIS khác (bao gồm OSM bpf, GeoPackage) cho toàn bộ các file trong thư mục và các thư mục con
 
 **- Basemap**: Thêm bản đồ nền Google, Carto, ESRI, OSM Stamen,...trong QGIS
-
-**- Download COVID-19 Data**:  Dữ liệu cập nhật diễn biến dịch bệnh COVID-19 trên thế giới và tại Việt Nam
 
 **- Download OpenData**:  Download dữ liệu GIS mở: OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University,...
 

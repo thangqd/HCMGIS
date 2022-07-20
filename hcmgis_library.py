@@ -70,8 +70,8 @@ u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',
 u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'y',u'Y',u'y',u'Y',u'y',u'Y',u'y',u'Y',u'y',u'Y'
 ]
 basemap_names = ['Google Maps', 'Google Satellite',\
-                'Google Satellite Hybrid','Google Terrain', \
-                'Google Terrain Hybrid','Bing Virtual Earth',\
+                'Google Satellite Hybrid','Google Terrain Hybrid', \
+                'Bing Virtual Earth',\
                 'Carto Antique','Carto Dark',\
                 'Carto Eco','Carto Light',\
                 'Esri Boundaries and Places','Esri Dark Gray',\
@@ -85,11 +85,11 @@ basemap_names = ['Google Maps', 'Google Satellite',\
                 'Stamen Toner Lite','Stamen Terrain',\
                 'Stamen Terrain Background','Stamen Watercolor',\
                 'Wikimedia Maps','Vietbando Maps',\
-                'Vietnam OSM Maps'
+                'Vietnam OSM BecaMaps'
              ]
 basemap_urls = ['mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',\
-                'mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}','mt1.google.com/vt/lyrs=t&x={x}&y={y}&z={z}',\
-                'mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}','ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1',\
+                'mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}','mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',\
+                'ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1',\
                 'cartocdn_a.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png','a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',\
                 'cartocdn_a.global.ssl.fastly.net/base-eco/{z}/{x}/{y}.png', 'a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.pn',\
                 'server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}','server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',\
@@ -103,7 +103,8 @@ basemap_urls = ['mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','mt1.google.com/vt/
                 'a.tile.stamen.com/toner-lite/{z}/{x}/{y}.png','a.tile.stamen.com/terrain/{z}/{x}/{y}.png',\
                 'a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png','c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg',\
                 'maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png','images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D',\
-                'thuduc-maps.hcmgis.vn/thuducserver/gwc/service/wmts?layer=thuduc:thuduc_maps&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+                # 'thuduc-maps.hcmgis.vn/thuducserver/gwc/service/wmts?layer=thuduc:thuduc_maps&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+                'https://becamaps.vntts.vn/geoserver/gwc/service/wmts?layer=osm:osm_vietnam&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
                 ]                 
               
 #--------------------------------------------------------

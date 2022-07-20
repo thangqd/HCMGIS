@@ -26,6 +26,7 @@ import qgis.utils
 from glob import glob
 import urllib, re, ssl
 from time import sleep
+from xml.etree.ElementTree import XML, fromstring
 
 
 try:
@@ -196,12 +197,12 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 'ISTI-CNR Pisa',
                 'Stanford University',
                 'CAEARTE-CONAE',
-                'OpenAPI',
+                # 'OpenAPI',
                 'IBGE',
                 'INDE',
-                'ISRIC Data Hub',
+                # 'ISRIC Data Hub',
                 'World Food Programme',
-                'PUMA - World Bank Group' ,
+                # 'PUMA - World Bank Group' ,
                 ]
 
     wfs_urls = [
@@ -214,25 +215,26 @@ class hcmgis_dialog(QtWidgets.QDialog):
         'http://geoserver.d4science.org:80/geoserver',
         'https://geowebservices.stanford.edu:443/geoserver',        
         'http://ambiente.caearte.conae.gov.ar/geoserver',
-        'http://openapi.aurin.org.au//public',
+        # 'http://openapi.aurin.org.au/public',
         'https://geoservicos.ibge.gov.br/geoserver',
         'https://geoservicos.inde.gov.br/geoserver',
-        'https://data.isric.org/geoserver',
+        # 'https://data.isric.org/geoserver',
         'https://geonode.wfp.org/geoserver',
-        'https://puma.worldbank.org/geoserver'
+        # 'https://puma.worldbank.org/geoserver'
          ]
   
     def hcmgis_fill_table_widget_with_wfs_layers0(self,table_widget, idx, TxtTitle, TxtAbstract, status_callback = None):	
         table_widget.setRowCount(0) 
         TxtTitle.clear()
-        TxtAbstract.clear()             		       
+        TxtAbstract.clear() 
+        self.Filter.clear()            		       
         try:
             ssl._create_default_https_context = ssl._create_unverified_context
             #wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',context=ssl._create_unverified_context())
             #wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities')
             #wfs = requests.get(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',verify = False)
             uri = self.wfs_urls[idx] +'/wfs?version=2.0.0&request=GetCapabilities'
-            print (uri)
+            # print (uri)
             wfs = requests.get(uri, stream=True, allow_redirects=True, verify = False)
             project = QgsProject.instance()
             home_path = project.homePath()
@@ -247,7 +249,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
                         break
                     f.write(chunk)                                                            
                 f.close()
-                   
+                    
             if wfs is not None:              
                 #data = wfs.read().decode('utf-8')
                 #data = wfs.text
@@ -255,13 +257,13 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 data = getcapabilities.read()
                 getcapabilities.close()
                 os.remove(filename)
-                #print (data)
+                # print (data)
                 server_title_regex = r'<ows:Title>(.+?)</ows:Title>|<ows:Title/>'
                 #server_title_pattern = re.compile(server_title_regex)
                 
                 server_abstract_regex = r'<ows:Abstract>(.+?)</ows:Abstract>|<ows:Abstract/>'
                 #server_abstract_pattern = re.compile(server_abstract_regex)
-               
+                
                 server_title = re.findall(server_title_regex,data,re.DOTALL)
                 server_abstract = re.findall(server_abstract_regex,data,re.DOTALL)
 
@@ -280,24 +282,41 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 
                 #QMessageBox.information(None, "Congrats",u'GetCapabilities completed! Now wait for a minute to load WFS Layers')
 
-                if layer_name is not None:                    
-                    for i in range (len(layer_name)):  
+                if layer_name is not None:
+                    # print (layer_name)                
+                    for i in range (len(layer_name)):                       
+                        # # Feature count
+                        # r = requests.get(self.wfs_urls[idx]+'/wfs', params={
+                        # 'service': 'WFS',
+                        # 'version': '1.1',
+                        # 'request': 'GetFeature',
+                        # 'resultType': 'hits',
+                        # 'typename': layer_name[i]
+                        # })
+                        # myxml = fromstring(r.content)
+                        # feature_count = myxml.attrib['numberOfFeatures']
                         table_widget.insertRow(i)
                         table_widget.setItem(i,0, QTableWidgetItem(layer_name[i]))
                         table_widget.setItem(i,1, QTableWidgetItem(layer_title[i]))
+                        # table_widget.setItem(i,2, QTableWidgetItem(feature_count))
+
                         table_widget.item(i,0).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
                         table_widget.item(i,1).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
                         status_callback((i/len(layer_name))*100,None)
-                   
-                    status_callback(((i+1)/len(layer_name))*100,None)
+                
+                        status_callback(((i+1)/len(layer_name))*100,None)
                     message = str(i+1) + " WFS layers loaded"
+                    self.LblWFSLayers.setText(message)
                     MessageBar = qgis.utils.iface.messageBar()
-                    MessageBar.pushMessage(message, 0, 2)  		
+                    MessageBar.pushMessage(message, 0, 2)
+                    self.Filter.setEnabled(True)
+                    self.Filter.setFocus(True)
+
                 else: return
             else: return
         except Exception as e:
             QMessageBox.warning(None, "WFS ERROR",str(e))	
-            return
+        return    		        
     
     def hcmgis_fill_table_widget_with_wfs_layers(self,table_widget, idx, TxtTitle, TxtAbstract, status_callback = None):	
         table_widget.clear()          
@@ -343,8 +362,12 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         hcmgis_dialog.__init__(self, iface)	
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
+        self.Filter.setFocus(True)
+        QWidget.setTabOrder(self.Filter, self.TblWFSLayers)      
         self.TblWFSLayers.doubleClicked.connect(self.run)
         self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+
         project = QgsProject.instance()
         home_path = project.homePath()
         if not home_path:
@@ -358,6 +381,12 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         self.TblWFSLayers.resizeColumnsToContents()
         self.TblWFSLayers.resizeRowsToContents()
         self.TblWFSLayers.horizontalHeader().setStretchLastSection(True)	
+        self.TblWFSLayers.doubleClicked.connect(self.run)
+
+        self.Filter.setEnabled(False)
+        self.Filter.valueChanged.connect(self.updateWFSTable)
+
+
         # self.TblWFSLayers.setDragDropMode(QAbstractItemView.DragOnly)  
         # self.TblWFSLayers.setDragEnabled(True) 
         
@@ -372,12 +401,33 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         self.hcmgis_set_status_bar(self.status,self.LblStatus)	
         
      
+    def updateWFSTable(self):
+        name = self.Filter.text().lower()
+        if (name != '' and name is not None):    
+            visible_row = 0
+            for row in range(self.TblWFSLayers.rowCount()):
+                item0 = self.TblWFSLayers.item(row, 0) # Layer Name
+                item1 = self.TblWFSLayers.item(row, 1) # Layer Title
+                # if the search is *not* in the item's text *do not hide* the row
+                if (name not in item0.text().lower() and name not in item1.text().lower()):
+                    match = True               
+                else: 
+                    match = False
+                    visible_row += 1
+                self.TblWFSLayers.setRowHidden(row, match )
+            if visible_row < self.TblWFSLayers.rowCount():
+                self.LblWFSLayers.setText(str(visible_row) + ' WFS Layers filterd')
+        else:
+            for row in range(self.TblWFSLayers.rowCount()):
+                self.TblWFSLayers.setRowHidden(row, False )
+            self.LblWFSLayers.setText(str(self.TblWFSLayers.rowCount()) + ' WFS Layers loaded')
 
     def updateServer(self):
         self.cboServerName.clear()
         self.TxtTitle.clear()
         self.TxtAbstract.clear()
         self.TblWFSLayers.setRowCount(0)
+        self.LblWFSLayers.setText('WFS Layers')
 
         if self.cboServerType.currentIndex() == 0:             #'WFS'
             self.cboServerName.addItems(self.wfs_servers)
@@ -387,6 +437,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         if (self.cboServerName.currentIndex()>-1):
             self.hcmgis_set_status_bar(self.status,self.LblStatus)	
             self.LblStatus.clear()
+            self.LblWFSLayers.setText('WFS Layers')
             #self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)           
             self.hcmgis_fill_table_widget_with_wfs_layers0(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)
 
@@ -1440,6 +1491,7 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
     def __init__(self, iface):		
         hcmgis_dialog.__init__(self, iface)		
         self.setupUi(self)
+        self.BtnClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.cboProvinces.setCurrentIndex(-1)
         self.cboEPSG.setCurrentIndex(-1)	
         self.cboProvinces.checked = True
@@ -1502,6 +1554,7 @@ class hcmgis_medialaxis_dialog(hcmgis_dialog, Ui_hcmgis_medialaxis_form):
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)		
         self.setupUi(self)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
         self.CboField.setLayer (self.CboInput.currentLayer())
         self.CboInput.activated.connect(self.update_field) 
@@ -1540,6 +1593,7 @@ class hcmgis_centerline_dialog(hcmgis_dialog, Ui_hcmgis_centerline_form):
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)	
         self.setupUi(self)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.chksurround.checked = False
@@ -1582,7 +1636,8 @@ class hcmgis_centerline_dialog(hcmgis_dialog, Ui_hcmgis_centerline_form):
 class hcmgis_closestpair_dialog(hcmgis_dialog, Ui_hcmgis_closestpair_form):		
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)	
+        self.setupUi(self)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.CboInput.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.CboField.setLayer (self.CboInput.currentLayer () )		
         self.CboInput.activated.connect(self.update_field)
@@ -1616,7 +1671,8 @@ class hcmgis_closestpair_dialog(hcmgis_dialog, Ui_hcmgis_closestpair_form):
 class hcmgis_lec_dialog(hcmgis_dialog, Ui_hcmgis_lec_form):		
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)	
+        self.setupUi(self)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
         self.CboInput.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.CboField.setLayer (self.CboInput.currentLayer () )	
         self.CboInput.activated.connect(self.update_field)         
@@ -1646,6 +1702,7 @@ class hcmgis_font_convert_dialog(hcmgis_dialog, Ui_hcmgis_font_convert_form):
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)		
         self.setupUi(self)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)		
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.hcmgis_set_status_bar(self.status,self.LblStatus)	 
@@ -1669,7 +1726,8 @@ class hcmgis_font_convert_dialog(hcmgis_dialog, Ui_hcmgis_font_convert_form):
 class hcmgis_split_field_dialog(hcmgis_dialog, Ui_hcmgis_split_field_form):	
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)	
+        self.setupUi(self)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
         self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)			
         self.CboField.setLayer (self.CboInput.currentLayer () )
         self.CboInput.activated.connect(self.update_field)                
@@ -1698,6 +1756,7 @@ class hcmgis_merge_field_dialog(hcmgis_dialog, Ui_hcmgis_merge_field_form):
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)		
         self.setupUi(self)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
         self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)
         self.update_fields()
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)	
@@ -1728,7 +1787,8 @@ class hcmgis_merge_field_dialog(hcmgis_dialog, Ui_hcmgis_merge_field_form):
 class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form):	
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)	
-        self.setupUi(self)	
+        self.setupUi(self)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.lsFiles.clear() 
         self.txtError.clear()
@@ -1836,6 +1896,7 @@ class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
     def __init__(self, iface):
         hcmgis_dialog.__init__(self, iface)		
         self.setupUi(self)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.lsCSV.clear() 
         self.txtError.clear()

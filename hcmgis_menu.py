@@ -31,7 +31,7 @@ class hcmgis_menu ():
         self.iface.mainWindow().menuBar().insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.hcmgis_menu)
         
         # OpenData_basemap submenu
-        self.basemap_menu = QMenu(u'BaseMap')		
+        self.basemap_menu = QMenu(u'Basemaps')		
         self.hcmgis_add_submenu(self.basemap_menu)
 
         ##https://mc.bbbike.org/mc/?num=2&mt0=mapnik&mt1=watercolor
@@ -58,10 +58,10 @@ class hcmgis_menu ():
 
                 
         #Google Terrain
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
-        self.hcmgis_googleterrain_action = QAction(icon, u'Google Terrain', self.iface.mainWindow())
-        self.hcmgis_googleterrain_action.triggered.connect(lambda: hcmgis_basemap('Google Terrain'))		
-        self.basemap_menu.addAction(self.hcmgis_googleterrain_action)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
+        # self.hcmgis_googleterrain_action = QAction(icon, u'Google Terrain', self.iface.mainWindow())
+        # self.hcmgis_googleterrain_action.triggered.connect(lambda: hcmgis_basemap('Google Terrain'))		
+        # self.basemap_menu.addAction(self.hcmgis_googleterrain_action)
 
         #Google Terrain Hybrid
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_googlemaps.png")
@@ -108,10 +108,10 @@ class hcmgis_menu ():
         # ESRI https://gitlab.com/GIS-projects/Belgium-XYZ-tiles/tree/b538df2c2de0d16937641742f25e4709ca94e42e
         #####################
         #Esri Boundaries and Places 
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
-        self.esriboundary_action = QAction(icon, u'Esri Boundaries and Places', self.iface.mainWindow())
-        self.esriboundary_action.triggered.connect(lambda: hcmgis_basemap('Esri Boundaries and Places'))		
-        self.basemap_menu.addAction(self.esriboundary_action)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
+        # self.esriboundary_action = QAction(icon, u'Esri Boundaries and Places', self.iface.mainWindow())
+        # self.esriboundary_action.triggered.connect(lambda: hcmgis_basemap('Esri Boundaries and Places'))		
+        # self.basemap_menu.addAction(self.esriboundary_action)
 
         #Esri Dark Gray 
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")
@@ -280,9 +280,9 @@ class hcmgis_menu ():
     # 	 """
 
         #Vietnam OSM Mapss
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-        self.hcmgis_osm_action = QAction(icon, u'Vietnam OSM Maps', self.iface.mainWindow())
-        self.hcmgis_osm_action.triggered.connect(lambda: hcmgis_basemap('Vietnam OSM Maps'))		
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_becamaps.png")
+        self.hcmgis_osm_action = QAction(icon, u'Vietnam OSM BecaMaps', self.iface.mainWindow())
+        self.hcmgis_osm_action.triggered.connect(lambda: hcmgis_basemap('Vietnam OSM BecaMaps'))		
         self.basemap_menu.addAction(self.hcmgis_osm_action)
 
         #Viet Ban do
@@ -298,13 +298,13 @@ class hcmgis_menu ():
         self.hcmgis_add_submenu(self.batch_converter_menu)
 
         # Vector Format Converter
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_converter.png")
         self.formatconvert_action = QAction(icon, u'Vector Format Converter', self.iface.mainWindow())
         self.formatconvert_action.triggered.connect(self.formatconvert)
         self.batch_converter_menu.addAction(self.formatconvert_action)
 
         # CSV point to Shapefile
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_csv.png")
         self.csv2shp_action = QAction(icon, u'CSV to Point', self.iface.mainWindow())
         self.csv2shp_action.triggered.connect(self.csv2shp)
         self.batch_converter_menu.addAction(self.csv2shp_action)
@@ -323,39 +323,39 @@ class hcmgis_menu ():
         # self.batch_converter_menu.addAction(self.xls2csv_action)
 
         #HCMGIS OpenData submenu
-        self.covid19_menu = QMenu(u'Download COVID-19 Data')		
-        self.hcmgis_add_submenu(self.covid19_menu)	
+        # self.covid19_menu = QMenu(u'Download COVID-19 Data')		
+        # self.hcmgis_add_submenu(self.covid19_menu)	
         
-        #Global CoVID-19 live update
-        self.hcmgis_add_submenu(self.covid19_menu)
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_covid19.png")
-        self.covid19_action = QAction(icon, u'Global COVID-19 Live Update - Johns Hopkins CSSE', self.iface.mainWindow())
-        self.covid19_action.triggered.connect(lambda:hcmgis_covid19())		
-        self.covid19_menu.addAction(self.covid19_action)
-
-        
-        #Global CoVID-19 Timeseries 
-        self.hcmgis_add_submenu(self.covid19_menu)
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_covid19.png")
-        self.covid19_timeseries_action = QAction(icon, u'Global COVID-19 Time Series - Johns Hopkins CSSE', self.iface.mainWindow())
-        self.covid19_timeseries_action.triggered.connect(lambda:hcmgis_covid19_timeseries())		
-        self.covid19_menu.addAction(self.covid19_timeseries_action)
+        # #Global CoVID-19 live update
+        # self.hcmgis_add_submenu(self.covid19_menu)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_covid19.png")
+        # self.covid19_action = QAction(icon, u'Global COVID-19 Live Update - Johns Hopkins CSSE', self.iface.mainWindow())
+        # self.covid19_action.triggered.connect(lambda:hcmgis_covid19())		
+        # self.covid19_menu.addAction(self.covid19_action)
 
         
-        #Global CoVID-19 Vaccination Timeseries
-        self.hcmgis_add_submenu(self.covid19_menu)
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_covid19_vaccine.png")
-        self.covid19_vaccination_timeseries_action = QAction(icon, u'Global CoVID-19 Vaccination Timeseries - Johns Hopkins GovEx', self.iface.mainWindow())
-        self.covid19_vaccination_timeseries_action.triggered.connect(lambda:hcmgis_covid19_vaccination_timeseries())		
-        self.covid19_menu.addAction(self.covid19_vaccination_timeseries_action)
+        # #Global CoVID-19 Timeseries 
+        # self.hcmgis_add_submenu(self.covid19_menu)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_covid19.png")
+        # self.covid19_timeseries_action = QAction(icon, u'Global COVID-19 Time Series - Johns Hopkins CSSE', self.iface.mainWindow())
+        # self.covid19_timeseries_action.triggered.connect(lambda:hcmgis_covid19_timeseries())		
+        # self.covid19_menu.addAction(self.covid19_timeseries_action)
+
+        
+        # #Global CoVID-19 Vaccination Timeseries
+        # self.hcmgis_add_submenu(self.covid19_menu)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_covid19_vaccine.png")
+        # self.covid19_vaccination_timeseries_action = QAction(icon, u'Global CoVID-19 Vaccination Timeseries - Johns Hopkins GovEx', self.iface.mainWindow())
+        # self.covid19_vaccination_timeseries_action.triggered.connect(lambda:hcmgis_covid19_vaccination_timeseries())		
+        # self.covid19_menu.addAction(self.covid19_vaccination_timeseries_action)
 
 
-        #Vietnam CoVID-19 live update 
-        self.hcmgis_add_submenu(self.covid19_menu)
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
-        self.covid19_vietnam_action = QAction(icon, u'Vietnam COVID-19 Live Update - HCMGIS OpenData', self.iface.mainWindow())
-        self.covid19_vietnam_action.triggered.connect(lambda:hcmgis_covid19_vietnam())		
-        self.covid19_menu.addAction(self.covid19_vietnam_action)
+        # #Vietnam CoVID-19 live update 
+        # self.hcmgis_add_submenu(self.covid19_menu)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
+        # self.covid19_vietnam_action = QAction(icon, u'Vietnam COVID-19 Live Update - HCMGIS OpenData', self.iface.mainWindow())
+        # self.covid19_vietnam_action.triggered.connect(lambda:hcmgis_covid19_vietnam())		
+        # self.covid19_menu.addAction(self.covid19_vietnam_action)
 
 
 

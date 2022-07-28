@@ -131,7 +131,7 @@
     <widget class="QTextEdit" name="txtError"/>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="BtnOKCancel">
+    <widget class="QDialogButtonBox" name="BtnApplyClose">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -146,12 +146,12 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>BtnOKCancel</tabstop>
+  <tabstop>BtnApplyClose</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>accepted()</signal>
    <receiver>hcmgis_txt2csv_form</receiver>
    <slot>accept()</slot>
@@ -167,7 +167,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>BtnOKCancel</sender>
+   <sender>BtnApplyClose</sender>
    <signal>rejected()</signal>
    <receiver>hcmgis_txt2csv_form</receiver>
    <slot>reject()</slot>

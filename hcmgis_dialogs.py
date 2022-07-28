@@ -1147,7 +1147,7 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
 # 		hcmgis_dialog.__init__(self, iface)
 # 		
 # 		self.setupUi(self)
-# 		#self.BtnOKCancel.accepted.connect(self.run)
+# 		#self.BtnApplyClose.accepted.connect(self.run)
 # 		self.cboProvinces.setCurrentIndex(-1)
 # 		self.cboKTT.setCurrentIndex(-1)
 # 		self.cboZone.setCurrentIndex(0)
@@ -1777,7 +1777,7 @@ class hcmgis_merge_field_dialog(hcmgis_dialog, Ui_hcmgis_merge_field_form):
         for i in list(self.ListFields.selectedItems()):
             selectedfields.append(str(i.text()))
         if len(selectedfields) > 0:
-            message = hcmgis_merge_field(selectedfields, char,self.hcmgis_status_callback)
+            message = hcmgis_merge_field(layer, selectedfields, char,self.hcmgis_status_callback)
             if message != None:
                 QMessageBox.critical(self.iface.mainWindow(), "Merge Fields", message)						               
             else: self.LblStatus.setText('Finish! ')  
@@ -1902,7 +1902,7 @@ class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
         self.txtError.clear()
         self.BtnInputFolder.clicked.connect(self.read_csv)			
         self.lsCSV.currentRowChanged.connect(self.set_field_names)                             
-        self.BtnOKCancel.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 
     def set_field_names(self):
         try: 
@@ -2000,7 +2000,7 @@ class hcmgis_txt2csv_dialog(hcmgis_dialog, Ui_hcmgis_txt2csv_form):
         self.lsTXT.clear() 
         self.txtError.clear()
         self.BtnInputFolder.clicked.connect(self.read_txt)			
-        self.BtnOKCancel.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         
     def read_txt(self):
         newname = QFileDialog.getExistingDirectory(None, "Input Folder",self.LinInputFolder.displayText())
@@ -2064,7 +2064,7 @@ class hcmgis_xls2csv_dialog(hcmgis_dialog, Ui_hcmgis_xls2csv_form):
         self.lsXLS.clear() 
         self.txtError.clear()
         self.BtnInputFolder.clicked.connect(self.read_xls)			
-        self.BtnOKCancel.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)	
         
     def read_xls(self):
         newname = QFileDialog.getExistingDirectory(None, "Input Folder",self.LinInputFolder.displayText())

@@ -1055,7 +1055,7 @@ def hcmgis_split_field(layer, field, char,status_callback = None):
     if (len(field) <= 0):
         return u'No selected field!'        	        
     
-    top_occurence = hcmgis_top_occurence(layer, field,char,selectedfeatureonly)    
+    top_occurence = hcmgis_top_occurence(layer, field,char,False)    # For all features
     
     if (top_occurence == 0):
         return u'Field ' + field + u' does not contain any split characters!'

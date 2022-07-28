@@ -129,6 +129,8 @@ class Ui_hcmgis_opendata_form(object):
         sizePolicy.setHeightForWidth(self.TblWFSLayers.sizePolicy().hasHeightForWidth())
         self.TblWFSLayers.setSizePolicy(sizePolicy)
         self.TblWFSLayers.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.TblWFSLayers.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.TblWFSLayers.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked)
         self.TblWFSLayers.setDragDropMode(QtWidgets.QAbstractItemView.NoDragDrop)
         self.TblWFSLayers.setObjectName("TblWFSLayers")
         self.TblWFSLayers.setColumnCount(2)

@@ -1469,23 +1469,23 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
             'VN-2000 / TM-3 108-15','VN-2000 / TM-3 108-15','VN-2000 / TM-3 108-15',
             'VN-2000 / TM-3 108-30','VN-2000 / TM-3 108-30','VN-2000 / TM-3 108-30','VN-2000 / TM-3 108-30','VN-2000 / TM-3 108-30'
             ]
-    epsg_code = [9205, 9205, 
-                9206, 
-                9207, 9207, 
-                9208, 9208, 9208, 9208, 9208, 
-                5897, 5897, 5897, 5897, 5897, 5897, 5897, 5897, 5897, 
-                9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 	
-                9210, 9210, 9210, 9210, 9210, 9210, 9210,			
-                9211, 9211, 9211, 
-                9212, 9212, 
-                9213, 9213, 
-                9214, 9214, 
-                9215,
-                9216,
-                5899, 5899, 5899, 5899, 5899, 5899,
-                5898, 
-                9217, 9217, 9217,			
-                9218, 9218, 9218, 9218, 9218
+    epsg_code = ['9205', '9205', 
+                '9206', 
+                '9207', '9207', 
+                '9208', '9208', '9208', '9208', '9208', 
+                '5897', '5897', '5897', '5897', '5897', '5897', '5897', '5897','5897', 
+                '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', 	
+                '9210', '9210', '9210', '9210', '9210', '9210', '9210',			
+                '9211', '9211', '9211', 
+                '9212', '9212', 
+                '9213', '9213', 
+                '9214', '9214', 
+                '9215',
+                '9216',
+                '5899', '5899', '5899', '5899', '5899', '5899',
+                '5898', 
+                '9217', '9217', '9217',			
+                '9218', '9218', '9218', '9218', '9218'
                 ]
     
     def __init__(self, iface):		
@@ -1498,6 +1498,9 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
         self.cboEPSG.checked = False
         self.cboEPSG.setEnabled(False)
 
+        self.lnZone.setReadOnly(True)
+        self.TxtEPSGInfo.setReadOnly(True)
+     
         self.TxtEPSGInfo.clear()
         self.lnEPSG.clear()
         self.lnZone.clear()
@@ -1512,43 +1515,68 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
     def ProvincesChange(self):
         self.lnEPSG.clear()
         self.lnZone.clear()
-        i = self.cboProvinces.currentIndex()
-        self.lnZone.setText(str(self.zone[i]))
-        self.lnEPSG.setText(str(self.epsg_code[i]))
+        self.TxtEPSGInfo.clear()
+        if self.cboProvinces.currentIndex() != -1:
+            
+            i = self.cboProvinces.currentIndex()
+            self.lnZone.setText(str(self.zone[i]))
+            self.lnEPSG.setText(str(self.epsg_code[i]))
+
+            EPSGCode = self.lnEPSG.text().strip()  
+            i = self.epsg_code.index(EPSGCode) 
+            EPSGInfoZoneName = '- Zone name: ' + str (self.zone[i]) 
+            EPSGInfoEPSGCode = '\n- EPSG Code: ' + EPSGCode
+            
+            indices = [i for i, x in enumerate(self.epsg_code) if x == EPSGCode]
+            provinces_list = ''
+            for indice in indices:
+                provinces_list+= str(self.provinces[indice]) + ', '
+
+            ProvincesText = '\n- Provinces: ' + provinces_list 
+
+            if ProvincesText.endswith(', '):     						
+                ProvincesText = ProvincesText[:-(len(', '))] + '.'
+            self.TxtEPSGInfo.setText(EPSGInfoZoneName + EPSGInfoEPSGCode +ProvincesText)
+
         
 
     def EPSGChange(self):
-        self.LblEPSGInfo.clear()
-        EPSGCode = int(self.cboEPSG.currentText().strip())
-        i = self.epsg_code.index(EPSGCode) 
-        EPSGInfoText = 'Zone name: ' + str (self.zone[i]) 
-        
-        indices = [i for i, x in enumerate(self.epsg_code) if x == EPSGCode]
-        provinces_list = ''
-        for indice in indices:
-            provinces_list+= str(self.provinces[indice]) + ', '
+        self.TxtEPSGInfo.clear()
+        if self.cboEPSG.currentIndex() != -1:            
+            EPSGCode = self.cboEPSG.currentText().strip()  
+            i = self.epsg_code.index(EPSGCode) 
+            EPSGInfoZoneName = '- Zone name: ' + str (self.zone[i]) 
+            EPSGInfoEPSGCode = '\n- EPSG Code: ' + EPSGCode            
+            
+            indices = [i for i, x in enumerate(self.epsg_code) if x == EPSGCode]
+            provinces_list = ''
+            for indice in indices:
+                provinces_list+= str(self.provinces[indice]) + ', '
 
-        ProvincesText = '. Provinces: ' + provinces_list 
+            ProvincesText = '\n- Provinces: ' + provinces_list 
 
-        if ProvincesText.endswith(', '):     						
-            ProvincesText = ProvincesText[:-(len(', '))] + '.'
-        self.TxtEPSGInfo.setText(EPSGInfoText + ProvincesText)
+            if ProvincesText.endswith(', '):     						
+                ProvincesText = ProvincesText[:-(len(', '))] + '.'
+            self.TxtEPSGInfo.setText(EPSGInfoZoneName + EPSGInfoEPSGCode +ProvincesText)
 
         
     def togglerad(self):
         if self.radProvinces.isChecked():
             self.cboEPSG.setEnabled(False)
-            self.TxtEPSGInfo.setEnabled(False)
+            self.cboEPSG.setCurrentIndex(-1)
             self.cboProvinces.setEnabled(True)
             self.lnEPSG.setEnabled(True)	
             self.lnZone.setEnabled(True)
+            self.TxtEPSGInfo.clear()
             
         elif self.radEPSG.isChecked():
             self.cboProvinces.setEnabled(False)
+            self.cboProvinces.setCurrentIndex(-1)
             self.lnEPSG.setEnabled(False)	
             self.lnZone.setEnabled(False)	
             self.cboEPSG.setEnabled(True)
-            self.TxtEPSGInfo.setEnabled(True)
+            self.TxtEPSGInfo.clear()
+           
 
 class hcmgis_medialaxis_dialog(hcmgis_dialog, Ui_hcmgis_medialaxis_form):		
     def __init__(self, iface):

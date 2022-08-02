@@ -87,24 +87,24 @@ basemap_names = ['Google Maps', 'Google Satellite',\
                 'Wikimedia Maps','Vietbando Maps',\
                 'Vietnam OSM BecaMaps'
              ]
-basemap_urls = ['mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',\
-                'mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}','mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',\
-                'ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1',\
-                'cartocdn_a.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png','a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',\
-                'cartocdn_a.global.ssl.fastly.net/base-eco/{z}/{x}/{y}.png', 'a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.pn',\
-                'server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}','server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',\
-                'server.arcgisonline.com/arcgis/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}', 'server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',\
-                'server.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}','server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',\
-                'server.arcgisonline.com/arcgis/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}','server.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',\
-                'server.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', 'server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',\
-                'server.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}','server.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',\
-                'tile1.f4map.com/tiles/f4_2d/{z}/{x}/{y}.png','a.tile.stamen.com/toner/{z}/{x}/{y}.png',\
-                'a.tile.stamen.com/toner-background/{z}/{x}/{y}.png','a.tile.stamen.com/toner-hybrid/{z}/{x}/{y}.png',\
-                'a.tile.stamen.com/toner-lite/{z}/{x}/{y}.png','a.tile.stamen.com/terrain/{z}/{x}/{y}.png',\
-                'a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png','c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg',\
-                'maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png','images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D',\
-                # 'thuduc-maps.hcmgis.vn/thuducserver/gwc/service/wmts?layer=thuduc:thuduc_maps&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-                'https://becamaps.vntts.vn/geoserver/gwc/service/wmts?layer=osm:osm_vietnam&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+basemap_urls = ['https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',\
+                'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}','https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',\
+                'https://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1',\
+                'https://cartocdn_a.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png','https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',\
+                'https://cartocdn_a.global.ssl.fastly.net/base-eco/{z}/{x}/{y}.png', 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.pn',\
+                'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}','https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',\
+                'https://server.arcgisonline.com/arcgis/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}', 'https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',\
+                'https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}','https://server.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',\
+                'https://server.arcgisonline.com/arcgis/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}','https://server.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',\
+                'https://server.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', 'https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',\
+                'https://server.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}','https://server.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',\
+                'https://tile1.f4map.com/tiles/f4_2d/{z}/{x}/{y}.png','http://a.tile.stamen.com/toner/{z}/{x}/{y}.png',\
+                'http://a.tile.stamen.com/toner-background/{z}/{x}/{y}.png','http://a.tile.stamen.com/toner-hybrid/{z}/{x}/{y}.png',\
+                'http://a.tile.stamen.com/toner-lite/{z}/{x}/{y}.png','http://a.tile.stamen.com/terrain/{z}/{x}/{y}.png',\
+                'http://a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png','http://c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg',\
+                'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png','http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D',\
+                'https://thuduc-maps.hcmgis.vn/thuducserver/gwc/service/wmts?layer=thuduc:thuduc_maps&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
+                #'https://becamaps.vntts.vn/geoserver/gwc/service/wmts?layer=osm:osm_vietnam&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
                 ]                 
               
 #--------------------------------------------------------
@@ -115,8 +115,7 @@ def hcmgis_basemap_load():
     sources = []
     for basemap_name in basemap_names:
         idx = basemap_names.index(basemap_name)
-        basemap_url = basemap_urls[idx]
-        basemap_uri = "http://"+basemap_url
+        basemap_uri = basemap_urls[idx]
         sources.append(["connections-xyz",basemap_name,"","","",basemap_uri,"","22","0"])
     i = 0
     for source in sources:
@@ -138,31 +137,28 @@ def hcmgis_basemap_load():
          
 def hcmgis_basemap(basemap_name):
     idx = basemap_names.index(basemap_name)
-    basemap_url = basemap_urls[idx]
-    if ( basemap_name == 'Bing Virtual Earth' or basemap_name == 'Vietbando Maps') :
-        basemap_uri = "type=xyz&url=http://"+basemap_url
-        xyz_layer = QgsRasterLayer(basemap_uri,basemap_name, 'wms') 
-        if xyz_layer.isValid():    
-                QgsProject.instance().addMapLayer(xyz_layer)
-    else:
-        basemap_uri = "type=xyz&zmin=0&zmax=22&url=http://"+requests.utils.quote(basemap_url)
-        xyz_layer = qgis.utils.iface.addRasterLayer(basemap_uri, basemap_name, "wms") 
-        if not xyz_layer.isValid():
-             QMessageBox.warning(None, "Basemap", 'Basemap loaded error!')        
-
-    basemap_uri1 = "http://"+basemap_url
-    source = ["connections-xyz",basemap_name,"","","",basemap_uri1,"","22","0"]   
-    connectionType = source[0]
-    connectionName = source[1]
-    QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
-    QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
-    QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
-    QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
-    QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
-    QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
-    QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
-    qgis.utils.iface.reloadConnections()              
-
+    basemap_url = basemap_urls[idx]   
+    if ( basemap_name == 'Vietbando Maps'):
+        basemap_uri = "type=xyz&url="+basemap_url
+    else: 
+        basemap_uri = "type=xyz&url="+ requests.utils.quote(basemap_url)
+    
+    xyz_layer = QgsRasterLayer(basemap_uri,basemap_name, 'wms') 
+    if xyz_layer.isValid():    
+        QgsProject.instance().addMapLayer(xyz_layer)
+        source = ["connections-xyz",basemap_name,"","","",basemap_url,"","22","0"]   
+        connectionType = source[0]
+        connectionName = source[1]
+        QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
+        QSettings().setValue("qgis/%s/%s/password" % (connectionType, connectionName), source[3])
+        QSettings().setValue("qgis/%s/%s/referer" % (connectionType, connectionName), source[4])
+        QSettings().setValue("qgis/%s/%s/url" % (connectionType, connectionName), source[5])
+        QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
+        QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
+        QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
+        qgis.utils.iface.reloadConnections()              
+    else: 
+        print('Add basemap failed!')
        
 def hcmgis_covid19():  
         uri_live_update = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Coronavirus_2019_nCoV_Cases/FeatureServer/2/query?where=1%3D1&outFields=*&outSR=4326&f=geojson'

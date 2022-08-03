@@ -84,8 +84,8 @@ basemap_names = ['Google Maps', 'Google Satellite',\
                 'Stamen Toner Background','Stamen Toner Hybrid',\
                 'Stamen Toner Lite','Stamen Terrain',\
                 'Stamen Terrain Background','Stamen Watercolor',\
-                'Wikimedia Maps','Vietbando Maps',\
-                'Vietnam OSM BecaMaps'
+                'Wikimedia Maps',\
+                'Vietbando Maps','Vietnam OSM BecaMaps'
              ]
 basemap_urls = ['https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',\
                 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}','https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',\
@@ -102,7 +102,8 @@ basemap_urls = ['https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','https://mt
                 'http://a.tile.stamen.com/toner-background/{z}/{x}/{y}.png','http://a.tile.stamen.com/toner-hybrid/{z}/{x}/{y}.png',\
                 'http://a.tile.stamen.com/toner-lite/{z}/{x}/{y}.png','http://a.tile.stamen.com/terrain/{z}/{x}/{y}.png',\
                 'http://a.tile.stamen.com/terrain-background/{z}/{x}/{y}.png','http://c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg',\
-                'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png','http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D',\
+                'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',\
+                'http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D',\
                 'https://thuduc-maps.hcmgis.vn/thuducserver/gwc/service/wmts?layer=thuduc:thuduc_maps&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
                 #'https://becamaps.vntts.vn/geoserver/gwc/service/wmts?layer=osm:osm_vietnam&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
                 ]                 

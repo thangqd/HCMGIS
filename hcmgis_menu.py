@@ -21,7 +21,14 @@ class hcmgis_menu ():
 
     def hcmgis_add_submenu(self, submenu):
         if self.hcmgis_menu != None:
-            self.hcmgis_menu.addMenu(submenu)
+            self.hcmgis_menu.addMenu(submenu)           
+        else:
+            self.iface.addPluginToMenu("&hcmgis", submenu.menuAction())
+    
+    def hcmgis_add_submenu2(self, submenu, icon):
+        if self.hcmgis_menu != None:
+            submenu.setIcon(QIcon(icon))
+            self.hcmgis_menu.addMenu(submenu)           
         else:
             self.iface.addPluginToMenu("&hcmgis", submenu.menuAction())
 
@@ -30,9 +37,10 @@ class hcmgis_menu ():
         self.hcmgis_menu = QMenu(QCoreApplication.translate("hcmgis", "HCMGIS"))
         self.iface.mainWindow().menuBar().insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.hcmgis_menu)
         
-        # OpenData_basemap submenu
-        self.basemap_menu = QMenu(u'Basemaps')		
-        self.hcmgis_add_submenu(self.basemap_menu)
+        # OpenData_basemap submenu        
+        self.basemap_menu = QMenu(u'Basemaps')	
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_basemaps.png")	
+        self.hcmgis_add_submenu2(self.basemap_menu, icon)
 
         ##https://mc.bbbike.org/mc/?num=2&mt0=mapnik&mt1=watercolor
         #https://gitlab.com/GIS-projects/Belgium-XYZ-tiles/tree/b538df2c2de0d16937641742f25e4709ca94e42e
@@ -68,8 +76,9 @@ class hcmgis_menu ():
         self.hcmgis_googleterrainhybrid_action = QAction(icon, u'Google Terrain Hybrid', self.iface.mainWindow())
         self.hcmgis_googleterrainhybrid_action.triggered.connect(lambda: hcmgis_basemap('Google Terrain Hybrid'))		
         self.basemap_menu.addAction(self.hcmgis_googleterrainhybrid_action)
-
+       
         
+        self.basemap_menu.addSeparator()
         #############
         #Bing Virtual Earth
         #############
@@ -78,7 +87,7 @@ class hcmgis_menu ():
         self.bingaerial_action.triggered.connect(lambda: hcmgis_basemap('Bing Virtual Earth'))	
         self.basemap_menu.addAction(self.bingaerial_action)
  
-
+        self.basemap_menu.addSeparator()
         #Carto Antique
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")
         self.cartoantique_action = QAction(icon, u'Carto Antique', self.iface.mainWindow())
@@ -103,7 +112,7 @@ class hcmgis_menu ():
         self.cartolight_action.triggered.connect(lambda: hcmgis_basemap('Carto Light'))		
         self.basemap_menu.addAction(self.cartolight_action)
 
-        
+        self.basemap_menu.addSeparator()
         #########################		
         # ESRI https://gitlab.com/GIS-projects/Belgium-XYZ-tiles/tree/b538df2c2de0d16937641742f25e4709ca94e42e
         #####################
@@ -186,6 +195,7 @@ class hcmgis_menu ():
         # self.basemap_menu.addAction(self.esritransport_action)
         #  """
         
+        self.basemap_menu.addSeparator()
         ##############################
         # F4map - 2D
         #############################
@@ -211,7 +221,7 @@ class hcmgis_menu ():
         # self.basemap_menu.addAction(self.opentopomap_action) """
         
 
-        
+        self.basemap_menu.addSeparator()
         #Stamen Toner
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
         self.stamentoner_action = QAction(icon, u'Stamen Toner', self.iface.mainWindow())
@@ -253,7 +263,8 @@ class hcmgis_menu ():
         self.stamenwatercolor_action = QAction(icon, u'Stamen Watercolor', self.iface.mainWindow())
         self.stamenwatercolor_action.triggered.connect(lambda: hcmgis_basemap('Stamen Watercolor'))		
         self.basemap_menu.addAction(self.stamenwatercolor_action)
-                
+
+        self.basemap_menu.addSeparator()        
         # Wikimedia Maps
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_wikimedia.png")
         self.wikimedia_action = QAction(icon, u'Wikimedia Maps', self.iface.mainWindow())
@@ -278,7 +289,7 @@ class hcmgis_menu ():
     # 	self.wikimediahikebike_action.triggered.connect(self.wikimediahikebike_call)		
     # 	self.basemap_menu.addAction(self.wikimediahikebike_action)
     # 	 """
-
+        self.basemap_menu.addSeparator()
         #Vietnam OSM Mapss
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_becamaps.png")
         self.hcmgis_osm_action = QAction(icon, u'Vietnam OSM BecaMaps', self.iface.mainWindow())
@@ -294,8 +305,10 @@ class hcmgis_menu ():
 
         
         # Batch Converter Submenu
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_batchconverter.png")	
         self.batch_converter_menu = QMenu(u'Batch Converter')	
-        self.hcmgis_add_submenu(self.batch_converter_menu)
+        self.hcmgis_add_submenu2(self.batch_converter_menu, icon)
+
 
         # Vector Format Converter
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_converter.png")
@@ -361,8 +374,10 @@ class hcmgis_menu ():
 
 
         #HCMGIS OpenData submenu
-        self.opendata_menu = QMenu(u'Download OpenData')		
-        self.hcmgis_add_submenu(self.opendata_menu)	
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_open.png")	
+        self.opendata_menu = QMenu(u'Download OpenData')
+        self.hcmgis_add_submenu2(self.opendata_menu, icon)
+
 
         #OSM Data from Geofabrik 
         self.hcmgis_add_submenu(self.opendata_menu)
@@ -393,9 +408,12 @@ class hcmgis_menu ():
 
 
         
-        # VN-2000 Projections submenu
-        self.projections_menu = QMenu(u'VN-2000/TM-3')		
-        self.hcmgis_add_submenu(self.projections_menu)
+        # VN-2000 Projections submenu  
+
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_projections.png")
+        self.projections_menu = QMenu(u'VN-2000/TM-3')	
+        self.hcmgis_add_submenu2(self.projections_menu, icon)
+
         
         # VN-2000 Projections
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_projections.png")
@@ -405,8 +423,10 @@ class hcmgis_menu ():
 
         
         # Geoprocessing submenu
-        self.geoprocessing_menu = QMenu(u'Geometry Processing')		
-        self.hcmgis_add_submenu(self.geoprocessing_menu)
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_geoprocess.png")
+        self.geoprocessing_menu = QMenu(u'Geometry Processing')	
+        self.hcmgis_add_submenu2(self.geoprocessing_menu, icon)
+
         
         # MediAxis Submenu
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_skeleton.png")
@@ -436,8 +456,10 @@ class hcmgis_menu ():
 
             
         # Calculate Attribute submenu
-        self.tool_menu = QMenu(u'Calculate Field')	
-        self.hcmgis_add_submenu(self.tool_menu)
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_calculator.png")	
+        self.tool_menu = QMenu(u'Calculate Field')
+        self.hcmgis_add_submenu2(self.tool_menu, icon)
+
                 
         
         # Merge Field Submenu

@@ -399,6 +399,10 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         self.cboServerName.currentIndexChanged.connect(self.readwfs)
         self.CboFormat.setEnabled(False)
         self.hcmgis_set_status_bar(self.status,self.LblStatus)	
+
+        self.cboServerName.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboServerName.setMaxVisibleItems(10)
+        self.cboServerName.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded) 
         
      
     def updateWFSTable(self):
@@ -571,6 +575,16 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+        
+        self.cboCountry.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboCountry.setMaxVisibleItems(10)
+        self.cboCountry.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+
+        self.cboProvince.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboProvince.setMaxVisibleItems(10)
+        self.cboProvince.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+
+
         project = QgsProject.instance()
         home_path = project.homePath()
         if not home_path:
@@ -866,8 +880,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
 #########################################################
 class hcmgis_gadm_dialog(hcmgis_dialog, Ui_hcmgis_gadm_form):	
     def __init__(self, iface):		
-        hcmgis_dialog.__init__(self, iface)
-        
+        hcmgis_dialog.__init__(self, iface)        
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
@@ -880,7 +893,12 @@ class hcmgis_gadm_dialog(hcmgis_dialog, Ui_hcmgis_gadm_form):
         self.cboCountry.currentIndexChanged.connect(self.updateLOD)   
         self.cboCountry.setCurrentIndex(-1) 
         self.LinLOD.setText('')
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)		
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
+        
+        self.cboCountry.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboCountry.setMaxVisibleItems(10)
+        self.cboCountry.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)         
+
     country = ['Afghanistan','Akrotiri and Dhekelia','Åland','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica',\
             'Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh',\
             'Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia','Bonaire, Saint Eustatius and Saba','Bosnia and Herzegovina',\
@@ -961,7 +979,8 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
         hcmgis_dialog.__init__(self, iface)        
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+        self.BtnOutputFolder.clicked.connect(self.browse_outfile)       
+
         project = QgsProject.instance()
         home_path = project.homePath()
         if not home_path:
@@ -974,7 +993,11 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
         self.cboProvince.setEnabled(False)
         self.cboProvince.currentIndexChanged.connect(self.updateinfo)
         self.hcmgis_set_status_bar(self.status,self.LblStatus)	   
-        self.LblHyperlink.setOpenExternalLinks(True)	     
+        self.LblHyperlink.setOpenExternalLinks(True)
+
+        self.cboProvince.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboProvince.setMaxVisibleItems(10)
+        self.cboProvince.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)	     
     import locale
     #locale.setlocale(locale.LC_ALL, 'en_US')
    
@@ -1492,41 +1515,32 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
         hcmgis_dialog.__init__(self, iface)		
         self.setupUi(self)
         self.BtnClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
+        self.cboProvinces.addItems(self.provinces) 
+        self.cboProvinces.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboProvinces.setMaxVisibleItems(21)
+        self.cboProvinces.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        
         self.cboProvinces.setCurrentIndex(-1)
         self.cboEPSG.setCurrentIndex(-1)	
         self.cboProvinces.checked = True
         self.cboEPSG.checked = False
         self.cboEPSG.setEnabled(False)
-
-        self.lnZone.setReadOnly(True)
-        self.TxtEPSGInfo.setReadOnly(True)
-     
+        self.TxtEPSGInfo.setReadOnly(True)     
         self.TxtEPSGInfo.clear()
-        self.lnEPSG.clear()
-        self.lnZone.clear()
 
-        self.radProvinces.toggled.connect(self.togglerad)
         self.radEPSG.toggled.connect(self.togglerad)
         self.cboEPSG.currentIndexChanged.connect(self.EPSGChange)
+        self.radProvinces.toggled.connect(self.togglerad)
         self.cboProvinces.currentIndexChanged.connect(self.ProvincesChange)
-        self.cboProvinces.clear()
-        self.cboProvinces.addItems(self.provinces)        
+       
    
     def ProvincesChange(self):
-        self.lnEPSG.clear()
-        self.lnZone.clear()
         self.TxtEPSGInfo.clear()
-        if self.cboProvinces.currentIndex() != -1:
-            
+        if self.cboProvinces.currentIndex() != -1:  
             i = self.cboProvinces.currentIndex()
-            self.lnZone.setText(str(self.zone[i]))
-            self.lnEPSG.setText(str(self.epsg_code[i]))
-
-            EPSGCode = self.lnEPSG.text().strip()  
-            i = self.epsg_code.index(EPSGCode) 
-            EPSGInfoZoneName = '- Zone name: ' + str (self.zone[i]) 
-            EPSGInfoEPSGCode = '\n- EPSG Code: ' + EPSGCode
-            
+            EPSGCode = self.epsg_code[i] 
+            EPSGInfoZoneName = '- Zone name: ' + self.zone[i] 
+            EPSGInfoEPSGCode = '\n- EPSG Code: ' + EPSGCode            
             indices = [i for i, x in enumerate(self.epsg_code) if x == EPSGCode]
             provinces_list = ''
             for indice in indices:
@@ -1536,16 +1550,14 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
 
             if ProvincesText.endswith(', '):     						
                 ProvincesText = ProvincesText[:-(len(', '))] + '.'
-            self.TxtEPSGInfo.setText(EPSGInfoZoneName + EPSGInfoEPSGCode +ProvincesText)
-
-        
+            self.TxtEPSGInfo.setText(EPSGInfoZoneName + EPSGInfoEPSGCode +ProvincesText)        
 
     def EPSGChange(self):
         self.TxtEPSGInfo.clear()
         if self.cboEPSG.currentIndex() != -1:            
             EPSGCode = self.cboEPSG.currentText().strip()  
             i = self.epsg_code.index(EPSGCode) 
-            EPSGInfoZoneName = '- Zone name: ' + str (self.zone[i]) 
+            EPSGInfoZoneName = '- Zone name: ' + self.zone[i] 
             EPSGInfoEPSGCode = '\n- EPSG Code: ' + EPSGCode            
             
             indices = [i for i, x in enumerate(self.epsg_code) if x == EPSGCode]
@@ -1565,15 +1577,11 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
             self.cboEPSG.setEnabled(False)
             self.cboEPSG.setCurrentIndex(-1)
             self.cboProvinces.setEnabled(True)
-            self.lnEPSG.setEnabled(True)	
-            self.lnZone.setEnabled(True)
             self.TxtEPSGInfo.clear()
             
         elif self.radEPSG.isChecked():
             self.cboProvinces.setEnabled(False)
             self.cboProvinces.setCurrentIndex(-1)
-            self.lnEPSG.setEnabled(False)	
-            self.lnZone.setEnabled(False)	
             self.cboEPSG.setEnabled(True)
             self.TxtEPSGInfo.clear()
            

@@ -1,18 +1,18 @@
-# HCMGIS - Basemap, Download CO-VID19 Data, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
+# HCMGIS - Basemaps, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
 **- Basemap**: Add dozens of global basemaps from Google, Carto, ESRI, OSM Stamen, etc.
 
-**- Batch Converter**: Batch convert CSV to Point Shapefile and between other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;
+**- Batch Converter**: Batch convert CSV to Point Shapefile and other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;
 
-**- Download OpenData**:  Download Open Data from OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University and more
+**- Download OpenData**:  Download Open Data from OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, Standford University, ect.
 
-**- Vn-2000 Projections**:  Look up EPSG Code for Vn-2000/ TM3 Projection for all Provinces in Vietnam
+**- Vn-2000 Projections**:  Look up EPSG Code for Vn-2000/ TM3 Projections for all Provinces in Vietnam
 
 
 **- Spatial Processing**: 
 
 + Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures
-+ Create Centerline in Polygon's gaps (E.g building blocks)
++ Create Centerline in Polygons' gaps (E.g building blocks)
 + Finding closest/ farthest pair of Points in a Point set based on Voronoi Diagram
 + Finding Largest Empty Circle of a Point set
 
@@ -21,13 +21,14 @@
 
 # 
 
-**HCMGIS** - Basemap, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
-
-**- Batch Converter**: Chuyển đổi tất cả các file XY (CSV) sang dạng điểm (shapefile) và giua các định dạng GIS khác (bao gồm OSM bpf, GeoPackage) cho toàn bộ các file trong thư mục và các thư mục con
+**HCMGIS** - Basemaps, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
 **- Basemap**: Thêm bản đồ nền Google, Carto, ESRI, OSM Stamen,...trong QGIS
 
-**- Download OpenData**:  Download dữ liệu GIS mở: OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, PUMA WorBank Group, Standford University,...
+**- Batch Converter**: Chuyển đổi tất cả các file XY (CSV) sang dạng điểm (shapefile) và giữa các định dạng GIS khác (bao gồm OSM bpf, GeoPackage) cho toàn bộ các file trong thư mục và các thư mục con
+
+
+**- Download OpenData**:  Download dữ liệu GIS mở: OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, Standford University,...
 
 **- Vn-2000 Projections**:  Tra cứu EPSG Code cho múi chiếu 3 độ, kinh tuyến trục địa phương các tỉnh thành Việt Nam
 

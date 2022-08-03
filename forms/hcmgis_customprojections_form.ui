@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>632</width>
-    <height>344</height>
+    <width>688</width>
+    <height>308</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -28,27 +28,6 @@
      <property name="verticalSpacing">
       <number>20</number>
      </property>
-     <item row="4" column="3">
-      <widget class="QLabel" name="lblEPSGCode">
-       <property name="text">
-        <string>EPSG Code:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QRadioButton" name="radEPSG">
-       <property name="text">
-        <string>Search by EPSG Code</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="LblZone">
-       <property name="text">
-        <string>Zone Name</string>
-       </property>
-      </widget>
-     </item>
      <item row="9" column="0" colspan="4">
       <widget class="QLabel" name="LblEPSGInfo">
        <property name="text">
@@ -56,7 +35,54 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="2">
+     <item row="0" column="0" colspan="4">
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>VN-200/ TM-3</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QRadioButton" name="radProvinces">
+       <property name="text">
+        <string>Search by Province</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="cboProvinces">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0" colspan="4">
+      <widget class="QTextEdit" name="TxtEPSGInfo">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QRadioButton" name="radEPSG">
+       <property name="text">
+        <string>Search by EPSG Code</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
       <widget class="QComboBox" name="cboEPSG">
        <item>
         <property name="text">
@@ -144,49 +170,6 @@
         </property>
        </item>
       </widget>
-     </item>
-     <item row="4" column="2">
-      <widget class="QLineEdit" name="lnZone"/>
-     </item>
-     <item row="4" column="4">
-      <widget class="QLineEdit" name="lnEPSG">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="4">
-      <widget class="QLabel" name="label">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>VN-200/ TM-3</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0" colspan="5">
-      <widget class="QTextEdit" name="TxtEPSGInfo">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QRadioButton" name="radProvinces">
-       <property name="text">
-        <string>Search by Province</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1" colspan="3">
-      <widget class="QComboBox" name="cboProvinces"/>
      </item>
     </layout>
    </item>

@@ -181,7 +181,7 @@ class Ui_hcmgis_opendata_form(object):
         item.setText(_translate("hcmgis_opendata_form", "Name"))
         item = self.TblWFSLayers.horizontalHeaderItem(1)
         item.setText(_translate("hcmgis_opendata_form", "Title"))
-        self.Filter.setPlaceholderText(_translate("hcmgis_opendata_form", "Filter WFS Layers"))
+        self.Filter.setPlaceholderText(_translate("hcmgis_opendata_form", "Search"))
 from qgsfilterlineedit import QgsFilterLineEdit
 
 

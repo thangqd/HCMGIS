@@ -304,24 +304,6 @@ class hcmgis_menu ():
 
 
         
-        # Batch Converter Submenu
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_batchconverter.png")	
-        self.batch_converter_menu = QMenu(u'Batch Converter')	
-        self.hcmgis_add_submenu2(self.batch_converter_menu, icon)
-
-
-        # Vector Format Converter
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_converter.png")
-        self.formatconvert_action = QAction(icon, u'Vector Format Converter', self.iface.mainWindow())
-        self.formatconvert_action.triggered.connect(self.formatconvert)
-        self.batch_converter_menu.addAction(self.formatconvert_action)
-
-        # CSV point to Shapefile
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_csv.png")
-        self.csv2shp_action = QAction(icon, u'CSV to Point', self.iface.mainWindow())
-        self.csv2shp_action.triggered.connect(self.csv2shp)
-        self.batch_converter_menu.addAction(self.csv2shp_action)
-
         # TXT to CSV
         #icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
         #self.txt2csv_action = QAction(icon, u'TXT to CSV', self.iface.mainWindow())
@@ -396,9 +378,16 @@ class hcmgis_menu ():
         #Building Footprints from Microsoft
         self.hcmgis_add_submenu(self.opendata_menu)
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_bing.png")
-        self.microsoft_action = QAction(icon, u'Building Footprints from Microsoft', self.iface.mainWindow())
+        self.microsoft_action = QAction(icon, u'Microsoft Building Footprints - Releases', self.iface.mainWindow())
         self.microsoft_action.triggered.connect(self.microsoft)		
         self.opendata_menu.addAction(self.microsoft_action)
+
+        #Building Footprints from Microsoft
+        self.hcmgis_add_submenu(self.opendata_menu)
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_bing.png")
+        self.global_microsoft_action = QAction(icon, u'Microsoft Building Footprints - Global', self.iface.mainWindow())
+        self.global_microsoft_action.triggered.connect(self.global_microsoft)		
+        self.opendata_menu.addAction(self.global_microsoft_action)
 
         #HCMGIS OpenData
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_opendata.png")
@@ -407,6 +396,24 @@ class hcmgis_menu ():
         self.opendata_menu.addAction(self.opendata_action)
 
 
+          # Batch Converter Submenu
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_batchconverter.png")	
+        self.batch_converter_menu = QMenu(u'Batch Converter')	
+        self.hcmgis_add_submenu2(self.batch_converter_menu, icon)
+
+
+        # Vector Format Converter
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_converter.png")
+        self.formatconvert_action = QAction(icon, u'Vector Format Converter', self.iface.mainWindow())
+        self.formatconvert_action.triggered.connect(self.formatconvert)
+        self.batch_converter_menu.addAction(self.formatconvert_action)
+
+        # CSV point to Shapefile
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_csv.png")
+        self.csv2shp_action = QAction(icon, u'CSV to Point', self.iface.mainWindow())
+        self.csv2shp_action.triggered.connect(self.csv2shp)
+        self.batch_converter_menu.addAction(self.csv2shp_action)
+        
         
         # VN-2000 Projections submenu  
 
@@ -520,6 +527,10 @@ class hcmgis_menu ():
     def microsoft(self):
         dialog = hcmgis_microsoft_dialog(self.iface)
         dialog.exec_()    
+
+    def global_microsoft(self):
+        dialog = hcmgis_global_microsoft_dialog(self.iface)
+        dialog.exec_()  
         
             
     def projections(self):

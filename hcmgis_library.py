@@ -2375,18 +2375,27 @@ def hcmgis_microsoft(country, state, outdir,status_callback = None):
     download_url= ''
     zip_filename =''
     unzip_folder = ''
-    if (country == 'United States'):
-        pre = 'https://usbuildingdata.blob.core.windows.net/usbuildings-v1-1/'
-        suf = '.zip'
+    if (country == 'United States of America'):
+        pre = 'https://usbuildingdata.blob.core.windows.net/usbuildings-v2/'
+        suf = '.geojson.zip'
         download_url = pre + state + suf
         zip_filename = outdir + '/'+ state +  suf
-        unzip_folder = zip_filename.replace('.zip','')    
+        unzip_folder = zip_filename.replace('geojson.zip','')    
     elif (country == 'Canada'):
         pre = 'https://usbuildingdata.blob.core.windows.net/canadian-buildings-v2/'
         suf = '.zip'        
         download_url = pre + state + suf
         zip_filename = outdir + '/'+ state +  suf
         unzip_folder = zip_filename.replace('.zip','')    
+
+    elif (country == 'South America'):
+        pre = 'https://minedbuildings.blob.core.windows.net/southamerica/'
+        suf = '.geojsonl.zip'        
+        download_url = pre + state + suf
+        print (download_url)
+        zip_filename = outdir + '/'+ state +  suf
+        unzip_folder = zip_filename.replace('.geojsonl.zip','')
+
     elif (country == 'Australia'):
         download_url = 'https://usbuildingdata.blob.core.windows.net/australia-buildings/Australia_2020-06-21.geojson.zip'
         zip_filename = outdir + '/'+ 'Australia_2020-06-21.geojson.zip'
@@ -2437,7 +2446,8 @@ def hcmgis_microsoft(country, state, outdir,status_callback = None):
                     fileroute= unzip_folder+'/'+file
                     filename = QgsVectorLayer(fileroute,file[:-8],"ogr")
                     QgsProject.instance().addMapLayer(filename,False)
-                    shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+                    shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))                
+
                 percen_complete = i/len(wholelist)*100 
                 if status_callback:                
                     status_callback(i,None)

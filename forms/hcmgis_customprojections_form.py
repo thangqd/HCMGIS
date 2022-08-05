@@ -38,7 +38,7 @@ class Ui_hcmgis_customprojections_form(object):
         self.radProvinces.setObjectName("radProvinces")
         self.gridLayout.addWidget(self.radProvinces, 1, 0, 1, 1)
         self.cboProvinces = QtWidgets.QComboBox(hcmgis_customprojections_form)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.cboProvinces.sizePolicy().hasHeightForWidth())

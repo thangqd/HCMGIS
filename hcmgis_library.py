@@ -278,7 +278,152 @@ def hcmgis_covid19_vietnam():
         else:	
             QgsProject.instance().addMapLayer(json_file_live_update)					
     except: pass                 		
+
+#--------------------------------------------------------
+#    hcmgis_split_polygon - Split Polygons into (almost) equal parts
+# --------------------------------------------------------
+def hcmgis_split_polygon(layer, parts,randompoints,status_callback = None):		
+    ## create skeleton/ media axis     
+    i = 0
+    steps =6      
+    # try:
+    #     if layer.isValid():
+    #         parameters0 = {'INPUT':layer,
+    #                      'OUTPUT':  "memory:polygon"}
+    #         selectedfeature = processing.run('qgis:saveselectedfeatures',parameters0)
+
+    #         parameters1 = {'INPUT':selectedfeature['OUTPUT'],
+    #             'OUTPUT': 'memory:fix'}
+    #         fix = processing.run('qgis:fixgeometries',parameters1)           
+    #         polygon = fix['OUTPUT']                  
+    # except:
+    #     temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running split polygon in QGIS console  
         
+    # parameters1 = {'INPUT':layer,
+    #                 'OUTPUT': 'memory:fix'}
+    # fix = processing.run('qgis:fixgeometries',parameters1)
+    # polygon = fix['OUTPUT']
+    
+    # i+=1
+    # percent = int((i/steps)*100)
+    # label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
+    # if status_callback:
+    #     status_callback(percent,label)
+    # else:
+    #     print(label) 
+
+    # creat random points inside Polygons  
+    parameters2 = {'INPUT': layer,
+                   'INCLUDE_POLYGON_ATTRIBUTES' : True,
+                    'MAX_TRIES_PER_POINT' : None,
+                    'MIN_DISTANCE' : 0,
+                    'MIN_DISTANCE_GLOBAL' : 0,
+                    'POINTS_NUMBER' : randompoints, 
+                    'SEED' : None ,
+                    'OUTPUT' : "memory:points"} 
+    points = processing.run('qgis:randompointsinpolygons', parameters2)	
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. randompointsinpolygons'    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)    
+    
+
+    parameters3 =  {'INPUT': points['OUTPUT'],
+                    'CLUSTERS' :parts,
+                    'FIELD_NAME' : 'CLUSTER_ID',
+                    'SIZE_FIELD_NAME' : 'CLUSTER_SIZE',
+                    'OUTPUT' : 'memory:kmeansclustering'} 
+    kmeansclustering = processing.run('qgis:kmeansclustering', parameters3)
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. kmeansclustering'    
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)   
+   
+    parameters4 = {'INPUT': kmeansclustering['OUTPUT'],                  
+                    'GROUP_BY' : 'CLUSTER_ID',
+                    'AGGREGATES' : [],
+                    'OUTPUT' : 'memory:aggregate'} 
+    aggregate = processing.run('qgis:aggregate',parameters4)
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. aggregate'
+    if status_callback:
+        status_callback(percent,label) 
+    else:
+        print(label)       
+   
+    parameters5 = {'INPUT': aggregate['OUTPUT'],                  
+                    'ALL_PARTS' : False,
+                    'OUTPUT' : 'memory:centroids'} 
+    centroids = processing.run('qgis:centroids',parameters5)
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. centroids'
+    if status_callback:
+        status_callback(percent,label) 
+    else:
+        print(label)   
+
+    parameters6 = {'INPUT': centroids['OUTPUT'],                  
+                    'BUFFER' : 200,
+                    'OUTPUT' : 'memory:voronoi'} 
+    voronoi = processing.run('qgis:voronoipolygons',parameters6)
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. voronoi'
+    if status_callback:
+        status_callback(percent,label) 
+    else:
+        print(label)  
+    
+    parameters7 = {'INPUT': layer,  
+                    'OVERLAY':   voronoi['OUTPUT'],           
+                    # 'OUTPUT' : 'memory:intersection'
+                    'OUTPUT' : 'TEMPORARY_OUTPUT'
+                } 
+    # intersection = processing.runa('qgis:intersection',parameters7)
+    intersection = processing.runAndLoadResults('qgis:intersection',parameters7)
+  
+    # output_layer = intersection['OUTPUT']
+    #  # Create the output file
+    # if not output:
+    #     message = "No output file name given"
+    #     print (message)
+    #     return message
+
+    # file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
+    # output_file_format = file_formats[os.path.splitext(output)[1]]
+   
+    # error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+
+    # if error == QgsVectorFileWriter.NoError:
+    #     try:
+    #         skeleton = QgsVectorLayer(output, QFileInfo(output).baseName(), 'ogr')
+    #         QgsProject.instance().addMapLayer(skeleton)
+    #         qgis.utils.iface.setActiveLayer(skeleton)
+    #         qgis.utils.iface.zoomToActiveLayer()  
+    #     except :
+    #         print('output: '+ str(output))
+    # else:
+    #     message = "Failure creating output file: " + str(error_string)
+    #     print (message)
+    #     return message 
+
+    i+=1
+    label = str(i)+ '/'+ str(steps)+ '.intersection'  
+    percent = int((i/steps)*100)
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)      
+        
+    return
 #--------------------------------------------------------
 #    hcmgis_medialaxis - Create skeleton/ medial axis/ centerline of roads, rivers and similar linear structures
 # --------------------------------------------------------
@@ -433,7 +578,7 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(output)[1]]
    
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, polygon.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
 
     if error == QgsVectorFileWriter.NoError:
         try:
@@ -695,7 +840,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(output)[1]]
    
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, polygon.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
 
     if error == QgsVectorFileWriter.NoError:
         try:
@@ -833,7 +978,7 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(closest)[1]]
    
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(delaunay_clean, closest, point_layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only      
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(delaunay_clean, closest, layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only      
 
     if error == QgsVectorFileWriter.NoError:
         try:
@@ -982,7 +1127,7 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(farthest)[1]]
    
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(convexhull_clean, farthest, point_layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only      
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(convexhull_clean, farthest, layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only      
 
     if error == QgsVectorFileWriter.NoError:
         try:

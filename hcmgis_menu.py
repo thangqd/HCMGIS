@@ -396,7 +396,7 @@ class hcmgis_menu ():
         self.opendata_menu.addAction(self.opendata_action)
 
 
-          # Batch Converter Submenu
+        # Batch Converter Submenu
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_batchconverter.png")	
         self.batch_converter_menu = QMenu(u'Batch Converter')	
         self.hcmgis_add_submenu2(self.batch_converter_menu, icon)
@@ -415,8 +415,7 @@ class hcmgis_menu ():
         self.batch_converter_menu.addAction(self.csv2shp_action)
         
         
-        # VN-2000 Projections submenu  
-
+        # VN-2000 Projections submenu
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_projections.png")
         self.projections_menu = QMenu(u'VN-2000/TM-3')	
         self.hcmgis_add_submenu2(self.projections_menu, icon)
@@ -434,8 +433,13 @@ class hcmgis_menu ():
         self.geoprocessing_menu = QMenu(u'Geometry Processing')	
         self.hcmgis_add_submenu2(self.geoprocessing_menu, icon)
 
-        
-        # MediAxis Submenu
+        # Split Polygon Submenu
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_split_polygon.png")
+        self.split_polygon_action = QAction(icon, u'Split Polygons', self.iface.mainWindow())
+        self.split_polygon_action.triggered.connect(self.splitpolygon)
+        self.geoprocessing_menu.addAction(self.split_polygon_action)
+
+        # Media Axis Submenu
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_skeleton.png")
         self.medialaxis_action = QAction(icon, u'Skeleton/ Medial Axis', self.iface.mainWindow())
         self.medialaxis_action.triggered.connect(self.medialaxis)
@@ -546,7 +550,10 @@ class hcmgis_menu ():
         dialog = hcmgis_split_field_dialog(self.iface)
         dialog.exec_()
         
-            
+    def splitpolygon(self):
+        dialog = hcmgis_split_polygon_dialog(self.iface)
+        dialog.exec_()
+
     def medialaxis(self):
         dialog = hcmgis_medialaxis_dialog(self.iface)
         dialog.exec_()

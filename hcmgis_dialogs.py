@@ -57,6 +57,8 @@ from hcmgis_csv2shp_form import *
 from hcmgis_txt2csv_form import *
 from hcmgis_xls2csv_form import *
 from hcmgis_mapbox_form import *
+from hcmgis_split_polygon_form import *
+
 
 
 # ------------------------------------------------------------------------------
@@ -1721,7 +1723,78 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
             self.cboProvinces.setCurrentIndex(-1)
             self.cboEPSG.setEnabled(True)
             self.TxtEPSGInfo.clear()
-           
+
+#   Split Polygons into (almost) equal parts       
+class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):		
+    def __init__(self, iface):
+        hcmgis_dialog.__init__(self, iface)	
+        self.setupUi(self)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
+        self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)		
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
+        self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'split')    
+   
+              
+    def run(self):             		
+        layer = self.CboInput.currentLayer()
+        if layer is None:
+            return u'No selected Layer!'  
+        parts = self.spParts.value()
+        randompoints = self.spRandomPoints.value()
+        output = str(self.output_file_name.filePath())
+        split_layers = []        
+
+        if layer.selectedFeatureCount()>0:	
+            for feat in layer.selectedFeatures():
+                # mem_layer = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr')
+                mem_layer = QgsVectorLayer('Polygon','polygon','memory')
+                mem_layer.dataProvider().setEncoding(u'UTF-8')
+                mem_layer_data = mem_layer.dataProvider()
+                attr = layer.dataProvider().fields().toList()
+                mem_layer_data.addAttributes(attr)
+                mem_layer.updateFields()
+                mem_layer.startEditing()
+                mem_layer.addFeature(feat)
+                mem_layer.commitChanges()
+                # QgsProject.instance().addMapLayer(mem_layer)                 
+                message = hcmgis_split_polygon(mem_layer,parts,randompoints,self.hcmgis_status_callback)
+                if message != None:
+                    QMessageBox.critical(self.iface.mainWindow(), "Split Polygons", message)						               
+                else: 
+                    self.LblStatus.setText('Completed! ')  
+        else:
+            #return u'Please select at least 1 feature to Split Polygon	
+            for feat in layer.getFeatures():
+                # mem_layer = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr')
+                mem_layer = QgsVectorLayer('Polygon','polygon','memory')
+                mem_layer.dataProvider().setEncoding(u'UTF-8')
+                mem_layer_data = mem_layer.dataProvider()
+                attr = layer.dataProvider().fields().toList()
+                mem_layer_data.addAttributes(attr)
+                mem_layer.updateFields()
+                mem_layer.startEditing()
+                mem_layer.addFeature(feat)
+                mem_layer.commitChanges()
+                # QgsProject.instance().addMapLayer(mem_layer) 
+                message = hcmgis_split_polygon(mem_layer,parts,randompoints,self.hcmgis_status_callback)
+                if message != None:
+                    QMessageBox.critical(self.iface.mainWindow(), "Split Polygons", message)						               
+                else: 
+                    self.LblStatus.setText('Completed! ')         
+
+        #  layer list in the group
+        layers =  QgsProject.instance().mapLayersByName('Intersection')
+
+        parameters = {'LAYERS': layers,                
+                     'OUTPUT' : output} 
+        points = processing.runAndLoadResults('qgis:mergevectorlayers', parameters)  
+       
+        for layer in QgsProject.instance().mapLayers().values():            
+            if layer.name() == 'Intersection': 
+               QgsProject.instance().removeMapLayers([layer.id()])
+        return
+
 
 class hcmgis_medialaxis_dialog(hcmgis_dialog, Ui_hcmgis_medialaxis_form):		
     def __init__(self, iface):
@@ -1747,7 +1820,7 @@ class hcmgis_medialaxis_dialog(hcmgis_dialog, Ui_hcmgis_medialaxis_form):
         self.LblStatus.clear()	
         layer = self.CboInput.currentLayer()
         if layer is None:
-            return u'No selected layers!'  
+            return u'No selected Layer!'  
         field = self.CboField.currentText()
         density = self.spinBox.value()
         output = str(self.output_file_name.filePath())
@@ -1787,7 +1860,7 @@ class hcmgis_centerline_dialog(hcmgis_dialog, Ui_hcmgis_centerline_form):
     def run(self):             		
         layer = self.CboInput.currentLayer()
         if layer is None:
-            return u'No selected layers!'  
+            return u'No selected Layer!'  
         density = self.spinBox.value()
         chksurround = self.chksurround.isChecked() 
         distance = self.distance.value()
@@ -1797,7 +1870,7 @@ class hcmgis_centerline_dialog(hcmgis_dialog, Ui_hcmgis_centerline_form):
             if message != None:
                 QMessageBox.critical(self.iface.mainWindow(), "Centerline in Polygon's Gaps", message)						               
             else: 
-                self.LblStatus.setText('Finish! ')  	
+                self.LblStatus.setText('Completed! ')  	
         else:
             #return u'Please select at least 1 feature to create centerline		
             QMessageBox.information(None,  "Centerline",u'Please select at least 1 feature to create Centerline!') 
@@ -1835,7 +1908,7 @@ class hcmgis_closestpair_dialog(hcmgis_dialog, Ui_hcmgis_closestpair_form):
         message = hcmgis_closest_farthest(layer,field,closest,farthest,self.hcmgis_status_callback)
         if message != None:
             QMessageBox.critical(self.iface.mainWindow(), "Closest/ farthest pair of Points", message)						               
-        else: self.LblStatus.setText('Finish! ')  			
+        else: self.LblStatus.setText('Completed! ')  			
         return
 
 # --------------------------------------------------------
@@ -1868,7 +1941,7 @@ class hcmgis_lec_dialog(hcmgis_dialog, Ui_hcmgis_lec_form):
             message = hcmgis_lec(layer,field, output ,self.hcmgis_status_callback)
             if message != None:
                 QMessageBox.critical(self.iface.mainWindow(), "Largest Empty Circle", message)						               
-            else: self.LblStatus.setText('Finish! ')  		
+            else: self.LblStatus.setText('Completed! ')  		
         return
     
 class hcmgis_font_convert_dialog(hcmgis_dialog, Ui_hcmgis_font_convert_form):	
@@ -1891,7 +1964,7 @@ class hcmgis_font_convert_dialog(hcmgis_dialog, Ui_hcmgis_font_convert_form):
         message = hcmgis_convertfont(input_layer,sE, dE, caseI,output_layer,self.hcmgis_status_callback) 
         if message != None:
             QMessageBox.critical(self.iface.mainWindow(), "Convert Font", message)						               
-        else: self.LblStatus.setText('Finish! ')  
+        else: self.LblStatus.setText('Completed! ')  
 
 #---------------------------
 # Split Fields
@@ -1919,7 +1992,7 @@ class hcmgis_split_field_dialog(hcmgis_dialog, Ui_hcmgis_split_field_form):
         message = hcmgis_split_field(layer, field, char,self.hcmgis_status_callback)
         if message != None:
             QMessageBox.critical(self.iface.mainWindow(), "Split Fields", message)						               
-        else: self.LblStatus.setText('Finish! ')  		
+        else: self.LblStatus.setText('Completed! ')  		
         return
 
 #------------------------------
@@ -1953,7 +2026,7 @@ class hcmgis_merge_field_dialog(hcmgis_dialog, Ui_hcmgis_merge_field_form):
             message = hcmgis_merge_field(layer, selectedfields, char,self.hcmgis_status_callback)
             if message != None:
                 QMessageBox.critical(self.iface.mainWindow(), "Merge Fields", message)						               
-            else: self.LblStatus.setText('Finish! ')  
+            else: self.LblStatus.setText('Completed! ')  
         return
 
 # Format Convert

@@ -1749,7 +1749,8 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
             for feat in layer.selectedFeatures():
                 # mem_layer = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr')
                 mem_layer = QgsVectorLayer('Polygon','polygon','memory')
-                mem_layer.dataProvider().setEncoding(u'UTF-8')
+                mem_layer.setCrs(layer.crs())
+                mem_layer.dataProvider().setEncoding(layer.dataProvider().encoding())
                 mem_layer_data = mem_layer.dataProvider()
                 attr = layer.dataProvider().fields().toList()
                 mem_layer_data.addAttributes(attr)
@@ -1768,7 +1769,8 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
             for feat in layer.getFeatures():
                 # mem_layer = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr')
                 mem_layer = QgsVectorLayer('Polygon','polygon','memory')
-                mem_layer.dataProvider().setEncoding(u'UTF-8')
+                mem_layer.dataProvider().setEncoding(layer.dataProvider().encoding())
+                mem_layer.setCrs(layer.crs())
                 mem_layer_data = mem_layer.dataProvider()
                 attr = layer.dataProvider().fields().toList()
                 mem_layer_data.addAttributes(attr)
@@ -1787,8 +1789,33 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
         layers =  QgsProject.instance().mapLayersByName('Intersection')
 
         parameters = {'LAYERS': layers,                
-                     'OUTPUT' : output} 
-        points = processing.runAndLoadResults('qgis:mergevectorlayers', parameters)  
+                     'OUTPUT' : 'memory:merge'} 
+        merge = processing.run('qgis:mergevectorlayers', parameters) 
+
+        output_layer = merge['OUTPUT']
+        # Create the output file
+        if not output:
+            message = "No output file name given"
+            print (message)
+            # return message
+
+        file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
+        output_file_format = file_formats[os.path.splitext(output)[1]]
+    
+        error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), layer.crs(), output_file_format, False)# Bool: slected feature only      
+
+        if error == QgsVectorFileWriter.NoError:
+            try:
+                split = QgsVectorLayer(output, QFileInfo(output).baseName(), 'ogr')
+                QgsProject.instance().addMapLayer(split)
+                qgis.utils.iface.setActiveLayer(split)
+                qgis.utils.iface.zoomToActiveLayer()  
+            except :
+                print('output: '+ str(output))
+        else:
+            message = "Failure creating output file: " + str(error_string)
+            print (message)
+            # return message 
        
         for layer in QgsProject.instance().mapLayers().values():            
             if layer.name() == 'Intersection': 

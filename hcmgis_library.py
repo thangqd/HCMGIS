@@ -371,7 +371,7 @@ def hcmgis_split_polygon(layer, parts,randompoints,status_callback = None):
         print(label)   
 
     parameters6 = {'INPUT': centroids['OUTPUT'],                  
-                    'BUFFER' : 200,
+                    'BUFFER' : 1000,
                     'OUTPUT' : 'memory:voronoi'} 
     voronoi = processing.run('qgis:voronoipolygons',parameters6)
     i+=1    

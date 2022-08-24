@@ -432,7 +432,7 @@ def hcmgis_split_polygon(layer, parts,randompoints,status_callback = None):
 def hcmgis_medialaxis(layer, field, density,output,status_callback = None):		
     ## create skeleton/ media axis     
     i = 0
-    steps =10      
+    steps =13      
     try:
         if layer.isValid() and layer.selectedFeatureCount() in range(1,100):
             parameters0 = {'INPUT':layer,
@@ -565,10 +565,48 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
     parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
                     'METHOD' : 0,
                     'TOLERANCE' : tolerance, # 0.1m
-                    'OUTPUT':  "memory:skeleton"}
-    skeleton = processing.run('qgis:simplifygeometries',parameter11) 
+                    'OUTPUT':  "memory:simplify"}
+    simplify = processing.run('qgis:simplifygeometries',parameter11) 
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. simplify'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)  
+
+    try:
+        parameter12 = {'INPUT':simplify['OUTPUT'],                    
+                        'OUTPUT':  "memory:explode"}
+        explode = processing.run('qgis:explodelines',parameter12) 
+
+        i+=1    
+        percent = int((i/steps)*100)
+        label = str(i)+ '/'+ str(steps)+ '. explode'
+        if status_callback:
+            status_callback(percent,label)
+        else:
+            print(label)
+            
+        parameter13 = {'LINES':explode['OUTPUT'],
+                        'ANGLE' : 30,
+                        'TYPE' : 1, # Keep the attribute of the longest line
+                        'OUTPUT':  "memory:skeleton"}
+        skeleton = processing.run('HCMGISTools:directionalmerge',parameter13) 
+
+        i+=1    
+        percent = int((i/steps)*100)
+        label = str(i)+ '/'+ str(steps)+ '. directionalmerge'
+        if status_callback:
+            status_callback(percent,label)
+        else:
+            print(label)
+
+        output_layer = skeleton['OUTPUT']
+    except:
+        output_layer = simplify['OUTPUT']
+
     
-    output_layer = skeleton['OUTPUT']
      # Create the output file
     if not output:
         message = "No output file name given"
@@ -599,17 +637,17 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
     if status_callback:
         status_callback(percent,label)
     else:
-        print(label)      
-        
+        print(label)
     return
+
 
 # Centerline of a polygon block
 def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback = None):	
     ## extract gaps of polygon
     # fix geometries
     if chksurround: 
-        steps = 16
-    else: steps = 15 
+        steps = 18
+    else: steps = 16 
     i = 0
     # fix geometries
     try:
@@ -685,8 +723,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     else:
         print(label)
     
-    
-    #create convexhull
+        #create convexhull
     parameters1_5 = {'INPUT':simplify['OUTPUT'],					
                     'OUTPUT':  "memory:convexhull"}
     convexhull = processing.run('qgis:convexhull',parameters1_5)
@@ -814,8 +851,8 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         print(label)
     
     parameter10 =  {'INPUT':deleteduplicategeometries['OUTPUT'],
-                    'OUTPUT':  "memory:medialaxis_dissolve"}
-    medialaxis_dissolve = processing.run('qgis:dissolve',parameter10)
+                    'OUTPUT':  "memory:dissolve"}
+    dissolve = processing.run('qgis:dissolve',parameter10)
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. dissolve'    
     percent = int((i/steps)*100)
@@ -824,12 +861,50 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     else:
         print(label)    
     
-    parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
+    parameter11 = {'INPUT':dissolve['OUTPUT'],
                     'METHOD' : 0,
                     'TOLERANCE' : tolerance,
-                    'OUTPUT':  "memory:centerline"}
-    centerline = processing.run('qgis:simplifygeometries',parameter11) 
-    output_layer = centerline['OUTPUT']   
+                    'OUTPUT':  "memory:simplify"}
+    simplify = processing.run('qgis:simplifygeometries',parameter11) 
+    i+=1    
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. simplify'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+        
+    try:
+        parameter12 = {'INPUT':simplify['OUTPUT'],                    
+                        'OUTPUT':  "memory:explode"}
+        explode = processing.run('qgis:explodelines',parameter12) 
+        
+        i+=1    
+        percent = int((i/steps)*100)
+        label = str(i)+ '/'+ str(steps)+ '. explode'
+        if status_callback:
+            status_callback(percent,label)
+        else:
+            print(label)
+
+
+        parameter13 = {'LINES':explode['OUTPUT'],
+                        'ANGLE' : 30,
+                        'TYPE' : 1, # Keep the attribute of the longest line
+                        'OUTPUT':  "memory:centerline"}
+        centerline = processing.run('HCMGISTools:directionalmerge',parameter13) 
+
+        i+=1    
+        percent = int((i/steps)*100)
+        label = str(i)+ '/'+ str(steps)+ '. directionalmerge'
+        if status_callback:
+            status_callback(percent,label)
+        else:
+            print(label)
+
+        output_layer = centerline['OUTPUT']   
+    except: 
+        output_layer = simplify['OUTPUT']  
 
     # Create the output file
     if not output:
@@ -853,16 +928,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     else:
         message = "Failure creating output file: " + str(error_string)
         print (message)
-        return message 
-
-    i+=1
-    label = str(i)+ '/'+ str(steps)+ '. simplifygeometries'  
-    percent = int((i/steps)*100)
-    if status_callback:
-        status_callback(percent,label)
-    else:
-        print(label)  
-    
+        return message     
     return
 
 ################################################################

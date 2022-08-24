@@ -24,6 +24,7 @@ class Ui_hcmgis_merge_field_form(object):
         self.LblInput.setObjectName("LblInput")
         self.verticalLayout.addWidget(self.LblInput)
         self.CboInput = QgsMapLayerComboBox(hcmgis_merge_field_form)
+        self.CboInput.setShowCrs(True)
         self.CboInput.setObjectName("CboInput")
         self.verticalLayout.addWidget(self.CboInput)
         self.LblOutput_2 = QtWidgets.QLabel(hcmgis_merge_field_form)

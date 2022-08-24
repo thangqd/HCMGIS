@@ -16,7 +16,7 @@ class Ui_hcmgis_spit_polygon_form(object):
         hcmgis_spit_polygon_form.setObjectName("hcmgis_spit_polygon_form")
         hcmgis_spit_polygon_form.setWindowModality(QtCore.Qt.ApplicationModal)
         hcmgis_spit_polygon_form.setEnabled(True)
-        hcmgis_spit_polygon_form.resize(461, 318)
+        hcmgis_spit_polygon_form.resize(529, 318)
         hcmgis_spit_polygon_form.setMouseTracking(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(hcmgis_spit_polygon_form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -47,6 +47,7 @@ class Ui_hcmgis_spit_polygon_form(object):
         self.spRandomPoints.setObjectName("spRandomPoints")
         self.gridLayout.addWidget(self.spRandomPoints, 6, 1, 1, 1)
         self.CboInput = QgsMapLayerComboBox(hcmgis_spit_polygon_form)
+        self.CboInput.setShowCrs(True)
         self.CboInput.setObjectName("CboInput")
         self.gridLayout.addWidget(self.CboInput, 1, 0, 1, 2)
         self.LblParts = QtWidgets.QLabel(hcmgis_spit_polygon_form)
@@ -79,7 +80,7 @@ class Ui_hcmgis_spit_polygon_form(object):
 
     def retranslateUi(self, hcmgis_spit_polygon_form):
         _translate = QtCore.QCoreApplication.translate
-        hcmgis_spit_polygon_form.setWindowTitle(_translate("hcmgis_spit_polygon_form", "Spilt Polygons into (almost) equal parts"))
+        hcmgis_spit_polygon_form.setWindowTitle(_translate("hcmgis_spit_polygon_form", " Spilt Polygons into (almost) equal parts by Voronoi Diagram"))
         self.LblRandomPoints.setText(_translate("hcmgis_spit_polygon_form", "Number of random points"))
         self.LblOutput.setText(_translate("hcmgis_spit_polygon_form", "Output"))
         self.LblParts.setText(_translate("hcmgis_spit_polygon_form", "Number of equal parts"))

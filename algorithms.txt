@@ -1,3 +1,4 @@
+https://api.openstreetmap.org/api/0.6/map?bbox=101.95,8.15,109.78,23.40
 C:\Users\THANGQD_HCMGIS\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\HCMGIS\forms
 =====================
 pyuic5 -x hcmgis_font_convert_form.ui -o hcmgis_font_convert_form.py

@@ -31,7 +31,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QgsMapLayerComboBox" name="CboInput"/>
+    <widget class="QgsMapLayerComboBox" name="CboInput">
+     <property name="showCrs">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="LblOutput_2">

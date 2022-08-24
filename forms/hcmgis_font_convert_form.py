@@ -27,6 +27,7 @@ class Ui_hcmgis_font_convert_form(object):
         self.LblInput.setObjectName("LblInput")
         self.gridLayout.addWidget(self.LblInput, 0, 0, 1, 3)
         self.CboInput = QgsMapLayerComboBox(hcmgis_font_convert_form)
+        self.CboInput.setShowCrs(True)
         self.CboInput.setObjectName("CboInput")
         self.gridLayout.addWidget(self.CboInput, 1, 0, 1, 3)
         self.LblDestFont = QtWidgets.QLabel(hcmgis_font_convert_form)

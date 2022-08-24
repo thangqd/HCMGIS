@@ -435,7 +435,7 @@ class hcmgis_menu ():
 
         # Split Polygon Submenu
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_split_polygon.png")
-        self.split_polygon_action = QAction(icon, u'Split Polygons', self.iface.mainWindow())
+        self.split_polygon_action = QAction(icon, u'Split Polygons by Voronoi Diagram', self.iface.mainWindow())
         self.split_polygon_action.triggered.connect(self.splitpolygon)
         self.geoprocessing_menu.addAction(self.split_polygon_action)
 

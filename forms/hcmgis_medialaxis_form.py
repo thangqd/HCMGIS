@@ -55,6 +55,7 @@ class Ui_hcmgis_medialaxis_form(object):
         self.CboField.setObjectName("CboField")
         self.gridLayout.addWidget(self.CboField, 3, 0, 1, 2)
         self.CboInput = QgsMapLayerComboBox(hcmgis_medialaxis_form)
+        self.CboInput.setShowCrs(True)
         self.CboInput.setObjectName("CboInput")
         self.gridLayout.addWidget(self.CboInput, 1, 0, 1, 2)
         self.output_file_name = QgsFileWidget(hcmgis_medialaxis_form)

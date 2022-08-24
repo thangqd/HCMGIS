@@ -55,7 +55,7 @@
       </widget>
      </item>
      <item row="9" column="0" colspan="2">
-      <widget class="QgsFileWidget" name="output_file_name"/>
+      <widget class="QgsFileWidget" name="output_file_name" native="true"/>
      </item>
      <item row="0" column="0" colspan="2">
       <widget class="QLabel" name="LblInput">
@@ -67,7 +67,7 @@
      <item row="4" column="0" colspan="2">
       <widget class="QCheckBox" name="chksurround">
        <property name="text">
-        <string>Also create line surrounding the polygon</string>
+        <string>Also create lines surrounding the polygon</string>
        </property>
        <property name="checked">
         <bool>false</bool>
@@ -82,7 +82,11 @@
       </widget>
      </item>
      <item row="1" column="0" colspan="2">
-      <widget class="QgsMapLayerComboBox" name="CboInput"/>
+      <widget class="QgsMapLayerComboBox" name="CboInput">
+       <property name="showCrs" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="8" column="0" colspan="2">
       <widget class="QLabel" name="LblOutput">

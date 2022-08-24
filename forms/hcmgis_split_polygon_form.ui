@@ -12,7 +12,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
+    <width>529</width>
     <height>318</height>
    </rect>
   </property>
@@ -20,7 +20,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>Spilt Polygons into (almost) equal parts</string>
+   <string> Spilt Polygons into (almost) equal parts by Voronoi Diagram</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -84,7 +84,11 @@
       </widget>
      </item>
      <item row="1" column="0" colspan="2">
-      <widget class="QgsMapLayerComboBox" name="CboInput"/>
+      <widget class="QgsMapLayerComboBox" name="CboInput">
+       <property name="showCrs">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="LblParts">

@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>422</width>
-    <height>319</height>
+    <height>320</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -31,7 +31,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QgsMapLayerComboBox" name="CboInput"/>
+    <widget class="QgsMapLayerComboBox" name="CboInput">
+     <property name="showCrs">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="LblInput_2">

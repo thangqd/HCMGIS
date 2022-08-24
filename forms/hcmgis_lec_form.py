@@ -43,6 +43,7 @@ class Ui_hcmgis_lec_form(object):
         self.LblOutput.setObjectName("LblOutput")
         self.gridLayout.addWidget(self.LblOutput, 4, 0, 1, 2)
         self.CboInput = QgsMapLayerComboBox(hcmgis_lec_form)
+        self.CboInput.setShowCrs(True)
         self.CboInput.setObjectName("CboInput")
         self.gridLayout.addWidget(self.CboInput, 1, 0, 1, 2)
         self.output_file_name = QgsFileWidget(hcmgis_lec_form)

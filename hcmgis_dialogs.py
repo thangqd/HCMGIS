@@ -493,6 +493,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         opendata_url =self.wfs_urls[idx]
         outdir = unicode(self.LinOutputFolder.displayText())
         wfs_format  = self.CboFormat.currentText().lower()
+        unzip_folder = ''
         ext = "." + wfs_format
         if (wfs_format == "json"):
             wfs_format = "application/json"
@@ -518,7 +519,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         ii = 0        
         if layernames is not None:
             for layer_name in layernames:
-                uri = opendata_url + "/wfs?version=1.0.0&request=GetFeature&typename="+ str(layer_name)                       	
+                uri = opendata_url + "/wfs?version=1.0.0&request=GetFeature&format_options=CHARSET:UTF-8&typename="+ str(layer_name)                       	
                 #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)                       	
                 if (not self.ChkSaveShapefile.isChecked()):
                     try:
@@ -533,7 +534,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                     except Exception as e:                      
                         QMessageBox.critical(self.iface.mainWindow(), "WFS", e)                                                                  
                 else:   
-                    uri = opendata_url + "/wfs?version=1.0.0&request=GetFeature&typename="+ str(layer_name)   
+                    uri = opendata_url + "/wfs?version=1.0.0&request=GetFeature&format_options=CHARSET:UTF-8&typename="+ str(layer_name)   
                     #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)                       	                                       	                   
                     uri += '&outputFormat='
                     uri += wfs_format
@@ -574,19 +575,37 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                                 # print (str(i))
                                 #i+=1                                                      
                             f.close()
-                            layer = QgsVectorLayer(filename, QFileInfo(filename).baseName(), 'ogr')
-                            layer.dataProvider().setEncoding(u'UTF-8')
-                            if (layer.isValid()):                     
-                                QgsProject.instance().addMapLayer(layer)                         
-                                ii+=1		
-                                self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and loaded")	
-                                percent_complete = ii/len(layernames)*100
-                                self.status.setValue(percent_complete)
-                                message = str(int(percent_complete)) + "%"
-                                self.status.setFormat(message)  
+                            unzip_folder = filename.replace('.zip','')
+                            if not os.path.exists (unzip_folder):
+                                os.mkdir(unzip_folder)                            
+                            with zipfile.ZipFile(filename) as zip_ref:
+                                zip_ref.extractall(unzip_folder)
+                            wholelist = os.listdir(unzip_folder)                           
+                            i = 0
+                            for file in wholelist:
+                                if ".cst" in file:
+                                    new_file_name = os.path.splitext(file)[0]+'.cpg'
+                                    if not os.path.exists (os.path.join(unzip_folder,new_file_name)):
+                                        os.rename(os.path.join(unzip_folder,file),os.path.join(unzip_folder,new_file_name))
+
+                                if ".shp" in file:
+                                    fileroute= unzip_folder+'/'+file
+                                    layer = QgsVectorLayer(fileroute,file[:-4],"ogr")
+                                    if (layer.isValid()):                     
+                                        QgsProject.instance().addMapLayer(layer)   
+                            # layer = QgsVectorLayer(filename, QFileInfo(filename).baseName(), 'ogr')
+                            # layer.dataProvider().setEncoding(u'UTF-8')
+                            # if (layer.isValid()):                     
+                            #     QgsProject.instance().addMapLayer(layer)                         
+                                        ii+=1		
+                                        self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and loaded")	
+                                        percent_complete = ii/len(layernames)*100
+                                        self.status.setValue(percent_complete)
+                                        message = str(int(percent_complete)) + "%"
+                                        self.status.setFormat(message)  
                     except Exception as e:
-                        qgis.utils.iface.addVectorLayer(uri, str(layer_name),"WFS")    
-                        QMessageBox.critical(self.iface.mainWindow(), "WFS", e)
+                        # qgis.utils.iface.addVectorLayer(uri, str(layer_name),"WFS")    
+                        QMessageBox.critical(self.iface.mainWindow(), "WFS", str(e))
             qgis.utils.iface.zoomToActiveLayer()
                                  
         return		
@@ -1733,7 +1752,7 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
         self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)		
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
-        self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'split')    
+        self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'splitted')    
    
               
     def run(self):             		
@@ -1764,6 +1783,7 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
                     QMessageBox.critical(self.iface.mainWindow(), "Split Polygons", message)						               
                 else: 
                     self.LblStatus.setText('Completed! ')  
+                del(mem_layer)
         else:
             #return u'Please select at least 1 feature to Split Polygon	
             for feat in layer.getFeatures():
@@ -1783,10 +1803,12 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
                 if message != None:
                     QMessageBox.critical(self.iface.mainWindow(), "Split Polygons", message)						               
                 else: 
-                    self.LblStatus.setText('Completed! ')         
+                    self.LblStatus.setText('Completed! ') 
+                del(mem_layer)        
 
-        #  layer list in the group
-        layers =  QgsProject.instance().mapLayersByName('Intersection')
+        #  layers named "Intersection"
+        layers = [layer.id() for layer in QgsProject.instance().mapLayersByName('Intersection') if layer.type() == QgsMapLayer.VectorLayer \
+            and layer.geometryType() == QgsWkbTypes.PolygonGeometry and layer.dataProvider().name() == 'memory'] # Polygon
 
         parameters = {'LAYERS': layers,                
                      'OUTPUT' : 'memory:merge'} 
@@ -1816,11 +1838,16 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
             message = "Failure creating output file: " + str(error_string)
             print (message)
             # return message 
-       
-        for layer in QgsProject.instance().mapLayers().values():            
-            if layer.name() == 'Intersection': 
-               QgsProject.instance().removeMapLayers([layer.id()])
+        
+        #Remove all memory Layers
+        QgsProject.instance().removeMapLayers(layers)
+
         return
+
+        # for layer in QgsProject.instance().mapLayers().values():  
+        #     if layer.type() == QgsMapLayer.VectorLayer and layer.name() == 'Intersection' and layer.geometryType() == QgsWkbTypes.PolygonGeometry: 
+        #         QgsProject.instance().removeMapLayers([layer.id()])
+        # return
 
 
 class hcmgis_medialaxis_dialog(hcmgis_dialog, Ui_hcmgis_medialaxis_form):		

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # --------------------------------------------------------
 #    hcmgisgis_dialogs - Dialog classes for hcmgis
@@ -8,6 +7,15 @@
 #    copyright            : (c) 2018 by Quach Dong Thang
 #    email                : quachdongthang@gmail.com
 # --------------------------------------------------------
+"""
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License v3.0.            *
+ *                                                                         *
+ ***************************************************************************/
+ """
+
 import csv
 import math
 import os.path

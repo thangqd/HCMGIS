@@ -1,9 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# --------------------------------------------------------
 #    hcmgis_library - hcmgis operation functions
+#
+#    begin                : 01/02/2018
+#    copyright            : (c) 2018 by Quach Dong Thang
+#    email                : quachdongthang@gmail.com
 # --------------------------------------------------------
+
+"""
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License v3.0.            *
+ *                                                                         *
+ ***************************************************************************/
+ """
 
 import io
 import re

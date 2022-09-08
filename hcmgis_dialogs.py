@@ -1056,7 +1056,8 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
         locale.setlocale(locale.LC_ALL, 'en_US')
     except:
         #locale.getlocale()
-        locale.resetlocale()
+        #locale.resetlocale()
+        pass
 
     country = ['Australia','Canada', 'United States of America', 'South America', 'Uganda', 'Tanzania', 'Nigeria', 'Kenya', 'Indonesia', 'Philippines', 'Malaysia']    
     us_states = ['Alabama','Alaska','Arizona','Arkansas','California',\

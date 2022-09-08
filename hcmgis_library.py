@@ -604,7 +604,7 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
                         'ANGLE' : 30,
                         'TYPE' : 1, # Keep the attribute of the longest line
                         'OUTPUT':  "memory:skeleton"}
-        skeleton = processing.run('HCMGISTools:directionalmerge',parameter13) 
+        skeleton = processing.run('becagistools:directionalmerge',parameter13) 
 
         i+=1    
         percent = int((i/steps)*100)

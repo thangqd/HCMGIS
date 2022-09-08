@@ -446,11 +446,11 @@ class hcmgis_menu ():
         self.geoprocessing_menu = QMenu(u'Geometry Processing')	
         self.hcmgis_add_submenu2(self.geoprocessing_menu, icon)
 
-        # Split Polygon Submenu
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_split_polygon.png")
-        self.split_polygon_action = QAction(icon, u'Split Polygons by Voronoi Diagram', self.iface.mainWindow())
-        self.split_polygon_action.triggered.connect(self.splitpolygon)
-        self.geoprocessing_menu.addAction(self.split_polygon_action)
+        # # Split Polygon Submenu
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_split_polygon.png")
+        # self.split_polygon_action = QAction(icon, u'Split Polygons by Voronoi Diagram', self.iface.mainWindow())
+        # self.split_polygon_action.triggered.connect(self.splitpolygon)
+        # self.geoprocessing_menu.addAction(self.split_polygon_action)
 
         # Media Axis Submenu
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_skeleton.png")

@@ -396,7 +396,6 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.Filter.setFocus(True)
         QWidget.setTabOrder(self.Filter, self.TblWFSLayers)      
-        self.TblWFSLayers.doubleClicked.connect(self.run)
         self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
 
         project = QgsProject.instance()

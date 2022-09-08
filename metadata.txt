@@ -13,4 +13,3 @@ repository=https://github.com/thangqd/HCMGIS
 experimental=False
 deprecated=False
 icon=icons/hcmgis_opendata.png
-plugin_dependencies = BecaGISTools

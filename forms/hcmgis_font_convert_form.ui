@@ -37,7 +37,7 @@
      </item>
      <item row="1" column="0" colspan="3">
       <widget class="QgsMapLayerComboBox" name="CboInput">
-       <property name="showCrs">
+       <property name="showCrs" stdset="0">
         <bool>true</bool>
        </property>
       </widget>
@@ -73,7 +73,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Title (Hoa Mỗi từ)</string>
+         <string>Title (Hoa Mỗi Từ)</string>
         </property>
        </item>
       </widget>
@@ -167,7 +167,7 @@
       </widget>
      </item>
      <item row="7" column="0" colspan="3">
-      <widget class="QgsFileWidget" name="output_file_name"/>
+      <widget class="QgsFileWidget" name="output_file_name" native="true"/>
      </item>
     </layout>
    </item>

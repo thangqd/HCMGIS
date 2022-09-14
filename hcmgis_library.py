@@ -1326,26 +1326,24 @@ def hcmgis_convertfont(layer, sE, dE, caseI, output_layer, status_callback = Non
     totalfeaturecount = input_layer.featureCount()
     fields = []
     for field in input_layer.fields():
-        if field.typeName() == 'String':
-            fields.append (field.name())
+        if field.type() == QVariant.String:
+            fields.append (field.name())  
+
     for feat in  input_layer.getFeatures():
         for tf in fields:
             oldValue = feat[tf]
+            newValue = oldValue
             if oldValue != None:
-                if sE == _VNIWin:
-                    # Convert VNI-Win to Unicode
-                    newValue = ConvertVNIWindows(oldValue)
-                    # if targerEncode is not Unicode -> Convert to other options
-                    if dE !=  _Unicode:
-                        newValue = Convert(newValue,_Unicode,dE)
-                else:
-                    newValue = Convert(oldValue,sE,dE)
+                if (sE != None) and (dE != None) and (sE != dE):                
+                    if (sE == _VNIWin) and (dE ==_Unicode):
+                        newValue = ConvertVNIWindows(oldValue)
+                    else:
+                        newValue = Convert(oldValue,sE,dE)              
                 # Character Case-setting                                
-                if caseI !=  "none":
+                if caseI !=  None:
                     newValue = ChangeCase(newValue, caseI)                        
-                # update new value
-                feat[tf] = newValue						
-            else: pass									                        
+            # update new value
+            feat[tf] = newValue						
         shapeWriter.addFeature(feat)
         featurecount += 1		                                              
         percent = (featurecount/float(totalfeaturecount)) * 100
@@ -1449,15 +1447,15 @@ def GetEncodeIndex(encodeTxt):
         "TCVN3" : _TCVN3,
         "VNI-Windows": _VNIWin,
         "ANSI (Khong dau)" : _KhongDau,
-    }.get(encodeTxt,_Unicode)
+    }.get(encodeTxt)
 
 def GetCaseIndex(cText):
     return{
         u'UPPER CASE (IN HOA)' : "upper",
         u'lower case (in thường)' : "lower",
         u'Capitalize (Hoa đầu câu)' : "capitalize",
-        u'Title (Hoa Mỗi từ)' : "title",
-    }.get(cText, "none")
+        u'Title (Hoa Mỗi Từ)' : "title",
+    }.get(cText)
         
 def ChangeCase(str, caseIndex):
     result = u''

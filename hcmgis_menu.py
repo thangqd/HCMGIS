@@ -276,6 +276,14 @@ class hcmgis_menu ():
         self.stamenwatercolor_action = QAction(icon, u'Stamen Watercolor', self.iface.mainWindow())
         self.stamenwatercolor_action.triggered.connect(lambda: hcmgis_basemap('Stamen Watercolor'))		
         self.basemap_menu.addAction(self.stamenwatercolor_action)
+        
+        self.basemap_menu.addSeparator()        
+        # NASA
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_nasa_black.png")
+        self.nasa_black_action = QAction(icon, u'NASA Black Marble', self.iface.mainWindow())
+        self.nasa_black_action.triggered.connect(lambda: hcmgis_basemap('NASA Black Marble'))		
+        self.basemap_menu.addAction(self.nasa_black_action)
+
 
         self.basemap_menu.addSeparator()        
         # Wikimedia Maps

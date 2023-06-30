@@ -2526,9 +2526,10 @@ def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
 
 
 def hcmgis_gadm(country, country_short, outdir,status_callback = None):  
-    pre = 'https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_'
+    pre = 'https://geodata.ucdavis.edu/gadm/gadm4.1/shp/gadm41_'
     suf = '_shp.zip'
     download_url_shp = pre + country_short + suf
+    print (download_url_shp)
     zip_filename_shp = outdir + '/'+ country_short +  suf
     unzip_folder_shp = zip_filename_shp.replace('.zip','')
     

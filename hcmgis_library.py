@@ -1044,7 +1044,7 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
     fieldnumber =delaunay_clean.fields().count()    
     for feature in  delaunay_clean.getFeatures():   
         d = QgsDistanceArea()
-        length = d.convertLengthMeasurement(d.measureLength(feature.geometry()),0) #convert to meters
+        length = d.convertLengthMeasurement(d.measureLength(feature.geometry()),QgsUnitTypes.DistanceMeters) #convert to meters
         delaunay_clean.changeAttributeValue(feature.id(), fieldnumber-1,length )
 
     for idx in range(delaunay_clean.fields().count()):
@@ -1162,7 +1162,7 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
     fieldnumber =convexhull_clean.fields().count()    
     for feature in  convexhull_clean.getFeatures():   
         d = QgsDistanceArea()
-        length = d.convertLengthMeasurement(d.measureLength(feature.geometry()),0) #convert to meters
+        length = d.convertLengthMeasurement(d.measureLength(feature.geometry()),QgsUnitTypes.DistanceMeters) #convert to meters
         convexhull_clean.changeAttributeValue(feature.id(), fieldnumber-1,length )
 
     for idx in range(delaunay_clean.fields().count()):

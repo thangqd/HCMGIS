@@ -1,17 +1,5 @@
 # HCMGIS - Basemaps, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
-## ✅How to install
-
-### In QGIS, go to menu Plugins 👉 Manage and Install Plugins...👉Search 'HCMGIS' 👉 Install Plugin
-#### [HCMGIS Plugin on QGIS Plugin Repo](https://plugins.qgis.org/plugins/HCMGIS/)
-
-<div align="center">
-  <img src="icons/hcmgis_install.png" align="center"/>
-</div>
-
-
-## ✅How to use
-
 **- Basemap**: Add global basemaps from Google, Carto, ESRI, OSM Stamen, etc.
 
 **- Batch Converter**: Batch convert CSV to Point Shapefile and other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;

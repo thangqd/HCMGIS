@@ -46,33 +46,33 @@ from qgis.gui import QgsMessageBar
 from math import *
 # Used instead of "import math" so math functions can be used without "math." prefix
 import qgis.utils
-import processing   
+import processing
 from osgeo import gdal
 from osgeo import ogr
 from osgeo import osr
-import os 
+import os
 
 #global _Unicode, _TCVN3, _VNIWin, _KhongDau
 _Unicode = [
 u'â',u'Â',u'ă',u'Ă',u'đ',u'Đ',u'ê',u'Ê',u'ô',u'Ô',u'ơ',u'Ơ',u'ư',u'Ư',u'á',u'Á',u'à',u'À',u'ả',u'Ả',u'ã',u'Ã',u'ạ',u'Ạ',
 u'ấ',u'Ấ',u'ầ',u'Ầ',u'ẩ',u'Ẩ',u'ẫ',u'Ẫ',u'ậ',u'Ậ',u'ắ',u'Ắ',u'ằ',u'Ằ',u'ẳ',u'Ẳ',u'ẵ',u'Ẵ',u'ặ',u'Ặ',
-u'é',u'É',u'è',u'È',u'ẻ',u'Ẻ',u'ẽ',u'Ẽ',u'ẹ',u'Ẹ',u'ế',u'Ế',u'ề',u'Ề',u'ể',u'Ể',u'ễ',u'Ễ',u'ệ',u'Ệ',u'í',u'Í',u'ì',u'Ì',u'ỉ',u'Ỉ',u'ĩ',u'Ĩ',u'ị',u'Ị',    
-u'ó',u'Ó',u'ò',u'Ò',u'ỏ',u'Ỏ',u'õ',u'Õ',u'ọ',u'Ọ',u'ố',u'Ố',u'ồ',u'Ồ',u'ổ',u'Ổ',u'ỗ',u'Ỗ',u'ộ',u'Ộ',u'ớ',u'Ớ',u'ờ',u'Ờ',u'ở',u'Ở',u'ỡ',u'Ỡ',u'ợ',u'Ợ',    
-u'ú',u'Ú',u'ù',u'Ù',u'ủ',u'Ủ',u'ũ',u'Ũ',u'ụ',u'Ụ',u'ứ',u'Ứ',u'ừ',u'Ừ',u'ử',u'Ử',u'ữ',u'Ữ',u'ự',u'Ự',u'ỳ',u'Ỳ',u'ỷ',u'Ỷ',u'ỹ',u'Ỹ',u'ỵ',u'Ỵ',u'ý',u'Ý'    
+u'é',u'É',u'è',u'È',u'ẻ',u'Ẻ',u'ẽ',u'Ẽ',u'ẹ',u'Ẹ',u'ế',u'Ế',u'ề',u'Ề',u'ể',u'Ể',u'ễ',u'Ễ',u'ệ',u'Ệ',u'í',u'Í',u'ì',u'Ì',u'ỉ',u'Ỉ',u'ĩ',u'Ĩ',u'ị',u'Ị',
+u'ó',u'Ó',u'ò',u'Ò',u'ỏ',u'Ỏ',u'õ',u'Õ',u'ọ',u'Ọ',u'ố',u'Ố',u'ồ',u'Ồ',u'ổ',u'Ổ',u'ỗ',u'Ỗ',u'ộ',u'Ộ',u'ớ',u'Ớ',u'ờ',u'Ờ',u'ở',u'Ở',u'ỡ',u'Ỡ',u'ợ',u'Ợ',
+u'ú',u'Ú',u'ù',u'Ù',u'ủ',u'Ủ',u'ũ',u'Ũ',u'ụ',u'Ụ',u'ứ',u'Ứ',u'ừ',u'Ừ',u'ử',u'Ử',u'ữ',u'Ữ',u'ự',u'Ự',u'ỳ',u'Ỳ',u'ỷ',u'Ỷ',u'ỹ',u'Ỹ',u'ỵ',u'Ỵ',u'ý',u'Ý'
 ]
 _TCVN3 = [
 u'©',u'¢',u'¨',u'¡',u'®',u'§',u'ª',u'£',u'«',u'¤',u'¬',u'¥',u'­',u'¦',u'¸',u'¸',u'µ',u'µ',u'¶',u'¶',u'·',u'·',u'¹',u'¹',
 u'Ê',u'Ê',u'Ç',u'Ç',u'È',u'È',u'É',u'É',u'Ë',u'Ë',u'¾',u'¾',u'»',u'»',u'¼',u'¼',u'½',u'½',u'Æ',u'Æ',
-u'Ð',u'Ð',u'Ì',u'Ì',u'Î',u'Î',u'Ï',u'Ï',u'Ñ',u'Ñ',u'Õ',u'Õ',u'Ò',u'Ò',u'Ó',u'Ó',u'Ô',u'Ô',u'Ö',u'Ö',u'Ý',u'Ý',u'×',u'×',u'Ø',u'Ø',u'Ü',u'Ü',u'Þ',u'Þ',    
-u'ã',u'ã',u'ß',u'ß',u'á',u'á',u'â',u'â',u'ä',u'ä',u'è',u'è',u'å',u'å',u'æ',u'æ',u'ç',u'ç',u'é',u'é',u'í',u'í',u'ê',u'ê',u'ë',u'ë',u'ì',u'ì',u'î',u'î',    
-u'ó',u'ó',u'ï',u'ï',u'ñ',u'ñ',u'ò',u'ò',u'ô',u'ô',u'ø',u'ø',u'õ',u'õ',u'ö',u'ö',u'÷',u'÷',u'ù',u'ù',u'ú',u'ú',u'û',u'û',u'ü',u'ü',u'þ',u'þ',u'ý',u'ý'     
+u'Ð',u'Ð',u'Ì',u'Ì',u'Î',u'Î',u'Ï',u'Ï',u'Ñ',u'Ñ',u'Õ',u'Õ',u'Ò',u'Ò',u'Ó',u'Ó',u'Ô',u'Ô',u'Ö',u'Ö',u'Ý',u'Ý',u'×',u'×',u'Ø',u'Ø',u'Ü',u'Ü',u'Þ',u'Þ',
+u'ã',u'ã',u'ß',u'ß',u'á',u'á',u'â',u'â',u'ä',u'ä',u'è',u'è',u'å',u'å',u'æ',u'æ',u'ç',u'ç',u'é',u'é',u'í',u'í',u'ê',u'ê',u'ë',u'ë',u'ì',u'ì',u'î',u'î',
+u'ó',u'ó',u'ï',u'ï',u'ñ',u'ñ',u'ò',u'ò',u'ô',u'ô',u'ø',u'ø',u'õ',u'õ',u'ö',u'ö',u'÷',u'÷',u'ù',u'ù',u'ú',u'ú',u'û',u'û',u'ü',u'ü',u'þ',u'þ',u'ý',u'ý'
 ]
 _VNIWin = [
 u'aâ',u'AÂ',u'aê',u'AÊ',u'ñ',u'Ñ',u'eâ',u'EÂ',u'oâ',u'OÂ',u'ô',u'Ô',u'ö',u'Ö',u'aù',u'AÙ',u'aø',u'AØ',u'aû',u'AÛ',u'aõ',u'AÕ',u'aï',u'AÏ',
 u'aá',u'AÁ',u'aà',u'AÀ',u'aå',u'AÅ',u'aã',u'AÃ',u'aä',u'AÄ',u'aé',u'AÉ',u'aè',u'AÈ',u'aú',u'AÚ',u'aü',u'AÜ',u'aë',u'AË',
-u'eù',u'EÙ',u'eø',u'EØ',u'eû',u'EÛ',u'eõ',u'EÕ',u'eï',u'EÏ',u'eá',u'EÁ',u'eà',u'EÀ',u'eå',u'EÅ',u'eã',u'EÃ',u'eä',u'EÄ',u'í',u'Í',u'ì',u'Ì',u'æ',u'Æ',u'ó',u'Ó',u'ò',u'Ò',    
-u'où',u'OÙ',u'oø',u'OØ',u'oû',u'OÛ',u'oõ',u'OÕ',u'oï',u'OÏ',u'oá',u'OÁ',u'oà',u'OÀ',u'oå',u'OÅ',u'oã',u'OÃ',u'oä',u'OÄ',u'ôù',u'ÔÙ',u'ôø',u'ÔØ',u'ôû',u'ÔÛ',u'ôõ',u'ÔÕ',u'ôï',u'ÔÏ',    
-u'uù',u'UÙ',u'uø',u'UØ',u'uû',u'UÛ',u'uõ',u'UÕ',u'uï',u'UÏ',u'öù',u'ÖÙ',u'öø',u'ÖØ',u'öû',u'ÖÛ',u'öõ',u'ÖÕ',u'öï',u'ÖÏ',u'yø',u'YØ',u'yû',u'YÛ',u'yõ',u'YÕ',u'î',u'Î',u'yù',u'YÙ'    
+u'eù',u'EÙ',u'eø',u'EØ',u'eû',u'EÛ',u'eõ',u'EÕ',u'eï',u'EÏ',u'eá',u'EÁ',u'eà',u'EÀ',u'eå',u'EÅ',u'eã',u'EÃ',u'eä',u'EÄ',u'í',u'Í',u'ì',u'Ì',u'æ',u'Æ',u'ó',u'Ó',u'ò',u'Ò',
+u'où',u'OÙ',u'oø',u'OØ',u'oû',u'OÛ',u'oõ',u'OÕ',u'oï',u'OÏ',u'oá',u'OÁ',u'oà',u'OÀ',u'oå',u'OÅ',u'oã',u'OÃ',u'oä',u'OÄ',u'ôù',u'ÔÙ',u'ôø',u'ÔØ',u'ôû',u'ÔÛ',u'ôõ',u'ÔÕ',u'ôï',u'ÔÏ',
+u'uù',u'UÙ',u'uø',u'UØ',u'uû',u'UÛ',u'uõ',u'UÕ',u'uï',u'UÏ',u'öù',u'ÖÙ',u'öø',u'ÖØ',u'öû',u'ÖÛ',u'öõ',u'ÖÕ',u'öï',u'ÖÏ',u'yø',u'YØ',u'yû',u'YÛ',u'yõ',u'YÕ',u'î',u'Î',u'yù',u'YÙ'
 ]
 _KhongDau = [
 u'a',u'A',u'a',u'A',u'd',u'D',u'e',u'E',u'o',u'O',u'o',u'O',u'u',u'U',u'a',u'A',u'a',u'A',u'a',u'A',u'a',u'A',u'a',u'A',
@@ -120,8 +120,8 @@ basemap_urls = ['https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','https://mt
                 'http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D',\
                 'https://thuduc-maps.hcmgis.vn/thuducserver/gwc/service/wmts?layer=thuduc:thuduc_maps&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
                 #'https://becamaps.vntts.vn/geoserver/gwc/service/wmts?layer=osm:osm_vietnam&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-                ]                 
-              
+                ]
+
 #--------------------------------------------------------
 #    Add basemap
 # --------------------------------------------------------
@@ -144,24 +144,24 @@ def hcmgis_basemap_load():
         QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
         QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
         i+=1
-        print(str(i) + ('. ')+ source[1] +' added')        
+        print(str(i) + ('. ')+ source[1] +' added')
         try:
-            qgis.utils.iface.reloadConnections()    
+            qgis.utils.iface.reloadConnections()
         except:
             print('Reload Connection failed!')
-         
+
 def hcmgis_basemap(basemap_name):
     idx = basemap_names.index(basemap_name)
-    basemap_url = basemap_urls[idx]   
+    basemap_url = basemap_urls[idx]
     if ( basemap_name == 'Vietbando Maps'):
         basemap_uri = "type=xyz&url="+basemap_url
-    else: 
+    else:
         basemap_uri = "type=xyz&url="+ requests.utils.quote(basemap_url)
-    
-    xyz_layer = QgsRasterLayer(basemap_uri,basemap_name, 'wms') 
-    if xyz_layer.isValid():    
+
+    xyz_layer = QgsRasterLayer(basemap_uri,basemap_name, 'wms')
+    if xyz_layer.isValid():
         QgsProject.instance().addMapLayer(xyz_layer)
-        source = ["connections-xyz",basemap_name,"","","",basemap_url,"","22","0"]   
+        source = ["connections-xyz",basemap_name,"","","",basemap_url,"","22","0"]
         connectionType = source[0]
         connectionName = source[1]
         QSettings().setValue("qgis/%s/%s/authcfg" % (connectionType, connectionName), source[2])
@@ -171,11 +171,11 @@ def hcmgis_basemap(basemap_name):
         QSettings().setValue("qgis/%s/%s/username" % (connectionType, connectionName), source[6])
         QSettings().setValue("qgis/%s/%s/zmax" % (connectionType, connectionName), source[7])
         QSettings().setValue("qgis/%s/%s/zmin" % (connectionType, connectionName), source[8])
-        qgis.utils.iface.reloadConnections()              
-    else: 
+        qgis.utils.iface.reloadConnections()
+    else:
         print('Add basemap failed!')
-       
-def hcmgis_covid19():  
+
+def hcmgis_covid19():
         uri_live_update = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Coronavirus_2019_nCoV_Cases/FeatureServer/2/query?where=1%3D1&outFields=*&outSR=4326&f=geojson'
         layer_name= 'global_covid19_live_update'
         project = QgsProject.instance()
@@ -191,11 +191,11 @@ def hcmgis_covid19():
             if not json_file_live_update.isValid:
                 QMessageBox.warning(None, "Invalid Layer", "Global COVID-19 Live Update Download failed!")
                 return
-            else:	
-                QgsProject.instance().addMapLayer(json_file_live_update)					
-        except: pass                 
-    
-    
+            else:
+                QgsProject.instance().addMapLayer(json_file_live_update)
+        except: pass
+
+
 def hcmgis_covid19_timeseries():
     uri = ['https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
@@ -218,19 +218,19 @@ def hcmgis_covid19_timeseries():
            home_path = os.path.expanduser('~')
         csv_name = os.path.join(home_path, layername[i] + '.csv')
         shapefile_name = os.path.join(home_path, layername[i] + '.geojson')
-        
+
         #urllib.request.urlretrieve(uri[i], csv_name)
-        hcmgis_csv2shp(uri[i], "Lat", "Long", shapefile_name)	
-        print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))		
+        hcmgis_csv2shp(uri[i], "Lat", "Long", shapefile_name)
+        print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))
         covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
         try:
             if not covidlayer.isValid():
-                QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')			
+                QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')
             else:
-                QgsProject.instance().addMapLayer(covidlayer)		        
+                QgsProject.instance().addMapLayer(covidlayer)
         except:
             pass
-       
+
 def hcmgis_covid19_vaccination_timeseries():
     uri = ['https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/global_data/time_series_covid19_vaccine_doses_admin_global.csv'
         ]
@@ -249,29 +249,29 @@ def hcmgis_covid19_vaccination_timeseries():
            home_path = os.path.expanduser('~')
         csv_name = os.path.join(home_path, layername[i] + '.csv')
         shapefile_name = os.path.join(home_path, layername[i] + '.geojson')
-        
+
         #urllib.request.urlretrieve(uri[i], csv_name)
-        hcmgis_csv2shp(uri[i], "Lat", "Long_", shapefile_name)	
-        print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))		
+        hcmgis_csv2shp(uri[i], "Lat", "Long_", shapefile_name)
+        print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))
         covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
         try:
             if not covidlayer.isValid():
-                QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')			
+                QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')
             else:
-                QgsProject.instance().addMapLayer(covidlayer)		        
+                QgsProject.instance().addMapLayer(covidlayer)
         except:
             pass
 
 def hcmgis_covid19_vietnam0():
     uri_vietnam = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam'
-    
+
     vietnam = QgsVectorLayer(uri_vietnam, "Vietnam COVID-19 Live Update", "WFS")
 
     if not vietnam.isValid():
-        QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed or Please remove Layers from Layers Panel before redownload!")	
-        return		
-    else:	
-        QgsProject.instance().addMapLayer(vietnam)		
+        QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed or Please remove Layers from Layers Panel before redownload!")
+        return
+    else:
+        QgsProject.instance().addMapLayer(vietnam)
 
 def hcmgis_covid19_vietnam():
     uri_live_update = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam&format=application/json'
@@ -279,7 +279,7 @@ def hcmgis_covid19_vietnam():
     project = QgsProject.instance()
     home_path = project.homePath()
     if not home_path:
-       home_path = os.path.expanduser('~')        
+       home_path = os.path.expanduser('~')
     json_name_live_update = os.path.join(home_path, layer_name + '.json')
 
     urllib.request.urlretrieve(uri_live_update, json_name_live_update)
@@ -289,17 +289,17 @@ def hcmgis_covid19_vietnam():
         if not json_file_live_update.isValid:
             QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed!")
             return
-        else:	
-            QgsProject.instance().addMapLayer(json_file_live_update)					
-    except: pass                 		
+        else:
+            QgsProject.instance().addMapLayer(json_file_live_update)
+    except: pass
 
 #--------------------------------------------------------
 #    hcmgis_split_polygon - Split Polygons into (almost) equal parts
 # --------------------------------------------------------
-def hcmgis_split_polygon(layer, parts,randompoints,status_callback = None):		
-    ## create skeleton/ media axis     
+def hcmgis_split_polygon(layer, parts,randompoints,status_callback = None):
+    ## create skeleton/ media axis
     i = 0
-    steps =6      
+    steps =6
     # try:
     #     if layer.isValid():
     #         parameters0 = {'INPUT':layer,
@@ -308,102 +308,102 @@ def hcmgis_split_polygon(layer, parts,randompoints,status_callback = None):
 
     #         parameters1 = {'INPUT':selectedfeature['OUTPUT'],
     #             'OUTPUT': 'memory:fix'}
-    #         fix = processing.run('qgis:fixgeometries',parameters1)           
-    #         polygon = fix['OUTPUT']                  
+    #         fix = processing.run('qgis:fixgeometries',parameters1)
+    #         polygon = fix['OUTPUT']
     # except:
-    #     temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running split polygon in QGIS console  
-        
+    #     temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running split polygon in QGIS console
+
     # parameters1 = {'INPUT':layer,
     #                 'OUTPUT': 'memory:fix'}
     # fix = processing.run('qgis:fixgeometries',parameters1)
     # polygon = fix['OUTPUT']
-    
+
     # i+=1
     # percent = int((i/steps)*100)
-    # label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
+    # label = str(i)+ '/'+ str(steps)+ '. fixgeometries'
     # if status_callback:
     #     status_callback(percent,label)
     # else:
-    #     print(label) 
+    #     print(label)
 
-    # creat random points inside Polygons  
+    # creat random points inside Polygons
     parameters2 = {'INPUT': layer,
                    'INCLUDE_POLYGON_ATTRIBUTES' : True,
                     'MAX_TRIES_PER_POINT' : None,
                     'MIN_DISTANCE' : 0,
                     'MIN_DISTANCE_GLOBAL' : 0,
-                    'POINTS_NUMBER' : randompoints, 
+                    'POINTS_NUMBER' : randompoints,
                     'SEED' : None ,
-                    'OUTPUT' : "memory:points"} 
-    points = processing.run('qgis:randompointsinpolygons', parameters2)	
-    i+=1    
+                    'OUTPUT' : "memory:points"}
+    points = processing.run('qgis:randompointsinpolygons', parameters2)
+    i+=1
     percent = int((i/steps)*100)
-    label = str(i)+ '/'+ str(steps)+ '. randompointsinpolygons'    
+    label = str(i)+ '/'+ str(steps)+ '. randompointsinpolygons'
     if status_callback:
         status_callback(percent,label)
     else:
-        print(label)    
-    
+        print(label)
+
 
     parameters3 =  {'INPUT': points['OUTPUT'],
                     'CLUSTERS' :parts,
                     'FIELD_NAME' : 'CLUSTER_ID',
                     'SIZE_FIELD_NAME' : 'CLUSTER_SIZE',
-                    'OUTPUT' : 'memory:kmeansclustering'} 
+                    'OUTPUT' : 'memory:kmeansclustering'}
     kmeansclustering = processing.run('qgis:kmeansclustering', parameters3)
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
-    label = str(i)+ '/'+ str(steps)+ '. kmeansclustering'    
+    label = str(i)+ '/'+ str(steps)+ '. kmeansclustering'
     if status_callback:
         status_callback(percent,label)
     else:
-        print(label)   
-   
-    parameters4 = {'INPUT': kmeansclustering['OUTPUT'],                  
+        print(label)
+
+    parameters4 = {'INPUT': kmeansclustering['OUTPUT'],
                     'GROUP_BY' : 'CLUSTER_ID',
                     'AGGREGATES' : [],
-                    'OUTPUT' : 'memory:aggregate'} 
+                    'OUTPUT' : 'memory:aggregate'}
     aggregate = processing.run('qgis:aggregate',parameters4)
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. aggregate'
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else:
-        print(label)       
-   
-    parameters5 = {'INPUT': aggregate['OUTPUT'],                  
+        print(label)
+
+    parameters5 = {'INPUT': aggregate['OUTPUT'],
                     'ALL_PARTS' : False,
-                    'OUTPUT' : 'memory:centroids'} 
+                    'OUTPUT' : 'memory:centroids'}
     centroids = processing.run('qgis:centroids',parameters5)
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. centroids'
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else:
-        print(label)   
+        print(label)
 
-    parameters6 = {'INPUT': centroids['OUTPUT'],                  
+    parameters6 = {'INPUT': centroids['OUTPUT'],
                     'BUFFER' : 1000,
-                    'OUTPUT' : 'memory:voronoi'} 
+                    'OUTPUT' : 'memory:voronoi'}
     voronoi = processing.run('qgis:voronoipolygons',parameters6)
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. voronoi'
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else:
-        print(label)  
-    
-    parameters7 = {'INPUT': layer,  
-                    'OVERLAY':   voronoi['OUTPUT'],           
+        print(label)
+
+    parameters7 = {'INPUT': layer,
+                    'OVERLAY':   voronoi['OUTPUT'],
                     # 'OUTPUT' : 'memory:intersection'
                     'OUTPUT' : 'TEMPORARY_OUTPUT'
-                } 
+                }
     # intersection = processing.runa('qgis:intersection',parameters7)
     intersection = processing.runAndLoadResults('qgis:intersection',parameters7)
-  
+
     # output_layer = intersection['OUTPUT']
     #  # Create the output file
     # if not output:
@@ -413,40 +413,40 @@ def hcmgis_split_polygon(layer, parts,randompoints,status_callback = None):
 
     # file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     # output_file_format = file_formats[os.path.splitext(output)[1]]
-   
-    # error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+
+    # error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only
 
     # if error == QgsVectorFileWriter.NoError:
     #     try:
     #         skeleton = QgsVectorLayer(output, QFileInfo(output).baseName(), 'ogr')
     #         QgsProject.instance().addMapLayer(skeleton)
     #         qgis.utils.iface.setActiveLayer(skeleton)
-    #         qgis.utils.iface.zoomToActiveLayer()  
+    #         qgis.utils.iface.zoomToActiveLayer()
     #     except :
     #         print('output: '+ str(output))
     # else:
     #     message = "Failure creating output file: " + str(error_string)
     #     print (message)
-    #     return message 
+    #     return message
 
     i+=1
-    label = str(i)+ '/'+ str(steps)+ '.intersection'  
+    label = str(i)+ '/'+ str(steps)+ '.intersection'
     percent = int((i/steps)*100)
     if status_callback:
         status_callback(percent,label)
     else:
-        print(label)      
-        
+        print(label)
+
     return
 #--------------------------------------------------------
 #    hcmgis_medialaxis - Create skeleton/ medial axis/ centerline of roads, rivers and similar linear structures
 # --------------------------------------------------------
 
 #for alg in QgsApplication.processingRegistry().algorithms(): print(alg.id())
-def hcmgis_medialaxis(layer, field, density,output,status_callback = None):		
-    ## create skeleton/ media axis     
+def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
+    ## create skeleton/ media axis
     i = 0
-    steps =13      
+    steps =13
     try:
         if layer.isValid() and layer.selectedFeatureCount() in range(1,100):
             parameters0 = {'INPUT':layer,
@@ -455,160 +455,160 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
 
             parameters1 = {'INPUT':selectedfeature['OUTPUT'],
                 'OUTPUT': 'memory:fix'}
-            fix = processing.run('qgis:fixgeometries',parameters1)           
-            polygon = fix['OUTPUT']                  
+            fix = processing.run('qgis:fixgeometries',parameters1)
+            polygon = fix['OUTPUT']
     except:
-        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running medialaxis in QGIS console  
-        
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running medialaxis in QGIS console
+
         parameters1 = {'INPUT':temp,
                         'OUTPUT': 'memory:fix'}
         fix = processing.run('qgis:fixgeometries',parameters1)
         polygon = fix['OUTPUT']
-    
+
     tolerance = 0.1 # for simplify geometry
     if polygon.crs().isGeographic():
-        density = density*10**(-5) # meter to degree 
+        density = density*10**(-5) # meter to degree
         tolerance = tolerance*10**(-5)
 
     i+=1
     percent = int((i/steps)*100)
-    label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
-    if status_callback:
-        status_callback(percent,label)
-    else:
-        print(label) 
-
-    # points along geometries
-    parameters3 = {'INPUT': polygon,
-                   'DISTANCE' :	density,
-                   'OUTPUT' : "memory:points"} 
-    points = processing.run('qgis:pointsalonglines', parameters3)	
-    i+=1    
-    percent = int((i/steps)*100)
-    label = str(i)+ '/'+ str(steps)+ '. pointsalonglines'    
-    if status_callback:
-        status_callback(percent,label)
-    else:
-        print(label)                 
-     
-    parameters4 = {'INPUT': points['OUTPUT'],
-                    'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
-    voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)
-    i+=1    
-    percent = int((i/steps)*100)
-    label = str(i)+ '/'+ str(steps)+ '. voronoipolygons'    
+    label = str(i)+ '/'+ str(steps)+ '. fixgeometries'
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
-                  
-    
+
+    # points along geometries
+    parameters3 = {'INPUT': polygon,
+                   'DISTANCE' :	density,
+                   'OUTPUT' : "memory:points"}
+    points = processing.run('qgis:pointsalonglines', parameters3)
+    i+=1
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. pointsalonglines'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+
+    parameters4 = {'INPUT': points['OUTPUT'],
+                    'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'}
+    voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)
+    i+=1
+    percent = int((i/steps)*100)
+    label = str(i)+ '/'+ str(steps)+ '. voronoipolygons'
+    if status_callback:
+        status_callback(percent,label)
+    else:
+        print(label)
+
+
     parameters5 = {'INPUT': voronoipolygon['OUTPUT'],
-                    'OUTPUT' : 'memory:voronoipolyline'} 
+                    'OUTPUT' : 'memory:voronoipolyline'}
     voronoipolyline = processing.run('qgis:polygonstolines',parameters5)
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. polygonstolines'
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else:
-        print(label)   
-    
-    parameters6 = {'INPUT': voronoipolyline['OUTPUT'],					
+        print(label)
+
+    parameters6 = {'INPUT': voronoipolyline['OUTPUT'],
                     'OUTPUT' : 'memory:explode'}
     explode = processing.run('qgis:explodelines',parameters6)
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. explodelines'
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
- 
-    
+
+
     parameters7 = {'INPUT': explode['OUTPUT'],
-                    'PREDICATE' : [6], # within					
-                    'INTERSECT':  polygon,		
-                    # 'INTERSECT': layer,		
+                    'PREDICATE' : [6], # within
+                    'INTERSECT':  polygon,
+                    # 'INTERSECT': layer,
                     'METHOD' : 0,
                     'OUTPUT' : 'memory:candidate'}
     candidate= processing.run('qgis:selectbylocation',parameters7)
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. selectbylocation'
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
-   
-    
+
+
     parameters8 = {'INPUT':candidate['OUTPUT'],
                     'OUTPUT':  'memory:medialaxis'}
     medialaxis = processing.run('qgis:saveselectedfeatures',parameters8)
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
- 
-    
+
+
     parameters9 = {'INPUT':medialaxis['OUTPUT'],
                     'OUTPUT':  'memory:deleteduplicategeometries'}
     deleteduplicategeometries = processing.run('qgis:deleteduplicategeometries',parameters9)
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     if status_callback:
         status_callback(percent,label)
- 
-    
+
+
     parameter10 =  {'INPUT':deleteduplicategeometries['OUTPUT'],
                     'FIELD' : field,
                     'OUTPUT':  "memory:medialaxis_dissolve"}
-    medialaxis_dissolve = processing.run('qgis:dissolve',parameter10) 
-    i+=1    
+    medialaxis_dissolve = processing.run('qgis:dissolve',parameter10)
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. dissolve'
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
-    
+
     parameter11 = {'INPUT':medialaxis_dissolve['OUTPUT'],
                     'METHOD' : 0,
                     'TOLERANCE' : tolerance, # 0.1m
                     'OUTPUT':  "memory:simplify"}
-    simplify = processing.run('qgis:simplifygeometries',parameter11) 
-    i+=1    
+    simplify = processing.run('qgis:simplifygeometries',parameter11)
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. simplify'
     if status_callback:
         status_callback(percent,label)
     else:
-        print(label)  
+        print(label)
 
     try:
-        parameter12 = {'INPUT':simplify['OUTPUT'],                    
+        parameter12 = {'INPUT':simplify['OUTPUT'],
                         'OUTPUT':  "memory:explode"}
-        explode = processing.run('qgis:explodelines',parameter12) 
+        explode = processing.run('qgis:explodelines',parameter12)
 
-        i+=1    
+        i+=1
         percent = int((i/steps)*100)
         label = str(i)+ '/'+ str(steps)+ '. explode'
         if status_callback:
             status_callback(percent,label)
         else:
             print(label)
-            
+
         parameter13 = {'LINES':explode['OUTPUT'],
                         'ANGLE' : 30,
                         'TYPE' : 1, # Keep the attribute of the longest line
                         'OUTPUT':  "memory:skeleton"}
-        skeleton = processing.run('becagistools:directionalmerge',parameter13) 
+        skeleton = processing.run('becagistools:directionalmerge',parameter13)
 
-        i+=1    
+        i+=1
         percent = int((i/steps)*100)
         label = str(i)+ '/'+ str(steps)+ '. directionalmerge'
         if status_callback:
@@ -620,7 +620,7 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
     except:
         output_layer = simplify['OUTPUT']
 
-    
+
      # Create the output file
     if not output:
         message = "No output file name given"
@@ -629,24 +629,24 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
 
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(output)[1]]
-   
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only
 
     if error == QgsVectorFileWriter.NoError:
         try:
             skeleton = QgsVectorLayer(output, QFileInfo(output).baseName(), 'ogr')
             QgsProject.instance().addMapLayer(skeleton)
             qgis.utils.iface.setActiveLayer(skeleton)
-            qgis.utils.iface.zoomToActiveLayer()  
+            qgis.utils.iface.zoomToActiveLayer()
         except :
             print('output: '+ str(output))
     else:
         message = "Failure creating output file: " + str(error_string)
         print (message)
-        return message 
+        return message
 
     i+=1
-    label = str(i)+ '/'+ str(steps)+ '.simplifygeometries'  
+    label = str(i)+ '/'+ str(steps)+ '.simplifygeometries'
     percent = int((i/steps)*100)
     if status_callback:
         status_callback(percent,label)
@@ -656,12 +656,12 @@ def hcmgis_medialaxis(layer, field, density,output,status_callback = None):
 
 
 # Centerline of a polygon block
-def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback = None):	
+def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback = None):
     ## extract gaps of polygon
     # fix geometries
-    if chksurround: 
+    if chksurround:
         steps = 18
-    else: steps = 16 
+    else: steps = 16
     i = 0
     # fix geometries
     try:
@@ -672,31 +672,31 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
 
             parameters1 = {'INPUT':selectedfeature['OUTPUT'],
                 'OUTPUT': 'memory:fix'}
-            fix = processing.run('qgis:fixgeometries',parameters1)           
-            polygon = fix['OUTPUT']                  
+            fix = processing.run('qgis:fixgeometries',parameters1)
+            polygon = fix['OUTPUT']
     except:
-        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console  
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console
         parameters1 = {'INPUT':temp,
                     'OUTPUT': 'memory:fix'}
         fix = processing.run('qgis:fixgeometries',parameters1)
         polygon = fix['OUTPUT']
-    
+
     tolerance = 0.1 # for simplify geometry
     if polygon.crs().isGeographic():
-        density = density*10**(-5) # meter to degree 
+        density = density*10**(-5) # meter to degree
         distance = distance*10**(-5)
         tolerance = tolerance*10**(-5)
 
     i+=1
-    label = str(i)+ '/'+ str(steps)+ '. fixgeometries'    
-    percent = int((i/steps)*100)    
+    label = str(i)+ '/'+ str(steps)+ '. fixgeometries'
+    percent = int((i/steps)*100)
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
     #QgsProcessingFeatureSourceDefinition(layer.id(), selectedFeaturesOnly=True, featureLimit=-1, geometryCheck=QgsFeatureRequest.GeometryAbortOnInvalid),
-    # aggregate selected polygons	
-    parameters1_2 = {'INPUT': polygon,                    
+    # aggregate selected polygons
+    parameters1_2 = {'INPUT': polygon,
                     'GROUP_BY' : 'NULL',
                     'AGGREGATES' : [],
                     'OUTPUT':  'memory:aggregate'}
@@ -704,13 +704,13 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     aggregate = processing.run('qgis:aggregate',parameters1_2)
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. aggregate'
-    percent = int((i/steps)*100)    
+    percent = int((i/steps)*100)
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
-    
-    # delete holes in aggregated polygons	
+
+    # delete holes in aggregated polygons
     parameter1_3 = {'INPUT':aggregate['OUTPUT'],
                     'MIN_AREA' : 0,
                     'OUTPUT':  "memory:deleteholes"}
@@ -722,7 +722,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         status_callback(percent,label)
     else:
         print(label)
-        
+
     # simplify geometries
     parameter1_4 = {'INPUT':deleteholes['OUTPUT'],
                     'METHOD' : 0,
@@ -736,9 +736,9 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         status_callback(percent,label)
     else:
         print(label)
-    
+
         #create convexhull
-    parameters1_5 = {'INPUT':simplify['OUTPUT'],					
+    parameters1_5 = {'INPUT':simplify['OUTPUT'],
                     'OUTPUT':  "memory:convexhull"}
     convexhull = processing.run('qgis:convexhull',parameters1_5)
     i+=1
@@ -748,15 +748,15 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         status_callback(percent,label)
     else:
         print(label)
-        
+
     if chksurround:
         parameters1_6 = {'INPUT':convexhull['OUTPUT'],
                     'DISTANCE' : distance,
                     'SEGMENTS' : 5,
-                    'END_CAP_STYLE' : 0, 
-                    'JOIN_STYLE' : 0, 
-                    'MITER_LIMIT' : 2, 
-                    'DISSOLVE' : False, 
+                    'END_CAP_STYLE' : 0,
+                    'JOIN_STYLE' : 0,
+                    'MITER_LIMIT' : 2,
+                    'DISSOLVE' : False,
                     'OUTPUT':  "memory:convexhull"}
         convexhull = processing.run('qgis:buffer',parameters1_6)
         i+=1
@@ -765,12 +765,12 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         if status_callback:
             status_callback(percent,label)
         else:
-            print(label) 
-        
-    
+            print(label)
+
+
     parameters1_7 = {'INPUT': convexhull['OUTPUT'],
                     'OVERLAY' : simplify['OUTPUT'],
-                    'OUTPUT' : 'memory:polygon'} 					
+                    'OUTPUT' : 'memory:polygon'}
     gaps = processing.run('qgis:symmetricaldifference',parameters1_7)
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. symmetricaldifference'
@@ -783,19 +783,19 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
     # points along geometries
     parameters2_3 = {'INPUT': gaps['OUTPUT'],
                    'DISTANCE' :	density,
-                   'OUTPUT' : "memory:points"} 
+                   'OUTPUT' : "memory:points"}
     points = processing.run('qgis:pointsalonglines', parameters2_3)
 
-    i+=1    
+    i+=1
     percent = int((i/steps)*100)
-    label = str(i)+ '/'+ str(steps)+ '. pointsalonglines'    
+    label = str(i)+ '/'+ str(steps)+ '. pointsalonglines'
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
-        
+
     parameters4 = {'INPUT': points['OUTPUT'],
-                     'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'} 
+                     'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'}
     voronoipolygon = processing.run('qgis:voronoipolygons', parameters4)
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. voronoipolygons'
@@ -804,10 +804,10 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         status_callback(percent,label)
     else:
         print(label)
-    
+
     parameters5 = {'INPUT': voronoipolygon['OUTPUT'],
-                    'OUTPUT' : 'memory:voronoipolyline'} 
-    voronoipolyline = processing.run('qgis:polygonstolines',parameters5)    
+                    'OUTPUT' : 'memory:voronoipolyline'}
+    voronoipolyline = processing.run('qgis:polygonstolines',parameters5)
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. polygonstolines'
     percent = int((i/steps)*100)
@@ -815,11 +815,11 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         status_callback(percent,label)
     else:
         print(label)
-      
-    
-    parameters6 = {'INPUT': voronoipolyline['OUTPUT'],					
+
+
+    parameters6 = {'INPUT': voronoipolyline['OUTPUT'],
                     'OUTPUT' : 'memory:explode'}
-    explode = processing.run('qgis:explodelines',parameters6)    
+    explode = processing.run('qgis:explodelines',parameters6)
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. explodelines'
     percent = int((i/steps)*100)
@@ -827,13 +827,13 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         status_callback(percent,label)
     else:
         print(label)
-    
+
     parameters7 = {'INPUT': explode['OUTPUT'],
-                    'PREDICATE' : [6], # within					
-                    'INTERSECT': gaps['OUTPUT'],		
+                    'PREDICATE' : [6], # within
+                    'INTERSECT': gaps['OUTPUT'],
                     'METHOD' : 0,
                     'OUTPUT' : 'memory:candidate'}
-    candidate= processing.run('qgis:selectbylocation',parameters7)    
+    candidate= processing.run('qgis:selectbylocation',parameters7)
     i+=1
     label = str(i)+ '/'+ str(steps)+ '. selectbylocation'
     percent = int((i/steps)*100)
@@ -841,7 +841,7 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         status_callback(percent,label)
     else:
         print(label)
-    
+
     parameters8 = {'INPUT':candidate['OUTPUT'],
                     'OUTPUT':  "memory:medialaxis"}
     medialaxis = processing.run('qgis:saveselectedfeatures',parameters8)
@@ -852,48 +852,48 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         status_callback(percent,label)
     else:
         print(label)
-    
+
     parameters9 = {'INPUT':medialaxis['OUTPUT'],
                     'OUTPUT':  'memory:deleteduplicategeometries'}
     deleteduplicategeometries = processing.run('qgis:deleteduplicategeometries',parameters9)
     i+=1
-    label = str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'   
+    label = str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
-    
+
     parameter10 =  {'INPUT':deleteduplicategeometries['OUTPUT'],
                     'OUTPUT':  "memory:dissolve"}
     dissolve = processing.run('qgis:dissolve',parameter10)
     i+=1
-    label = str(i)+ '/'+ str(steps)+ '. dissolve'    
+    label = str(i)+ '/'+ str(steps)+ '. dissolve'
     percent = int((i/steps)*100)
     if status_callback:
         status_callback(percent,label)
     else:
-        print(label)    
-    
+        print(label)
+
     parameter11 = {'INPUT':dissolve['OUTPUT'],
                     'METHOD' : 0,
                     'TOLERANCE' : tolerance,
                     'OUTPUT':  "memory:simplify"}
-    simplify = processing.run('qgis:simplifygeometries',parameter11) 
-    i+=1    
+    simplify = processing.run('qgis:simplifygeometries',parameter11)
+    i+=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. simplify'
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
-        
+
     try:
-        parameter12 = {'INPUT':simplify['OUTPUT'],                    
+        parameter12 = {'INPUT':simplify['OUTPUT'],
                         'OUTPUT':  "memory:explode"}
-        explode = processing.run('qgis:explodelines',parameter12) 
-        
-        i+=1    
+        explode = processing.run('qgis:explodelines',parameter12)
+
+        i+=1
         percent = int((i/steps)*100)
         label = str(i)+ '/'+ str(steps)+ '. explode'
         if status_callback:
@@ -906,9 +906,9 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
                         'ANGLE' : 30,
                         'TYPE' : 1, # Keep the attribute of the longest line
                         'OUTPUT':  "memory:centerline"}
-        centerline = processing.run('HCMGISTools:directionalmerge',parameter13) 
+        centerline = processing.run('HCMGISTools:directionalmerge',parameter13)
 
-        i+=1    
+        i+=1
         percent = int((i/steps)*100)
         label = str(i)+ '/'+ str(steps)+ '. directionalmerge'
         if status_callback:
@@ -916,9 +916,9 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
         else:
             print(label)
 
-        output_layer = centerline['OUTPUT']   
-    except: 
-        output_layer = simplify['OUTPUT']  
+        output_layer = centerline['OUTPUT']
+    except:
+        output_layer = simplify['OUTPUT']
 
     # Create the output file
     if not output:
@@ -928,34 +928,34 @@ def hcmgis_centerline(layer,density,chksurround,distance,output,status_callback 
 
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(output)[1]]
-   
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only      
+
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), polygon.crs(), output_file_format, False)# Bool: slected feature only
 
     if error == QgsVectorFileWriter.NoError:
         try:
             skeleton = QgsVectorLayer(output, QFileInfo(output).baseName(), 'ogr')
             QgsProject.instance().addMapLayer(skeleton)
             qgis.utils.iface.setActiveLayer(skeleton)
-            qgis.utils.iface.zoomToActiveLayer()  
+            qgis.utils.iface.zoomToActiveLayer()
         except :
             print('output: '+ str(output))
     else:
         message = "Failure creating output file: " + str(error_string)
         print (message)
-        return message     
+        return message
     return
 
 ################################################################
 # Finding closest/ Farthest pair of Points
 ################################################################
-def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None):		
+def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None):
     if layer is None:
         return 'No selected layer!'
     if ((field is None) or (field == '')):
-        return 'Please select an unique field!'	
+        return 'Please select an unique field!'
     steps =6
     i = 0
-    
+
     label = 'Fiding closest pair of points'
     if status_callback:
         status_callback(2,label)
@@ -966,16 +966,16 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
                 parameters0 = {'INPUT':layer,
                               'OUTPUT':  "memory:singlepart"}
                 singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
-                point_layer = singlepart['OUTPUT']       
+                point_layer = singlepart['OUTPUT']
             else:
                 point_layer = layer
     except:
-        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console  
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console
         if (temp.wkbType() == QgsWkbTypes.MultiPoint):
             parameters0 = {'INPUT':temp,
                             'OUTPUT':  "memory:singlepart"}
             singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
-            point_layer = singlepart['OUTPUT']       
+            point_layer = singlepart['OUTPUT']
         else:
             point_layer = temp
     ##########
@@ -990,7 +990,7 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
     parameters1 = {'INPUT':point_layer,
                     'OUTPUT':  "memory:delaunay_polygon"}
     delaunay_polygon = processing.run('qgis:delaunaytriangulation',parameters1)
-    
+
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. polygonstolines'
     percent = int((i/steps)*100)
@@ -999,34 +999,34 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
     parameters2 = {'INPUT':delaunay_polygon['OUTPUT'],
                     'OUTPUT':  "memory:delaunay_polyline"}
     delaunay_polyline = processing.run('qgis:polygonstolines',parameters2)
-    
+
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. explodelines'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
-    else: print(label)	
-    parameters3 = {'INPUT': delaunay_polyline['OUTPUT'],					
+        status_callback(percent,label)
+    else: print(label)
+    parameters3 = {'INPUT': delaunay_polyline['OUTPUT'],
                     'OUTPUT' : 'memory:delaunay_explode'}
     delaunay_explode = processing.run('qgis:explodelines',parameters3)
-   
+
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. multiparttosingleparts'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
-    else: print(label)	
+        status_callback(percent,label)
+    else: print(label)
     parameters4 = {'INPUT':delaunay_explode['OUTPUT'],
                     'OUTPUT':  "memory:delaunay_singlepart"}
     delaunay_singlepart = processing.run('qgis:multiparttosingleparts',parameters4)
-    
+
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
-    else: print(label)	
-    parameters5 =  {'INPUT': delaunay_singlepart['OUTPUT'],					 
+        status_callback(percent,label)
+    else: print(label)
+    parameters5 =  {'INPUT': delaunay_singlepart['OUTPUT'],
                   'OUTPUT':  "memory:clean"}
     clean = processing.run('qgis:deleteduplicategeometries',parameters5)
     delaunay_clean = clean['OUTPUT']
@@ -1035,14 +1035,14 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
     label =str(i)+ '/'+ str(steps)+ '. Calculate length'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
-    else: print(label)	
+        status_callback(percent,label)
+    else: print(label)
 
-    delaunay_clean.startEditing() 
+    delaunay_clean.startEditing()
     delaunay_clean.dataProvider().addAttributes([QgsField("length",  QVariant.Double)]) # define/add field data type
-    delaunay_clean.updateFields() # tell the vector layer to fetch changes from the provider    
-    fieldnumber =delaunay_clean.fields().count()    
-    for feature in  delaunay_clean.getFeatures():   
+    delaunay_clean.updateFields() # tell the vector layer to fetch changes from the provider
+    fieldnumber =delaunay_clean.fields().count()
+    for feature in  delaunay_clean.getFeatures():
         d = QgsDistanceArea()
         length = d.convertLengthMeasurement(d.measureLength(feature.geometry()),QgsUnitTypes.DistanceMeters) #convert to meters
         delaunay_clean.changeAttributeValue(feature.id(), fieldnumber-1,length )
@@ -1057,21 +1057,21 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
 
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(closest)[1]]
-   
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(delaunay_clean, closest, layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only      
+
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(delaunay_clean, closest, layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only
 
     if error == QgsVectorFileWriter.NoError:
         try:
             closest_pair = QgsVectorLayer(closest, QFileInfo(closest).baseName(), 'ogr')
             QgsProject.instance().addMapLayer(closest_pair)
             qgis.utils.iface.setActiveLayer(closest_pair)
-            qgis.utils.iface.zoomToActiveLayer()  
+            qgis.utils.iface.zoomToActiveLayer()
         except :
             print('Closest pair: '+ str(closest))
     else:
         message = "Failure creating closest pair file: " + str(error_string)
         print (message)
-       
+
     ############
     #Finding farthest pair of points
     ############
@@ -1082,27 +1082,27 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
         status_callback(2,label)
     else: print(label)
 
- 
-    parameters6 = {'INPUT': delaunay_polygon['OUTPUT'],								
+
+    parameters6 = {'INPUT': delaunay_polygon['OUTPUT'],
                    'OUTPUT' : 'memory:convexhull'}
     convexhull = processing.run('qgis:dissolve',parameters6)
     i +=1
     label =str(i)+ '/'+ str(steps)+ '. dissolve'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
-    else: print(label)	
-    
-    parameters7 = {'INPUT': convexhull['OUTPUT'],								
+        status_callback(percent,label)
+    else: print(label)
+
+    parameters7 = {'INPUT': convexhull['OUTPUT'],
                      'OUTPUT' : 'memory:convexhull_vertices'}
     convexhull_vertices = processing.run('qgis:extractvertices',parameters7)
     i +=1
     label =str(i)+ '/'+ str(steps)+ '. extractvertices'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print(label)
-           
+
     parameters8 = {'INPUT':convexhull_vertices['OUTPUT'],
                     'OUTPUT':  "memory:singlepart"}
     vertices_singlepart = processing.run('qgis:multiparttosingleparts',parameters8)
@@ -1110,66 +1110,66 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
     label =str(i)+ '/'+ str(steps)+ '. multiparttosingleparts'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print(label)
-   
-    parameters9 =  {'INPUT': vertices_singlepart['OUTPUT'],					 
+
+    parameters9 =  {'INPUT': vertices_singlepart['OUTPUT'],
                   'OUTPUT':  "memory:clean"}
     clean = processing.run('qgis:deleteduplicategeometries',parameters9)
-    vertices_clean = clean['OUTPUT']  
+    vertices_clean = clean['OUTPUT']
     i +=1
     label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
-    else: print(label) 
+        status_callback(percent,label)
+    else: print(label)
 
-    parameters10 =  {'INPUT': convexhull['OUTPUT'],					 
+    parameters10 =  {'INPUT': convexhull['OUTPUT'],
                   'OUTPUT':  "memory:convexhull_line"}
     line = processing.run('qgis:polygonstolines',parameters10)
-    convexhull_line = line['OUTPUT']  
+    convexhull_line = line['OUTPUT']
     i +=1
     label =str(i)+ '/'+ str(steps)+ '. polygonstolines'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
-    else: print(label)  
+        status_callback(percent,label)
+    else: print(label)
 
-    parameters11 = {'INPUT': convexhull_line,					
+    parameters11 = {'INPUT': convexhull_line,
                     'OUTPUT' : 'memory:explode'}
     explode = processing.run('qgis:explodelines',parameters11)
-    i +=1    
+    i +=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. explodelines'
     if status_callback:
         status_callback(percent,label)
     else:
         print(label)
-    
+
     convexhull_clean = explode['OUTPUT']
     convexhull_clean.startEditing()
     for f1 in vertices_clean.getFeatures():
         point1 = f1.geometry().asPoint()
-        for f2 in vertices_clean.getFeatures():            
-            point2 = f2.geometry().asPoint()     
+        for f2 in vertices_clean.getFeatures():
+            point2 = f2.geometry().asPoint()
             if ( point1 != point2):
                 seg = QgsFeature()
                 seg.setGeometry(QgsGeometry.fromPolylineXY([point1,point2]))
                 convexhull_clean.dataProvider().addFeature(seg)
-    
+
     convexhull_clean.dataProvider().addAttributes([QgsField("length",  QVariant.Double)]) # define/add field data type
-    convexhull_clean.updateFields() # tell the vector layer to fetch changes from the provider    
-    fieldnumber =convexhull_clean.fields().count()    
-    for feature in  convexhull_clean.getFeatures():   
+    convexhull_clean.updateFields() # tell the vector layer to fetch changes from the provider
+    fieldnumber =convexhull_clean.fields().count()
+    for feature in  convexhull_clean.getFeatures():
         d = QgsDistanceArea()
         length = d.convertLengthMeasurement(d.measureLength(feature.geometry()),QgsUnitTypes.DistanceMeters) #convert to meters
         convexhull_clean.changeAttributeValue(feature.id(), fieldnumber-1,length )
 
     for idx in range(delaunay_clean.fields().count()):
-        convexhull_clean.deleteAttributes([idx])    
+        convexhull_clean.deleteAttributes([idx])
     convexhull_clean.commitChanges()
 
-    i +=1    
+    i +=1
     percent = int((i/steps)*100)
     label = str(i)+ '/'+ str(steps)+ '. calculate length'
     if status_callback:
@@ -1184,19 +1184,19 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
     label =str(i)+ '/'+ str(steps)+ '. multiparttosingleparts'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print(label)
-   
-    parameters12 =  {'INPUT': singlepart['OUTPUT'],					 
+
+    parameters12 =  {'INPUT': singlepart['OUTPUT'],
                   'OUTPUT':  "memory:clean"}
     clean = processing.run('qgis:deleteduplicategeometries',parameters12)
-    convexhull_clean = clean['OUTPUT']  
+    convexhull_clean = clean['OUTPUT']
     i +=1
     label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
-    else: print(label) 
+        status_callback(percent,label)
+    else: print(label)
 
 
     if not farthest:
@@ -1206,27 +1206,27 @@ def hcmgis_closest_farthest(layer,field,closest,farthest,status_callback = None)
 
     file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
     output_file_format = file_formats[os.path.splitext(farthest)[1]]
-   
-    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(convexhull_clean, farthest, layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only      
+
+    error, error_string = QgsVectorFileWriter.writeAsVectorFormat(convexhull_clean, farthest, layer.dataProvider().encoding(), point_layer.crs(), output_file_format, False)# Bool: slected feature only
 
     if error == QgsVectorFileWriter.NoError:
         try:
             farthest_pair = QgsVectorLayer(farthest, QFileInfo(farthest).baseName(), 'ogr')
             QgsProject.instance().addMapLayer(farthest_pair)
             qgis.utils.iface.setActiveLayer(farthest_pair)
-            qgis.utils.iface.zoomToActiveLayer()  
+            qgis.utils.iface.zoomToActiveLayer()
         except :
             print('Farthest pair: '+ str(farthest))
     else:
         message = "Failure creating farthest pair file: " + str(error_string)
-        print (message) 
+        print (message)
         return message
     return
 
-   
-def hcmgis_merge_field(layer, fields, char,status_callback = None):			
+
+def hcmgis_merge_field(layer, fields, char,status_callback = None):
     if layer is None:
-        return u'No selected layers!'  
+        return u'No selected layers!'
     if (char == u'Space'):
         char = " "
     elif (char == "Tab"):
@@ -1237,37 +1237,37 @@ def hcmgis_merge_field(layer, fields, char,status_callback = None):
     # need to create a data provider
     layer.dataProvider().addAttributes([QgsField("merge",  QVariant.String)]) # define/add field data type
     layer.updateFields() # tell the vector layer to fetch changes from the provider
-        
+
     fieldnumber = 0
     for i in layer.fields():
-        fieldnumber += 1      
-    featurecount = 0        
-        
-    layer.startEditing()     
+        fieldnumber += 1
+    featurecount = 0
+
+    layer.startEditing()
     totalfeaturecount = layer.featureCount()
-    for feature in  layer.getFeatures():  
+    for feature in  layer.getFeatures():
         count = 0
-        merge_value = ""                
-        for j in fields:                                       
+        merge_value = ""
+        for j in fields:
             if (feature[layer.dataProvider().fieldNameIndex(j)]):# is not NULL
                 if (count == len(fields)-1):# last slected field
-                    merge_value += unicode(feature[layer.dataProvider().fieldNameIndex(j)]) 
+                    merge_value += unicode(feature[layer.dataProvider().fieldNameIndex(j)])
                 else:
                     merge_value += unicode(feature[layer.dataProvider().fieldNameIndex(j)]) + char
                 layer.changeAttributeValue(feature.id(), fieldnumber-1, merge_value)
             count +=1
-        featurecount += 1              
+        featurecount += 1
         percent = (featurecount/float(totalfeaturecount)) * 100
         if status_callback:
-            status_callback(percent,None)     
+            status_callback(percent,None)
     layer.commitChanges()
     #hcmgis_completion_message(qgis, unicode(featurecount) + " records updated")
     return None
 
-def hcmgis_split_field(layer, field, char,status_callback = None):            
+def hcmgis_split_field(layer, field, char,status_callback = None):
     if layer is None:
         return u'No selected layer!'
-    if ( layer.isEditable == False): return u'Layer is read only!' 
+    if ( layer.isEditable == False): return u'Layer is read only!'
 
     char = unicode(char)
     if (char == u'Space'):
@@ -1275,95 +1275,95 @@ def hcmgis_split_field(layer, field, char,status_callback = None):
     elif (char == "Tab"):
         char = "\t"
     if (len(field) <= 0):
-        return u'No selected field!'        	        
-    
+        return u'No selected field!'
+
     top_occurence = hcmgis_top_occurence(layer, field,char,False)    # For all features
-    
+
     if (top_occurence == 0):
         return u'Field ' + field + u' does not contain any split characters!'
-              
+
     for i in range(0, top_occurence+1):
         layer.dataProvider().addAttributes([QgsField("split",  QVariant.String)]) # define/add field data type
     layer.updateFields()
 
     featurecount = 0
     fieldnumber = 0
-    
+
     for i in layer.fields():
-        fieldnumber += 1            
-                 
-    layer.startEditing() 
+        fieldnumber += 1
+
+    layer.startEditing()
     totalfeaturecount = layer.featureCount()
-    for feature in layer.getFeatures():                   
+    for feature in layer.getFeatures():
         fieldupdatenumber = unicode(feature[layer.dataProvider().fieldNameIndex(field)]).count(char)+1
         for i in range (fieldupdatenumber):
             if (feature[layer.dataProvider().fieldNameIndex(field)]):# is not NULL
-                layer.changeAttributeValue(feature.id(), (fieldnumber-1) - top_occurence + i, unicode(feature[layer.dataProvider().fieldNameIndex(field)]).split(char)[i])                                        
+                layer.changeAttributeValue(feature.id(), (fieldnumber-1) - top_occurence + i, unicode(feature[layer.dataProvider().fieldNameIndex(field)]).split(char)[i])
         featurecount += 1
         percent = (featurecount/float(totalfeaturecount)) * 100
         if status_callback:
-            status_callback(percent,None)             
-    layer.commitChanges()        
+            status_callback(percent,None)
+    layer.commitChanges()
     return None
 
 
 ##################################
 #Font Converter
 ##################################
-    
-def hcmgis_convertfont(layer, sE, dE, caseI, output_layer, status_callback = None):      
+
+def hcmgis_convertfont(layer, sE, dE, caseI, output_layer, status_callback = None):
     if layer is None:
-        return u'No selected layer!'    
+        return u'No selected layer!'
     if output_layer is None:
-        return u'No output layer!'   
+        return u'No output layer!'
     try:
         if layer.isValid():
-            input_layer = layer           
+            input_layer = layer
     except:
-        input_layer = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running medialaxis in QGIS console  
-    
-    #shapeWriter = VectorWriter(output_layer, "UTF-8", input_layer.dataProvider().fields(),input_layer.dataProvider().geometryType(), input_layer.crs())               
-    shapeWriter = QgsVectorFileWriter(output_layer, "UTF-8", input_layer.dataProvider().fields(),input_layer.wkbType(), input_layer.crs(),"ESRI Shapefile")   
-    featurecount = 0          
+        input_layer = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running medialaxis in QGIS console
+
+    #shapeWriter = VectorWriter(output_layer, "UTF-8", input_layer.dataProvider().fields(),input_layer.dataProvider().geometryType(), input_layer.crs())
+    shapeWriter = QgsVectorFileWriter(output_layer, "UTF-8", input_layer.dataProvider().fields(),input_layer.wkbType(), input_layer.crs(),"ESRI Shapefile")
+    featurecount = 0
     totalfeaturecount = input_layer.featureCount()
     fields = []
     for field in input_layer.fields():
         if field.type() == QVariant.String:
-            fields.append (field.name())  
+            fields.append (field.name())
 
     for feat in  input_layer.getFeatures():
         for tf in fields:
             oldValue = feat[tf]
             newValue = oldValue
             if oldValue != None:
-                if (sE != None) and (dE != None) and (sE != dE):                
+                if (sE != None) and (dE != None) and (sE != dE):
                     if (sE == _VNIWin) and (dE ==_Unicode):
                         newValue = ConvertVNIWindows(oldValue)
                     else:
-                        newValue = Convert(oldValue,sE,dE)              
-                # Character Case-setting                                
+                        newValue = Convert(oldValue,sE,dE)
+                # Character Case-setting
                 if caseI !=  None:
-                    newValue = ChangeCase(newValue, caseI)                        
+                    newValue = ChangeCase(newValue, caseI)
             # update new value
-            feat[tf] = newValue						
+            feat[tf] = newValue
         shapeWriter.addFeature(feat)
-        featurecount += 1		                                              
+        featurecount += 1
         percent = (featurecount/float(totalfeaturecount)) * 100
         if status_callback:
             label = "Writing feature " + str(featurecount) + " of " + str(totalfeaturecount)
-            status_callback(percent,label)                                      
+            status_callback(percent,label)
     del shapeWriter
     try:
         layer = QgsVectorLayer(output_layer, QFileInfo(output_layer).baseName(), 'ogr')
         layer.setProviderEncoding(u'System')
         layer.dataProvider().setEncoding(u'UTF-8')
         if layer.isValid():
-            QgsProject.instance().addMapLayer(layer)      
+            QgsProject.instance().addMapLayer(layer)
     except:
-        print('Completed: ' + output_layer)   
+        print('Completed: ' + output_layer)
     return None
-                
-def Convert(txt,s,d):    
+
+def Convert(txt,s,d):
     result = u''
     for c in txt:
         if c in s:
@@ -1377,45 +1377,45 @@ def ConvertVNIWindows(txt):
     _VniWindows2= [
             u'aâ',u'AÂ',u'aê',u'AÊ',u'eâ',u'EÂ',u'ô',u'Ô',u'aù',u'AÙ',u'aø',u'AØ',u'aû',u'AÛ',u'aõ',u'AÕ',u'aï',u'AÏ',
             u'aá',u'AÁ',u'aà',u'AÀ',u'aå',u'AÅ',u'aã',u'AÃ',u'aä',u'AÄ',u'aé',u'AÉ',u'aè',u'AÈ',u'aú',u'AÚ',u'aü',u'AÜ',u'aë',u'AË',
-            u'eù',u'EÙ',u'eø',u'EØ',u'eû',u'EÛ',u'eõ',u'EÕ',u'eï',u'EÏ',u'eá',u'EÁ',u'eà',u'EÀ',u'eå',u'EÅ',u'eã',u'EÃ',u'eä',u'EÄ',u'ó',u'Ó',u'ò',u'Ò',    
-            u'oû',u'OÛ',u'oõ',u'OÕ',u'oï',u'OÏ',u'oá',u'OÁ',u'oà',u'OÀ',u'oå',u'OÅ',u'oã',u'OÃ',u'oä',u'OÄ',u'ôù',u'ÔÙ',u'ôø',u'ÔØ',u'ôû',u'ÔÛ',u'ôõ',u'ÔÕ',u'ôï',u'ÔÏ',    
+            u'eù',u'EÙ',u'eø',u'EØ',u'eû',u'EÛ',u'eõ',u'EÕ',u'eï',u'EÏ',u'eá',u'EÁ',u'eà',u'EÀ',u'eå',u'EÅ',u'eã',u'EÃ',u'eä',u'EÄ',u'ó',u'Ó',u'ò',u'Ò',
+            u'oû',u'OÛ',u'oõ',u'OÕ',u'oï',u'OÏ',u'oá',u'OÁ',u'oà',u'OÀ',u'oå',u'OÅ',u'oã',u'OÃ',u'oä',u'OÄ',u'ôù',u'ÔÙ',u'ôø',u'ÔØ',u'ôû',u'ÔÛ',u'ôõ',u'ÔÕ',u'ôï',u'ÔÏ',
             u'uù',u'UÙ',u'uø',u'UØ',u'uû',u'UÛ',u'uõ',u'UÕ',u'uï',u'UÏ',u'öù',u'ÖÙ',u'öø',u'ÖØ',u'öû',u'ÖÛ',u'öõ',u'ÖÕ',u'öï',u'ÖÏ',u'yø',u'YØ',u'yû',u'YÛ',u'yõ',u'YÕ',u'yù',u'YÙ',
             u'où',u'OÙ',u'oø',u'OØ',u'oâ',u'OÂ'
     ]
-    _VniWindows1= [    
-            u'ñ',u'Ñ',u'í',u'Í',u'ì',u'Ì',u'æ',u'Æ',u'ö',u'Ö',u'î',u'Î'    
+    _VniWindows1= [
+            u'ñ',u'Ñ',u'í',u'Í',u'ì',u'Ì',u'æ',u'Æ',u'ö',u'Ö',u'î',u'Î'
     ]
     _Unicode2= [
             u'â',u'Â',u'ă',u'Ă',u'ê',u'Ê',u'ơ',u'Ơ',u'á',u'Á',u'à',u'À',u'ả',u'Ả',u'ã',u'Ã',u'ạ',u'Ạ',
             u'ấ',u'Ấ',u'ầ',u'Ầ',u'ẩ',u'Ẩ',u'ẫ',u'Ẫ',u'ậ',u'Ậ',u'ắ',u'Ắ',u'ằ',u'Ằ',u'ẳ',u'Ẳ',u'ẵ',u'Ẵ',u'ặ',u'Ặ',
-            u'é',u'É',u'è',u'È',u'ẻ',u'Ẻ',u'ẽ',u'Ẽ',u'ẹ',u'Ẹ',u'ế',u'Ế',u'ề',u'Ề',u'ể',u'Ể',u'ễ',u'Ễ',u'ệ',u'Ệ',u'ĩ',u'Ĩ',u'ị',u'Ị',    
-            u'ỏ',u'Ỏ',u'õ',u'Õ',u'ọ',u'Ọ',u'ố',u'Ố',u'ồ',u'Ồ',u'ổ',u'Ổ',u'ỗ',u'Ỗ',u'ộ',u'Ộ',u'ớ',u'Ớ',u'ờ',u'Ờ',u'ở',u'Ở',u'ỡ',u'Ỡ',u'ợ',u'Ợ',    
+            u'é',u'É',u'è',u'È',u'ẻ',u'Ẻ',u'ẽ',u'Ẽ',u'ẹ',u'Ẹ',u'ế',u'Ế',u'ề',u'Ề',u'ể',u'Ể',u'ễ',u'Ễ',u'ệ',u'Ệ',u'ĩ',u'Ĩ',u'ị',u'Ị',
+            u'ỏ',u'Ỏ',u'õ',u'Õ',u'ọ',u'Ọ',u'ố',u'Ố',u'ồ',u'Ồ',u'ổ',u'Ổ',u'ỗ',u'Ỗ',u'ộ',u'Ộ',u'ớ',u'Ớ',u'ờ',u'Ờ',u'ở',u'Ở',u'ỡ',u'Ỡ',u'ợ',u'Ợ',
             u'ú',u'Ú',u'ù',u'Ù',u'ủ',u'Ủ',u'ũ',u'Ũ',u'ụ',u'Ụ',u'ứ',u'Ứ',u'ừ',u'Ừ',u'ử',u'Ử',u'ữ',u'Ữ',u'ự',u'Ự',u'ỳ',u'Ỳ',u'ỷ',u'Ỷ',u'ỹ',u'Ỹ',u'ý',u'Ý',
             u'ó#',u'Ó#',u'ò#',u'Ò#',u'ô#',u'Ô#'
             ]
-    _Unicode1= [   
-            u'đ',u'Đ',u'í',u'Í',u'ì',u'Ì',u'ỉ',u'Ỉ',u'ư',u'Ư',u'ỵ',u'Ỵ'      
-    ]           
+    _Unicode1= [
+            u'đ',u'Đ',u'í',u'Í',u'ì',u'Ì',u'ỉ',u'Ỉ',u'ư',u'Ư',u'ỵ',u'Ỵ'
+    ]
 
     for j in range (0,len(txt)-1):
-        c = txt[j:j+2]     
-        if c in _VniWindows2:      
+        c = txt[j:j+2]
+        if c in _VniWindows2:
             idx = _VniWindows2.index(c)
             if idx >= 0:
-                c = _Unicode2[idx]                
+                c = _Unicode2[idx]
             txt = txt.replace(txt[j:j+2],c)
 
     for j in range (0,len(txt)):
         c = txt[j:j+1]
-        if c in _VniWindows1:      
+        if c in _VniWindows1:
             idx = _VniWindows1.index(c)
             if idx >= 0:
-                c = _Unicode1[idx]                
-            txt = txt.replace(txt[j:j+1],c)	
-                
+                c = _Unicode1[idx]
+            txt = txt.replace(txt[j:j+1],c)
 
-    for i in range (0,len(txt)):       
-        c = txt[i:i+1]  
+
+    for i in range (0,len(txt)):
+        c = txt[i:i+1]
         if c == u'ó'and txt[i+1:i+2] != u'#':
             c= u'ĩ'
             txt = txt[:i] + c + txt[i+1:]
@@ -1458,7 +1458,7 @@ def GetCaseIndex(cText):
         u'Capitalize (Hoa đầu câu)' : "capitalize",
         u'Title (Hoa Mỗi Từ)' : "title",
     }.get(cText)
-        
+
 def ChangeCase(str, caseIndex):
     result = u''
     # Character Case-setting
@@ -1472,7 +1472,7 @@ def ChangeCase(str, caseIndex):
         result = str.title()
     return result
 
-def hcmgis_top_occurence(layer, field, char, selectedfeatureonly):	
+def hcmgis_top_occurence(layer, field, char, selectedfeatureonly):
     max = 0
     if selectedfeatureonly:
         for feature in layer.SelectedFeatures():
@@ -1488,7 +1488,7 @@ def hcmgis_top_occurence(layer, field, char, selectedfeatureonly):
                 max = occurence
     return max
 
-    
+
 def hcmgis_wkbtype_to_text(wkbtype):
     text = QgsWkbTypes.displayString(wkbtype)
     if text:
@@ -1508,155 +1508,155 @@ def hcmgis_find_layer(layer_name):
 
 # --------------------------------------------------------
 # hcmgis_lec - Largest Empty Circle inside the convexhull of a point set based on Voronoi Diagram
-# 	 
+#
 # --------------------------------------------------------
 
-def hcmgis_lec(layer,field,output,status_callback = None):	
+def hcmgis_lec(layer,field,output,status_callback = None):
     if layer is None:
         return 'No selected layer!'
     if ((field is None) or (field == '')):
-       return 'Please select an unique field!'	
+       return 'Please select an unique field!'
     i = 0
-    steps = 11     
+    steps = 11
     try:
         if layer.isValid():
             if (layer.wkbType() == QgsWkbTypes.MultiPoint):
                 parameters0 = {'INPUT':layer,
                             'OUTPUT':  "memory:singlepart"}
                 singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
-                point_layer = singlepart['OUTPUT']       
+                point_layer = singlepart['OUTPUT']
             else:
                 point_layer = layer
     except:
-        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console  
+        temp = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr') # for running centerline in QGIS console
         if (temp.wkbType() == QgsWkbTypes.MultiPoint):
             parameters0 = {'INPUT':temp,
                                 'OUTPUT':  "memory:singlepart"}
             singlepart = processing.run('qgis:multiparttosingleparts',parameters0)
-            point_layer = singlepart['OUTPUT']       
+            point_layer = singlepart['OUTPUT']
         else:
             point_layer = temp
-     
+
     parameters1 = {'INPUT': point_layer,
                   'BUFFER' : 0, 'OUTPUT' : 'memory:voronoipolygon'
-                  } 
+                  }
     voronoipolygon = processing.run('qgis:voronoipolygons', parameters1)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. voronoipolygons'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
-  
+
 
     parameters2 = {'INPUT': point_layer,
                 'FIELD' : None,
                  'TYPE' : 3,
-                    'OUTPUT' : 'memory:convexhull'} 
-    convexhull = processing.run('qgis:minimumboundinggeometry', parameters2)	
+                    'OUTPUT' : 'memory:convexhull'}
+    convexhull = processing.run('qgis:minimumboundinggeometry', parameters2)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. minimumboundinggeometry'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
-  
 
-    parameter2_1 =  {'INPUT': convexhull['OUTPUT'],					 
+
+    parameter2_1 =  {'INPUT': convexhull['OUTPUT'],
                   'OUTPUT':  "memory:convexhull_vertices"}
-    convexhull_vertices = processing.run('qgis:extractvertices',parameter2_1) 
+    convexhull_vertices = processing.run('qgis:extractvertices',parameter2_1)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. extractvertices'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
 
-    parameter2_2 =  {'INPUT': convexhull_vertices['OUTPUT'],					 
+    parameter2_2 =  {'INPUT': convexhull_vertices['OUTPUT'],
                   'OUTPUT':  "memory:convexhull_vertices_clean"}
-    convexhull_vertices_clean = processing.run('qgis:deleteduplicategeometries',parameter2_2) 
+    convexhull_vertices_clean = processing.run('qgis:deleteduplicategeometries',parameter2_2)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
 
- 
-    parameter3 =  {'INPUT': voronoipolygon['OUTPUT'],	
-                   'OVERLAY': convexhull['OUTPUT'], 
+
+    parameter3 =  {'INPUT': voronoipolygon['OUTPUT'],
+                   'OVERLAY': convexhull['OUTPUT'],
                   'OUTPUT':  "memory:voronoi_clip"}
-    voronoi_clip = processing.run('qgis:clip',parameter3) 
+    voronoi_clip = processing.run('qgis:clip',parameter3)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. clip'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
 
-    parameter4 =  {'INPUT': voronoi_clip['OUTPUT'],					 
+    parameter4 =  {'INPUT': voronoi_clip['OUTPUT'],
                   'OUTPUT':  "memory:voronoi_vertices"}
     voronoi_vertices = processing.run('qgis:extractvertices',parameter4)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. extractvertices'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
 
-    parameter5 =  {'INPUT': voronoi_vertices['OUTPUT'],					 
+    parameter5 =  {'INPUT': voronoi_vertices['OUTPUT'],
                   'OUTPUT':  "memory:voronoi_vertices_clean"}
-    voronoi_vertices_clean = processing.run('qgis:deleteduplicategeometries',parameter5) 
+    voronoi_vertices_clean = processing.run('qgis:deleteduplicategeometries',parameter5)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
 
     # parameter6 =  {'INPUT': voronoi_vertices_clean['OUTPUT'],
-    #                'OVERLAY': 	convexhull_vertices_clean['OUTPUT'],				 
+    #                'OVERLAY': 	convexhull_vertices_clean['OUTPUT'],
     #                'OUTPUT':  "memory:candidates"}
-    # candidates = processing.runAndLoadResults('qgis:symmetricaldifference',parameter6) 
+    # candidates = processing.runAndLoadResults('qgis:symmetricaldifference',parameter6)
     # i+=1
     # label =str(i)+ '/'+ str(steps)+ '. symmetricaldifference'
     # percent = int((i/steps)*100)
-    # status_callback(percent,label) 
+    # status_callback(percent,label)
 
     parameter6 =  {'INPUT': voronoi_vertices_clean['OUTPUT'],
                    'INTERSECT':convexhull_vertices_clean['OUTPUT'],
-                   'PREDICATE' : [2],#disjoint				 
+                   'PREDICATE' : [2],#disjoint
                    'OUTPUT':  "memory:candidates"}
-    candidates = processing.run('qgis:extractbylocation',parameter6) 
+    candidates = processing.run('qgis:extractbylocation',parameter6)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. extractbylocation'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
-     
+
     parameter7 =  {'INPUT': candidates['OUTPUT'],
                     'FIELD': field,
                     'HUBS' : point_layer,
                     'UNIT' : 0,
                     'OUTPUT':  "memory:distances"}
-    max_distances = processing.run('qgis:distancetonearesthubpoints',parameter7) 
+    max_distances = processing.run('qgis:distancetonearesthubpoints',parameter7)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. distancetonearesthubpoints'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
-   
+
     values = []
     centers = max_distances['OUTPUT']
     idx =  centers.dataProvider().fieldNameIndex("HubDist")
     for feat in centers.getFeatures():
         attrs = feat.attributes()
         values.append(attrs[idx])
-    
-    maxvaluestr = str(max(values))	
-    
+
+    maxvaluestr = str(max(values))
+
     selection = centers.getFeatures(QgsFeatureRequest(QgsExpression('"HubDist"' + '=' + maxvaluestr)))
     ids = [s.id() for s in selection]
     centers.selectByIds(ids)
@@ -1668,34 +1668,34 @@ def hcmgis_lec(layer,field,output,status_callback = None):
     label =str(i)+ '/'+ str(steps)+ '. saveselectedfeatures'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
 
-    parameter9 =  {'INPUT': center['OUTPUT'],					 
+    parameter9 =  {'INPUT': center['OUTPUT'],
                   'OUTPUT':  "memory:lec"}
-    processing.runAndLoadResults('qgis:deleteduplicategeometries',parameter9) 
+    processing.runAndLoadResults('qgis:deleteduplicategeometries',parameter9)
     i+=1
     label =str(i)+ '/'+ str(steps)+ '. deleteduplicategeometries'
     percent = int((i/steps)*100)
     if status_callback:
-        status_callback(percent,label) 
+        status_callback(percent,label)
     else: print (label)
-    
-    parameter10 =  {'INPUT': center['OUTPUT'],					 
+
+    parameter10 =  {'INPUT': center['OUTPUT'],
                   'OUTPUT':  "memory:lec"}
-    final = processing.run('qgis:deleteduplicategeometries',parameter10) 
-    
+    final = processing.run('qgis:deleteduplicategeometries',parameter10)
+
     input_layer = final['OUTPUT']
     selected_only = False
     radius_attribute = 'HubDist'
-    radius =  None 
+    radius =  None
     radius_unit = 'Meters'
     edges_attribute = None
     edge_count = 64
     rotation_attribute = None
     rotation_degrees = 0
-    output_file_name =  output     
-    
+    output_file_name =  output
+
     message = hcmgis_buffers(input_layer, selected_only, radius_attribute, radius, radius_unit, \
         edges_attribute, edge_count, rotation_attribute, rotation_degrees, \
         output_file_name)
@@ -1703,17 +1703,17 @@ def hcmgis_lec(layer,field,output,status_callback = None):
     if message:
         QMessageBox.critical(None, "Create LEC", message)
     else:
-        layer = QgsVectorLayer(output_file_name, QFileInfo(output_file_name).baseName(), 'ogr')       
+        layer = QgsVectorLayer(output_file_name, QFileInfo(output_file_name).baseName(), 'ogr')
         layer.setProviderEncoding(u'System')
         layer.dataProvider().setEncoding(u'UTF-8')
-        if layer.isValid():            
+        if layer.isValid():
             try:
                 QgsProject.instance().addMapLayer(layer)
                 qgis.utils.iface.setActiveLayer(layer)
-                qgis.utils.iface.zoomToActiveLayer()  
+                qgis.utils.iface.zoomToActiveLayer()
             except :
                 print('output: '+ str(output_file_name))
-           
+
 
 ######### hcmgis_buffer
 def hcmgis_bearing(start, end):
@@ -1777,7 +1777,7 @@ def hcmgis_buffer_geometry(geometry, meters):
 
     azimuthal_equidistant = QgsCoordinateReferenceSystem()
     azimuthal_equidistant.createFromProj4(proj4)
-    
+
     transform = QgsCoordinateTransform(wgs84, azimuthal_equidistant, QgsProject.instance())
     geometry.transform(transform)
 
@@ -1876,7 +1876,7 @@ def hcmgis_buffer_line_side(geometry, width, direction):
     for z in range(0, len(points) - 1):
         b1 = hcmgis_bearing(points[z], points[z + 1]) % 360
 
-        # Form rectangle beside line 
+        # Form rectangle beside line
         # 2% offset mitigates topology floating-point errors
         linestring = [QgsPointXY(points[z])]
         if (z == 0):
@@ -1898,7 +1898,7 @@ def hcmgis_buffer_line_side(geometry, width, direction):
 
             # 8-step interpolation of arc
             if (((bearing > 0) and (elbow < 0)) or \
-                ((bearing < 0) and (elbow > 0))): 
+                ((bearing < 0) and (elbow > 0))):
                 for a in range(1,8):
                     b = b1 + (elbow * a / 8.0) + bearing
                     linestring.append(hcmgis_endpoint(points[z + 1], width, b))
@@ -1908,7 +1908,7 @@ def hcmgis_buffer_line_side(geometry, width, direction):
 
         # Close polygon
         linestring.append(QgsPointXY(points[z + 1]))
-        linestring.append(QgsPointXY(points[z]))	
+        linestring.append(QgsPointXY(points[z]))
         segment = QgsGeometry.fromPolygonXY([linestring])
         # print linestring
         # print "  Line to polygon " + str(segment.isGeosValid())
@@ -1990,7 +1990,7 @@ def hcmgis_buffers(input_layer, selected_only, radius_attribute, radius, radius_
             rotation_degrees = float(rotation_degrees)
         except Exception as e:
             return "Invalid rotation degrees: " + str(rotation_degrees)
-        
+
 
     # Create the output file
 
@@ -1999,7 +1999,7 @@ def hcmgis_buffers(input_layer, selected_only, radius_attribute, radius, radius_
     #wgs84.createFromString("EPSG:4326")
     transform = QgsCoordinateTransform(input_layer.crs(), wgs84, QgsProject.instance())
     # print layer.crs().toProj4() + " -> " + wgs84.toProj4()
-    
+
     if not output_file_name:
         return "No output file name given"
 
@@ -2118,7 +2118,7 @@ def hcmgis_buffers(input_layer, selected_only, radius_attribute, radius, radius_
             newfeature.setGeometry(newgeometry)
             newfeature.setAttributes(feature.attributes())
             outfile.addFeature(newfeature)
-    
+
         buffercount = buffercount + 1
 
     del outfile
@@ -2138,15 +2138,15 @@ def hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name):
         except:
             return "Failure creating output file"
     else:
-        input_file = QgsVectorLayer(input_file_name)	
+        input_file = QgsVectorLayer(input_file_name)
         if input_file.featureCount() <= 0:
             return "Invalid Vector file"
         error, error_string = QgsVectorFileWriter.writeAsVectorFormat(input_file, output_file_name, input_file.dataProvider().encoding(), input_file.crs(),ogr_driver_name, False)
         if error != QgsVectorFileWriter.NoError:
             return "Failure creating output file: " + str(error_string)
         return None
-   
-    
+
+
 # ----------------------------------------------------------------
 #    hcmgis_point_import_from_csv - point import from CSV
 # ----------------------------------------------------------------
@@ -2170,7 +2170,7 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
     wkb_type = QgsWkbTypes.Point
 
     # Create the output shapefile
-    fields = QgsFields()	
+    fields = QgsFields()
     for field in input_csv.fields():
         #print (str(field))
         fields.append(field)
@@ -2198,34 +2198,34 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
     options.driverName = output_file_format
     outfile = QgsVectorFileWriter.create(output_file_name,  fields, QgsWkbTypes.Point, crs, context, options)
 
-   
+
     if (outfile.hasError() != QgsVectorFileWriter.NoError):
         return "Failure creating output file: " + str(outfile.errorMessage())
 
     shape_count = 0
     for row_number, row in enumerate(input_csv.getFeatures()):
         if status_callback and ((row_number % 10) == 0):
-            if status_callback(100 * row_number / input_csv.featureCount(), 
+            if status_callback(100 * row_number / input_csv.featureCount(),
                     "Point " + str(row_number) + " of " + str(input_csv.featureCount())):
                 return "Canceled at point " + str(row_number)
 
         if (latitude_index >= len(row.attributes())) or (longitude_index >= len(row.attributes())):
             return "Node file missing lat/long at row " + str(row_number + 1)
-   
-        # Each node is a separate feature in a point file        
+
+        # Each node is a separate feature in a point file
         newfeature = QgsFeature()
         newfeature.setAttributes(row.attributes())
         try:
             point = QgsPointXY(float(row.attributes()[longitude_index]), float(row.attributes()[latitude_index]))
             geometry = QgsGeometry.fromPointXY(point)
-            newfeature.setGeometry(geometry)        
+            newfeature.setGeometry(geometry)
         except:
-            pass       
-        
+            pass
+
         outfile.addFeature(newfeature)
         shape_count += 1
-        		
-        
+
+
     del outfile
 
     if status_callback:
@@ -2235,21 +2235,21 @@ def hcmgis_csv2shp(input_csv_name, latitude_field, longitude_field, \
     #return None
     return None
 
-def hcmgis_txt2csv(input_txt_name, output_file_name, status_callback = None):    
+def hcmgis_txt2csv(input_txt_name, output_file_name, status_callback = None):
     with open(input_txt_name, "r") as input_file:
         in_txt = csv.reader(input_file)
         with open(output_file_name, 'w', newline='') as output_file:
             out_csv = csv.writer(output_file)
             out_csv.writerows(in_txt)
-    
+
     if status_callback:
         status_callback(100, None)
 
     return None
 
-# def hcmgis_xls2csv(input_xls_name, 	output_file_name, status_callback = None):  
+# def hcmgis_xls2csv(input_xls_name, 	output_file_name, status_callback = None):
 #     temp_outfile_name = output_file_name.replace(".csv","", 1)
-#     #Non_empty sheets	
+#     #Non_empty sheets
 #     with xlrd.open_workbook(input_xls_name) as wb:
 #         non_empty_sheets = []
 #         for sheet_name in wb.sheet_names():
@@ -2264,7 +2264,7 @@ def hcmgis_txt2csv(input_txt_name, output_file_name, status_callback = None):
 #         else:
 #             for sheet_name in non_empty_sheets:
 #                 if (wb.sheet_by_name(sheet_name).nrows > 0 or wb.sheet_by_name(sheet_name).ncols > 0): # check none empty sheets
-#                     sh  = wb.sheet_by_name(sheet_name) 
+#                     sh  = wb.sheet_by_name(sheet_name)
 #                     sheet_csv = temp_outfile_name + '_'+ sheet_name + '.csv'
 #                     with  open(sheet_csv, 'w', newline="") as f:
 #                         c = csv.writer(f)
@@ -2276,20 +2276,20 @@ def hcmgis_txt2csv(input_txt_name, output_file_name, status_callback = None):
 
 def hcmgis_geofabrik(region, country, outdir,status_callback = None):
     #temp_dir = tempfile.mkdtemp()
-    download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '-latest-free.shp.zip'	
+    download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '-latest-free.shp.zip'
     #print (download_url_shp)
     zip_filename_shp = outdir + '/'+ country +  '-latest-free.shp.zip'
-    unzip_folder_shp = zip_filename_shp.replace('.zip','')    
+    unzip_folder_shp = zip_filename_shp.replace('.zip','')
     #print (zip_filename_shp)
-    download_url_pbf = r'https://download.geofabrik.de/' + region + '/'+ country+ '-latest.osm.pbf'	
+    download_url_pbf = r'https://download.geofabrik.de/' + region + '/'+ country+ '-latest.osm.pbf'
     filename_pbf = outdir + '/'+ country +  '-latest.osm.pbf'
-    #print (download_url_pbf)    
+    #print (download_url_pbf)
     headers = ""
-    zip = requests.get(download_url_shp, headers=headers, stream=True, allow_redirects=True)    
+    zip = requests.get(download_url_shp, headers=headers, stream=True, allow_redirects=True)
     total_size = int(zip.headers.get('content-length'))
     total_size_MB = round(total_size*10**(-6),2)
     chunk_size = int(total_size/100)
-    
+
     if  (zip.status_code == 200):
         print ('total_length MB:', total_size_MB)
         confirmed = QMessageBox.question(None, "Attention",'Estimated Shapefile size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
@@ -2300,264 +2300,18 @@ def hcmgis_geofabrik(region, country, outdir,status_callback = None):
                 if not chunk:
                     break
                 f.write(chunk)
-                if status_callback: 
+                if status_callback:
                     status_callback(i,None)
                 i+=1
-               
+
             f.close()
             QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
-            if status_callback: 
+            if status_callback:
                 status_callback(0,None)
             if not os.path.exists (unzip_folder_shp):
                 os.mkdir(unzip_folder_shp)
             print (unzip_folder_shp)
 
-            with zipfile.ZipFile(zip_filename_shp) as zip_ref:
-                zip_ref.extractall(unzip_folder_shp)	
-            #os.chdir(zip_folder)
-            wholelist = os.listdir(unzip_folder_shp)
-            root = QgsProject.instance().layerTreeRoot()
-            shapeGroup = root.addGroup(country)
-            i = 0
-            for file in wholelist:
-                if ".shp" in file:
-                    if "xml" not in file:
-                        fileroute=unzip_folder_shp+'/'+file
-                        filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
-                        QgsProject.instance().addMapLayer(filename,False)
-                        shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
-                percen_complete = i/len(wholelist)*100                
-                if status_callback: 
-                    status_callback(i,None)
-                i+=1
-            if status_callback: 
-                status_callback(100,None)            
-            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
-            for child in shapeGroup.children():
-                if isinstance(child, QgsLayerTreeLayer):
-                    layer = child.layer()
-                    break 
-            try:
-                qgis.utils.iface.setActiveLayer(layer)
-                qgis.utils.iface.zoomToActiveLayer()  
-            except :
-                pass
-            
-    else:
-        zip = requests.get(download_url_pbf, headers=headers, stream=True, allow_redirects=True)    
-        total_size = int(zip.headers.get('content-length'))
-        total_size_MB = round(total_size*10**(-6),2)
-        chunk_size = int(total_size/100)       
-        confirmed = QMessageBox.question(None, "Attention",'Estimated OSM ppf size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
-        if confirmed == QMessageBox.Yes:
-            i = 0
-            f = open(filename_pbf, 'wb')
-            for chunk in zip.iter_content(chunk_size = chunk_size):
-                if not chunk:
-                    break
-                f.write(chunk)
-                if status_callback: 
-                    status_callback(i,None)
-                i+=1
-            f.close()
-            #print (unzip_folder_shp)
-            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to convert pbf to GeoPackage and load into QGIS')
-            if status_callback: 
-                status_callback(0,None)
-            filename_gpkg = filename_pbf[:-4]+'.gpkg'
-            ogr2ogr(["","-f", "GPKG",filename_gpkg, filename_pbf])
-            #from qgis.core import QgsVectorLayer, QgsProject
-
-            root = QgsProject.instance().layerTreeRoot()
-            shapeGroup = root.addGroup(country)
-            layer = QgsVectorLayer(filename_gpkg,"gpkg","ogr")
-            subLayers =layer.dataProvider().subLayers()
-            i = 0
-            for subLayer in subLayers:
-                name = subLayer.split('!!::!!')[1]
-                uri = "%s|layername=%s" % (filename_gpkg, name,)
-                # Create layer
-                if name != 'other_relations':
-                    sub_vlayer = QgsVectorLayer(uri, name, 'ogr')
-                    # Add layer to map
-                    QgsProject.instance().addMapLayer(sub_vlayer,False)
-                    shapeGroup.insertChildNode(1,QgsLayerTreeLayer(sub_vlayer))
-                percen_complete = i/len(subLayers)*100                
-                if status_callback: 
-                    status_callback(i,None)
-                i+=1
-            if status_callback: 
-                status_callback(100,None)  
-            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
-            for child in shapeGroup.children():
-                if isinstance(child, QgsLayerTreeLayer):
-                    layer = child.layer()
-                    break 
-            try:
-                qgis.utils.iface.setActiveLayer(layer)
-                qgis.utils.iface.zoomToActiveLayer()  
-            except :
-                pass
-             
-  
-def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
-    #temp_dir = tempfile.mkdtemp()
-    download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '/' + state + '-latest-free.shp.zip'	
-    print (download_url_shp)
-    zip_filename_shp = outdir + '/'+ country + '-'+ state + '-latest-free.shp.zip'
-    unzip_folder_shp = zip_filename_shp.replace('.zip','')
-
-    download_url_pbf = r'https://download.geofabrik.de/' + region + '/'+ country+ '/' + state+'-latest.osm.pbf'	
-    print (download_url_pbf)
-    filename_pbf = outdir + '/'+ country + '-'+ state + '-latest.osm.pbf'   
-    headers = ""
-    zip = requests.get(download_url_shp, headers=headers, stream=True, allow_redirects=True)    
-    total_size = int(zip.headers.get('content-length'))
-    total_size_MB = round(total_size*10**(-6),2)
-    chunk_size = int(total_size/100)    
-    if  (zip.status_code == 200):
-        print ('total_length MB:', total_size_MB)
-        confirmed = QMessageBox.question(None, "Attention",'Estimated Shapefile size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
-        if confirmed == QMessageBox.Yes:
-            i = 0
-            f = open(zip_filename_shp, 'wb')
-            for chunk in zip.iter_content(chunk_size = chunk_size):
-                if not chunk:
-                    break
-                f.write(chunk)
-                if status_callback: 
-                    status_callback(i,None)
-                i+=1               
-            f.close()
-            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
-            if status_callback: 
-                status_callback(0,None)
-            if not os.path.exists (unzip_folder_shp):
-                os.mkdir(unzip_folder_shp)
-            print (unzip_folder_shp)
-
-            with zipfile.ZipFile(zip_filename_shp) as zip_ref:
-                zip_ref.extractall(unzip_folder_shp)	
-            #os.chdir(zip_folder)
-            wholelist = os.listdir(unzip_folder_shp)
-            root = QgsProject.instance().layerTreeRoot()
-            shapeGroup = root.addGroup(country+'_'+state)
-            i = 0
-            for file in wholelist:
-                if ".shp" in file:
-                    if "xml" not in file:
-                        fileroute=unzip_folder_shp+'/'+file
-                        filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
-                        QgsProject.instance().addMapLayer(filename,False)
-                        shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
-                percen_complete = i/len(wholelist)*100                
-                if status_callback: 
-                    status_callback(i,None)
-                i+=1
-            if status_callback: 
-                status_callback(100,None)            
-            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')  
-            for child in shapeGroup.children():
-                if isinstance(child, QgsLayerTreeLayer):
-                    layer = child.layer()
-                    break 
-            try:
-                qgis.utils.iface.setActiveLayer(layer)
-                qgis.utils.iface.zoomToActiveLayer()  
-            except :
-                pass
-           
-    else:
-        zip = requests.get(download_url_pbf, headers=headers, stream=True, allow_redirects=True)    
-        total_size = int(zip.headers.get('content-length'))
-        total_size_MB = round(total_size*10**(-6),2)
-        chunk_size = int(total_size/100)        
-        confirmed = QMessageBox.question(None, "Attention",'Estimated OSM ppf size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
-        if confirmed == QMessageBox.Yes:
-            i = 0
-            f = open(filename_pbf, 'wb')
-            for chunk in zip.iter_content(chunk_size = chunk_size):
-                if not chunk:
-                    break
-                f.write(chunk)
-                if status_callback: 
-                    status_callback(i,None)
-                i+=1
-            f.close()
-            #print (unzip_folder_shp)
-            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to convert pbf to GeoPackage and load into QGIS')
-            if status_callback: 
-                status_callback(0,None)
-            filename_gpkg = filename_pbf[:-4]+'.gpkg'
-            ogr2ogr(["","-f", "GPKG",filename_gpkg, filename_pbf])
-            #from qgis.core import QgsVectorLayer, QgsProject
-
-            root = QgsProject.instance().layerTreeRoot()
-            shapeGroup = root.addGroup(country+'_'+state)
-            layer = QgsVectorLayer(filename_gpkg,"gpkg","ogr")
-            subLayers =layer.dataProvider().subLayers()
-            i = 0
-            for subLayer in subLayers:
-                name = subLayer.split('!!::!!')[1]
-                uri = "%s|layername=%s" % (filename_gpkg, name,)
-                # Create layer
-                if name != 'other_relations':
-                    sub_vlayer = QgsVectorLayer(uri, name, 'ogr')
-                    # Add layer to map
-                    QgsProject.instance().addMapLayer(sub_vlayer,False)
-                    shapeGroup.insertChildNode(1,QgsLayerTreeLayer(sub_vlayer))
-                percen_complete = i/len(subLayers)*100                
-                if status_callback: 
-                    status_callback(i,None)
-                i+=1
-            if status_callback: 
-                status_callback(100,None) 
-            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
-            for child in shapeGroup.children():
-                if isinstance(child, QgsLayerTreeLayer):
-                    layer = child.layer()
-                    break 
-            try:
-                qgis.utils.iface.setActiveLayer(layer)
-                qgis.utils.iface.zoomToActiveLayer()  
-            except :
-                pass
-           
-
-
-def hcmgis_gadm(country, country_short, outdir,status_callback = None):  
-    pre = 'https://geodata.ucdavis.edu/gadm/gadm4.1/shp/gadm41_'
-    suf = '_shp.zip'
-    download_url_shp = pre + country_short + suf
-    print (download_url_shp)
-    zip_filename_shp = outdir + '/'+ country_short +  suf
-    unzip_folder_shp = zip_filename_shp.replace('.zip','')
-    
-    headers = ""
-    zip = requests.get(download_url_shp, headers=headers, stream=True, allow_redirects=True)    
-    total_size = int(zip.headers.get('content-length'))
-    total_size_MB = round(total_size*10**(-6),2)
-    chunk_size = int(total_size/100)    
-    if  (zip.status_code == 200):
-        print ('total_length MB:', total_size_MB)
-        confirmed = QMessageBox.question(None, "Attention",'Estimated Shapefile size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
-        if confirmed == QMessageBox.Yes:
-            i = 0
-            f = open(zip_filename_shp, 'wb')
-            for chunk in zip.iter_content(chunk_size = chunk_size):
-                if not chunk:
-                    break
-                f.write(chunk)
-                if status_callback: 
-                    status_callback(i,None)
-                i+=1               
-            f.close()        
-            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
-            if status_callback: 
-                status_callback(0,None)
-            if not os.path.exists (unzip_folder_shp):
-                os.mkdir(unzip_folder_shp)
-            
             with zipfile.ZipFile(zip_filename_shp) as zip_ref:
                 zip_ref.extractall(unzip_folder_shp)
             #os.chdir(zip_folder)
@@ -2572,28 +2326,343 @@ def hcmgis_gadm(country, country_short, outdir,status_callback = None):
                         filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
                         QgsProject.instance().addMapLayer(filename,False)
                         shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
-                percen_complete = i/len(wholelist)*100 
-                if status_callback:                
+                percen_complete = i/len(wholelist)*100
+                if status_callback:
                     status_callback(i,None)
                 i+=1
-            if status_callback: 
-                status_callback(100,None)            
+            if status_callback:
+                status_callback(100,None)
+            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()
+            except :
+                pass
+
+    else:
+        zip = requests.get(download_url_pbf, headers=headers, stream=True, allow_redirects=True)
+        total_size = int(zip.headers.get('content-length'))
+        total_size_MB = round(total_size*10**(-6),2)
+        chunk_size = int(total_size/100)
+        confirmed = QMessageBox.question(None, "Attention",'Estimated OSM ppf size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+        if confirmed == QMessageBox.Yes:
+            i = 0
+            f = open(filename_pbf, 'wb')
+            for chunk in zip.iter_content(chunk_size = chunk_size):
+                if not chunk:
+                    break
+                f.write(chunk)
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            f.close()
+            #print (unzip_folder_shp)
+            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to convert pbf to GeoPackage and load into QGIS')
+            if status_callback:
+                status_callback(0,None)
+            filename_gpkg = filename_pbf[:-4]+'.gpkg'
+            ogr2ogr(["","-f", "GPKG",filename_gpkg, filename_pbf])
+            #from qgis.core import QgsVectorLayer, QgsProject
+
+            root = QgsProject.instance().layerTreeRoot()
+            shapeGroup = root.addGroup(country)
+            layer = QgsVectorLayer(filename_gpkg,"gpkg","ogr")
+            subLayers =layer.dataProvider().subLayers()
+            i = 0
+            for subLayer in subLayers:
+                name = subLayer.split('!!::!!')[1]
+                uri = "%s|layername=%s" % (filename_gpkg, name,)
+                # Create layer
+                if name != 'other_relations':
+                    sub_vlayer = QgsVectorLayer(uri, name, 'ogr')
+                    # Add layer to map
+                    QgsProject.instance().addMapLayer(sub_vlayer,False)
+                    shapeGroup.insertChildNode(1,QgsLayerTreeLayer(sub_vlayer))
+                percen_complete = i/len(subLayers)*100
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            if status_callback:
+                status_callback(100,None)
+            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()
+            except :
+                pass
+
+
+def hcmgis_geofabrik2(region, country,state, outdir,status_callback = None):
+    #temp_dir = tempfile.mkdtemp()
+    download_url_shp = r'https://download.geofabrik.de/' + region + '/'+ country+ '/' + state + '-latest-free.shp.zip'
+    print (download_url_shp)
+    zip_filename_shp = outdir + '/'+ country + '-'+ state + '-latest-free.shp.zip'
+    unzip_folder_shp = zip_filename_shp.replace('.zip','')
+
+    download_url_pbf = r'https://download.geofabrik.de/' + region + '/'+ country+ '/' + state+'-latest.osm.pbf'
+    print (download_url_pbf)
+    filename_pbf = outdir + '/'+ country + '-'+ state + '-latest.osm.pbf'
+    headers = ""
+    zip = requests.get(download_url_shp, headers=headers, stream=True, allow_redirects=True)
+    total_size = int(zip.headers.get('content-length'))
+    total_size_MB = round(total_size*10**(-6),2)
+    chunk_size = int(total_size/100)
+    if  (zip.status_code == 200):
+        print ('total_length MB:', total_size_MB)
+        confirmed = QMessageBox.question(None, "Attention",'Estimated Shapefile size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+        if confirmed == QMessageBox.Yes:
+            i = 0
+            f = open(zip_filename_shp, 'wb')
+            for chunk in zip.iter_content(chunk_size = chunk_size):
+                if not chunk:
+                    break
+                f.write(chunk)
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            f.close()
+            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
+            if status_callback:
+                status_callback(0,None)
+            if not os.path.exists (unzip_folder_shp):
+                os.mkdir(unzip_folder_shp)
+            print (unzip_folder_shp)
+
+            with zipfile.ZipFile(zip_filename_shp) as zip_ref:
+                zip_ref.extractall(unzip_folder_shp)
+            #os.chdir(zip_folder)
+            wholelist = os.listdir(unzip_folder_shp)
+            root = QgsProject.instance().layerTreeRoot()
+            shapeGroup = root.addGroup(country+'_'+state)
+            i = 0
+            for file in wholelist:
+                if ".shp" in file:
+                    if "xml" not in file:
+                        fileroute=unzip_folder_shp+'/'+file
+                        filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
+                        QgsProject.instance().addMapLayer(filename,False)
+                        shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+                percen_complete = i/len(wholelist)*100
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            if status_callback:
+                status_callback(100,None)
+            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()
+            except :
+                pass
+
+    else:
+        zip = requests.get(download_url_pbf, headers=headers, stream=True, allow_redirects=True)
+        total_size = int(zip.headers.get('content-length'))
+        total_size_MB = round(total_size*10**(-6),2)
+        chunk_size = int(total_size/100)
+        confirmed = QMessageBox.question(None, "Attention",'Estimated OSM ppf size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+        if confirmed == QMessageBox.Yes:
+            i = 0
+            f = open(filename_pbf, 'wb')
+            for chunk in zip.iter_content(chunk_size = chunk_size):
+                if not chunk:
+                    break
+                f.write(chunk)
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            f.close()
+            #print (unzip_folder_shp)
+            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to convert pbf to GeoPackage and load into QGIS')
+            if status_callback:
+                status_callback(0,None)
+            filename_gpkg = filename_pbf[:-4]+'.gpkg'
+            ogr2ogr(["","-f", "GPKG",filename_gpkg, filename_pbf])
+            #from qgis.core import QgsVectorLayer, QgsProject
+
+            root = QgsProject.instance().layerTreeRoot()
+            shapeGroup = root.addGroup(country+'_'+state)
+            layer = QgsVectorLayer(filename_gpkg,"gpkg","ogr")
+            subLayers =layer.dataProvider().subLayers()
+            i = 0
+            for subLayer in subLayers:
+                name = subLayer.split('!!::!!')[1]
+                uri = "%s|layername=%s" % (filename_gpkg, name,)
+                # Create layer
+                if name != 'other_relations':
+                    sub_vlayer = QgsVectorLayer(uri, name, 'ogr')
+                    # Add layer to map
+                    QgsProject.instance().addMapLayer(sub_vlayer,False)
+                    shapeGroup.insertChildNode(1,QgsLayerTreeLayer(sub_vlayer))
+                percen_complete = i/len(subLayers)*100
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            if status_callback:
+                status_callback(100,None)
+            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()
+            except :
+                pass
+
+
+
+def hcmgis_gadm(country, country_short, outdir,status_callback = None):
+    pre = 'https://geodata.ucdavis.edu/gadm/gadm4.1/shp/gadm41_'
+    suf = '_shp.zip'
+    download_url_shp = pre + country_short + suf
+    print (download_url_shp)
+    zip_filename_shp = outdir + '/'+ country_short +  suf
+    unzip_folder_shp = zip_filename_shp.replace('.zip','')
+
+    headers = ""
+    zip = requests.get(download_url_shp, headers=headers, stream=True, allow_redirects=True)
+    total_size = int(zip.headers.get('content-length'))
+    total_size_MB = round(total_size*10**(-6),2)
+    chunk_size = int(total_size/100)
+    if  (zip.status_code == 200):
+        print ('total_length MB:', total_size_MB)
+        confirmed = QMessageBox.question(None, "Attention",'Estimated Shapefile size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+        if confirmed == QMessageBox.Yes:
+            i = 0
+            f = open(zip_filename_shp, 'wb')
+            for chunk in zip.iter_content(chunk_size = chunk_size):
+                if not chunk:
+                    break
+                f.write(chunk)
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            f.close()
+            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
+            if status_callback:
+                status_callback(0,None)
+            if not os.path.exists (unzip_folder_shp):
+                os.mkdir(unzip_folder_shp)
+
+            with zipfile.ZipFile(zip_filename_shp) as zip_ref:
+                zip_ref.extractall(unzip_folder_shp)
+            #os.chdir(zip_folder)
+            wholelist = os.listdir(unzip_folder_shp)
+            root = QgsProject.instance().layerTreeRoot()
+            shapeGroup = root.addGroup(country)
+            i = 0
+            for file in wholelist:
+                if ".shp" in file:
+                    if "xml" not in file:
+                        fileroute=unzip_folder_shp+'/'+file
+                        filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
+                        QgsProject.instance().addMapLayer(filename,False)
+                        shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+                percen_complete = i/len(wholelist)*100
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            if status_callback:
+                status_callback(100,None)
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
             # zoom to group extent
             for child in shapeGroup.children():
                 if isinstance(child, QgsLayerTreeLayer):
                     layer = child.layer()
-                    break 
+                    break
             try:
                 qgis.utils.iface.setActiveLayer(layer)
-                qgis.utils.iface.zoomToActiveLayer()  
+                qgis.utils.iface.zoomToActiveLayer()
             except :
-                pass           
+                pass
     else:
         QMessageBox.warning(None, "Attention",u'Link not found!')
     return
 
-def hcmgis_microsoft(country, state, outdir,status_callback = None):  
+def hcmgis_wof(country, country_short, outdir,status_callback = None):
+    pre = 'https://data.geocode.earth/wof/dist/shapefile/whosonfirst-data-admin-'
+    suf = '-latest.zip'
+    # NOTE: country_short is 2-characters for WOF shapefiles (but 3-characters for GADM)
+    download_url_shp = pre + country_short + suf
+    print (download_url_shp)
+    zip_filename_shp = outdir + '/wof-' + country_short + '-' + country.replace('(','-').replace(')','').replace(' / ','-') + suf
+    unzip_folder_shp = zip_filename_shp.replace('.zip','')
+
+    headers = {'referer': 'https://plugins.qgis.org/plugins/HCMGIS/'}
+    zip = requests.get(download_url_shp, headers=headers, stream=True, allow_redirects=True)
+    total_size = int(zip.headers.get('content-length'))
+    total_size_MB = round(total_size*10**(-6),2)
+    chunk_size = int(total_size/100)
+    if  (zip.status_code == 200):
+        print ('total_length MB:', total_size_MB)
+        confirmed = QMessageBox.question(None, "Attention",'Estimated Shapefile size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
+        if confirmed == QMessageBox.Yes:
+            i = 0
+            f = open(zip_filename_shp, 'wb')
+            for chunk in zip.iter_content(chunk_size = chunk_size):
+                if not chunk:
+                    break
+                f.write(chunk)
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            f.close()
+            QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
+            if status_callback:
+                status_callback(0,None)
+            if not os.path.exists (unzip_folder_shp):
+                os.mkdir(unzip_folder_shp)
+
+            with zipfile.ZipFile(zip_filename_shp) as zip_ref:
+                zip_ref.extractall(unzip_folder_shp)
+            #os.chdir(zip_folder)
+            wholelist = os.listdir(unzip_folder_shp)
+            root = QgsProject.instance().layerTreeRoot()
+            shapeGroup = root.addGroup(country)
+            i = 0
+            for file in wholelist:
+                if ".shp" in file:
+                    if "xml" not in file:
+                        fileroute=unzip_folder_shp+'/'+file
+                        filename = QgsVectorLayer(fileroute,file[:-4],"ogr")
+                        QgsProject.instance().addMapLayer(filename,False)
+                        shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
+                percen_complete = i/len(wholelist)*100
+                if status_callback:
+                    status_callback(i,None)
+                i+=1
+            if status_callback:
+                status_callback(100,None)
+            QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
+            # zoom to group extent
+            for child in shapeGroup.children():
+                if isinstance(child, QgsLayerTreeLayer):
+                    layer = child.layer()
+                    break
+            try:
+                qgis.utils.iface.setActiveLayer(layer)
+                qgis.utils.iface.zoomToActiveLayer()
+            except :
+                pass
+    else:
+        QMessageBox.warning(None, "Attention",u'Link not found!')
+    return
+
+def hcmgis_microsoft(country, state, outdir,status_callback = None):
     pre = ''
     suf = ''
     download_url= ''
@@ -2604,17 +2673,17 @@ def hcmgis_microsoft(country, state, outdir,status_callback = None):
         suf = '.geojson.zip'
         download_url = pre + state + suf
         zip_filename = outdir + '/'+ state +  suf
-        unzip_folder = zip_filename.replace('geojson.zip','')    
+        unzip_folder = zip_filename.replace('geojson.zip','')
     elif (country == 'Canada'):
         pre = 'https://usbuildingdata.blob.core.windows.net/canadian-buildings-v2/'
-        suf = '.zip'        
+        suf = '.zip'
         download_url = pre + state + suf
         zip_filename = outdir + '/'+ state +  suf
-        unzip_folder = zip_filename.replace('.zip','')    
+        unzip_folder = zip_filename.replace('.zip','')
 
     elif (country == 'South America'):
         pre = 'https://minedbuildings.blob.core.windows.net/southamerica/'
-        suf = '.geojsonl.zip'        
+        suf = '.geojsonl.zip'
         download_url = pre + state + suf
         print (download_url)
         zip_filename = outdir + '/'+ state +  suf
@@ -2623,7 +2692,7 @@ def hcmgis_microsoft(country, state, outdir,status_callback = None):
     elif (country == 'Australia'):
         download_url = 'https://usbuildingdata.blob.core.windows.net/australia-buildings/Australia_2020-06-21.geojson.zip'
         zip_filename = outdir + '/'+ 'Australia_2020-06-21.geojson.zip'
-        unzip_folder = 'Australia'    
+        unzip_folder = 'Australia'
     elif (country == 'Uganda'):
         download_url = 'https://usbuildingdata.blob.core.windows.net/tanzania-uganda-buildings/Uganda_2019-09-16.zip'
         zip_filename = outdir + '/'+ 'Uganda_2019-09-16.zip'
@@ -2632,12 +2701,12 @@ def hcmgis_microsoft(country, state, outdir,status_callback = None):
         download_url = 'https://usbuildingdata.blob.core.windows.net/tanzania-uganda-buildings/Tanzania_2019-09-16.zip'
         zip_filename = outdir + '/'+ 'Tanzania_2019-09-16.zip'
         unzip_folder = 'Tanzania'
-    
+
     headers = ""
-    zip = requests.get(download_url, headers=headers, stream=True, allow_redirects=True)    
+    zip = requests.get(download_url, headers=headers, stream=True, allow_redirects=True)
     total_size = int(zip.headers.get('content-length'))
     total_size_MB = round(total_size*10**(-6),2)
-    chunk_size = int(total_size/100)    
+    chunk_size = int(total_size/100)
     if  (zip.status_code == 200):
         print ('total_length MB:', total_size_MB)
         confirmed = QMessageBox.question(None, "Attention",'Estimated file size: ' +str(total_size_MB) + ' MB. Downloading may take time. Are you sure?', QMessageBox.Yes | QMessageBox.No)
@@ -2648,16 +2717,16 @@ def hcmgis_microsoft(country, state, outdir,status_callback = None):
                 if not chunk:
                     break
                 f.write(chunk)
-                if status_callback: 
+                if status_callback:
                     status_callback(i,None)
-                i+=1               
-            f.close()        
+                i+=1
+            f.close()
             QMessageBox.information(None, "Congrats",u'Download completed! Now wait for a minute to extract zip files and load into QGIS')
-            if status_callback: 
+            if status_callback:
                 status_callback(0,None)
             if not os.path.exists (unzip_folder):
                 os.mkdir(unzip_folder)
-            
+
             with zipfile.ZipFile(zip_filename) as zip_ref:
                 zip_ref.extractall(unzip_folder)
             #os.chdir(zip_folder)
@@ -2670,26 +2739,26 @@ def hcmgis_microsoft(country, state, outdir,status_callback = None):
                     fileroute= unzip_folder+'/'+file
                     filename = QgsVectorLayer(fileroute,file[:-8],"ogr")
                     QgsProject.instance().addMapLayer(filename,False)
-                    shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))                
+                    shapeGroup.insertChildNode(1,QgsLayerTreeLayer(filename))
 
-                percen_complete = i/len(wholelist)*100 
-                if status_callback:                
+                percen_complete = i/len(wholelist)*100
+                if status_callback:
                     status_callback(i,None)
                 i+=1
-            if status_callback: 
-                status_callback(100,None)            
+            if status_callback:
+                status_callback(100,None)
             QMessageBox.information(None, "Congrats",u'Done. Thank you for your patience!')
             # zoom to group extent
             for child in shapeGroup.children():
                 if isinstance(child, QgsLayerTreeLayer):
                     layer = child.layer()
-                    break 
+                    break
             try:
                 qgis.utils.iface.setActiveLayer(layer)
-                qgis.utils.iface.zoomToActiveLayer()  
+                qgis.utils.iface.zoomToActiveLayer()
             except :
                 pass
-           
+
     else:
         QMessageBox.warning(None, "Attention",u'Link not found!')
     return

@@ -21,7 +21,7 @@ import math
 import os.path
 import operator
 import sys
-from urllib.request import urlopen  
+from urllib.request import urlopen
 import json
 
 from qgis.core import *
@@ -51,6 +51,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/forms")
 from hcmgis_opendata_form import *
 from hcmgis_geofabrik_form import *
 from hcmgis_gadm_form import *
+from hcmgis_wof_form import *
 from hcmgis_microsoft_form import *
 from hcmgis_global_microsoft_form import *
 
@@ -127,7 +128,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
         infile.seek(0)
         reader = csv.reader(infile, dialect)
         header = next(reader)
-            
+
         del reader
         infile.close()
         del infile
@@ -164,8 +165,8 @@ class hcmgis_dialog(QtWidgets.QDialog):
         for index in removed:
             item = list_widget.takeItem(index)
             item = None
-            # list_widget.removeItemWidget(list_widget.item(index))   
-  
+            # list_widget.removeItemWidget(list_widget.item(index))
+
     def hcmgis_set_status_bar(self, status_bar, status_lable):
         status_bar.setMinimum(0)
         status_bar.setMaximum(100)
@@ -175,8 +176,8 @@ class hcmgis_dialog(QtWidgets.QDialog):
         self.status_lable = status_lable
 
     def hcmgis_status_callback(self, percent_complete, lable):
-        try:           
-            self.status_lable.setText(lable)    
+        try:
+            self.status_lable.setText(lable)
             message = str(int(percent_complete)) + "%"
             self.status_bar.setFormat(message)
 
@@ -226,7 +227,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
         'https://data.opendevelopmentmekong.net/geoserver/ODMyanmar',
         'https://data.opendevelopmentmekong.net/geoserver/ODVietnam',
         'http://geoserver.d4science.org:80/geoserver',
-        'https://geowebservices.stanford.edu:443/geoserver',        
+        'https://geowebservices.stanford.edu:443/geoserver',
         # 'http://ambiente.caearte.conae.gov.ar/geoserver',
         # 'http://openapi.aurin.org.au/public',
         'https://geoservicos.ibge.gov.br/geoserver',
@@ -235,12 +236,12 @@ class hcmgis_dialog(QtWidgets.QDialog):
         'https://geonode.wfp.org/geoserver',
         # 'https://puma.worldbank.org/geoserver'
          ]
-    
+
     ogc_servers = [
                 # 'Local GeoServer',
-                # 'Local PyGeoAPI',                  
+                # 'Local PyGeoAPI',
                 'GeoSolutions (GeoServer)',
-                
+
                 'Sammeldienst Kreis Viersen (QGIS Server)',
                 'OSM-Daten Kreis Viersen (QGIS Server)',
 
@@ -253,14 +254,14 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 'OS Open Zoomstack (Ldproxy)',
                 'Straßennetz Landesbetrieb Straßenbau NRW'
 
-                'Geoconnex (Pygeoapi)',   
-                'US Geoplatform (Pygeoapi)',                
-                'Meteorological Services of Canada (Pygeoapi)',    
+                'Geoconnex (Pygeoapi)',
+                'US Geoplatform (Pygeoapi)',
+                'Meteorological Services of Canada (Pygeoapi)',
                 'Pygeoapi Demo'
                 ]
 
     ogc_urls = [
-                # 'http://localhost:8080/geoserver/ogc/features',  
+                # 'http://localhost:8080/geoserver/ogc/features',
                 # 'http://localhost:5000',
                 'https://gs-main.geosolutionsgroup.com/geoserver/ogc/features',
 
@@ -269,37 +270,37 @@ class hcmgis_dialog(QtWidgets.QDialog):
 
                 'https://demo.mapserver.org/cgi-bin/mapserv/localdemo/ogcapi',
 
-                'https://www.ldproxy.nrw.de/topographie',  
+                'https://www.ldproxy.nrw.de/topographie',
                 'https://d123.ldproxy.net/montreal',
                 'https://demo.ldproxy.net/cshapes',
                 'https://demo.ldproxy.net/daraa',
                 'https://demo.ldproxy.net/zoomstack',
                 'https://demo.ldproxy.net/strassen',
-            
-                'https://reference.geoconnex.us',      
-                'https://geoapi.geoplatform.gov', 
+
+                'https://reference.geoconnex.us',
+                'https://geoapi.geoplatform.gov',
                 'https://api.weather.gc.ca',
                 'https://demo.pygeoapi.io/master '
          ]
-    
+
     wfs_formats = [
                 'SHAPE-ZIP',
-                'JSON',                
+                'JSON',
                 'KML',
                 'CSV',
                 'GML',
                 'XLSX'
                 ]
 
-    ogc_formats = [                
-                'JSON', 
-                'JSONLD',              
+    ogc_formats = [
+                'JSON',
+                'JSONLD',
                 'KML',
                 'CSV',
-                'GML'                
+                'GML'
                 ]
-    
-    def hcmgis_fill_table_widget_with_csv(self,table_widget, csv_file, status_callback = None):	       
+
+    def hcmgis_fill_table_widget_with_csv(self,table_widget, csv_file, status_callback = None):
         data = []
         with open(csv_file, 'r') as stream:
             for rowdata in csv.reader(stream):
@@ -315,15 +316,15 @@ class hcmgis_dialog(QtWidgets.QDialog):
             for col in range(nb_col):
                 item = QTableWidgetItem(str(data[row][col]))
                 table_widget.setItem(row, col, item)
-        
+
         return
-    
-    def hcmgis_fill_table_widget_with_json(self,table_widget, url, TxtTitle, TxtAbstract, status_callback = None):	       
-        table_widget.setRowCount(0) 
+
+    def hcmgis_fill_table_widget_with_json(self,table_widget, url, TxtTitle, TxtAbstract, status_callback = None):
+        table_widget.setRowCount(0)
         TxtTitle.clear()
-        TxtAbstract.clear() 
-        self.Filter.clear()    
-        self.LblWFSLayers.clear()   
+        TxtAbstract.clear()
+        self.Filter.clear()
+        self.LblWFSLayers.clear()
         # url_landingpage = self.ogc_urls[idx]
         url_landingpage = url
         # url_landingpage = url + '/?f=json'
@@ -332,18 +333,18 @@ class hcmgis_dialog(QtWidgets.QDialog):
             try:
                 landingpage_response = urlopen(url_landingpage)
                 if (landingpage_response is not None):
-                    server_json = json.loads(landingpage_response.read()) 
+                    server_json = json.loads(landingpage_response.read())
                     server_title = server_json['title']
                     server_abstract = server_json['description']
-                    TxtTitle.insertPlainText(server_title)                
+                    TxtTitle.insertPlainText(server_title)
                     TxtAbstract.insertPlainText(server_abstract)
-            except: pass            
+            except: pass
             collections_response = urlopen(url_collections)
             if collections_response is not None:
-                # storing the JSON response from url in data                 
-                data_json = json.loads(collections_response.read())  
-                collections = data_json['collections'] 
-                if len(collections) > 0:              
+                # storing the JSON response from url in data
+                data_json = json.loads(collections_response.read())
+                collections = data_json['collections']
+                if len(collections) > 0:
                     i = 0
                     for i in range (len(collections)):
                         table_widget.insertRow(i)
@@ -351,17 +352,17 @@ class hcmgis_dialog(QtWidgets.QDialog):
                             table_widget.setItem(i,0, QTableWidgetItem(collections[i]['id']))
                         except:
                             table_widget.setItem(i,0, QTableWidgetItem(collections[i]['name']))
-                        table_widget.setItem(i,1, QTableWidgetItem(collections[i]['title']))                       
+                        table_widget.setItem(i,1, QTableWidgetItem(collections[i]['title']))
                         table_widget.item(i,0).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
-                        table_widget.item(i,1).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )               
+                        table_widget.item(i,1).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
                         status_callback(((i+1)/len(collections))*100,None)
                     message = str(i+1) + " layers loaded"
                     MessageBar = qgis.utils.iface.messageBar()
-                    MessageBar.pushMessage(message, 0, 2)                    
-                    self.LblWFSLayers.setText(message)                    
+                    MessageBar.pushMessage(message, 0, 2)
+                    self.LblWFSLayers.setText(message)
                     self.Filter.setEnabled(True)
                     self.Filter.setFocus(True)
-                else:  
+                else:
                     message = " 0 layer loaded"
                     self.LblWFSLayers.setText(message)
                     MessageBar = qgis.utils.iface.messageBar()
@@ -369,19 +370,19 @@ class hcmgis_dialog(QtWidgets.QDialog):
                     self.Filter.setEnabled(False)
                     self.Filter.setFocus(False)
 
-            else: return   
+            else: return
         except Exception as e:
-            QMessageBox.warning(None, "Connection Error",str(e))	
+            QMessageBox.warning(None, "Connection Error",str(e))
             return
-        return 
-                
-    def hcmgis_fill_table_widget_with_wfs_layers0(self,table_widget, url, TxtTitle, TxtAbstract, status_callback = None):	
-        table_widget.setRowCount(0) 
+        return
+
+    def hcmgis_fill_table_widget_with_wfs_layers0(self,table_widget, url, TxtTitle, TxtAbstract, status_callback = None):
+        table_widget.setRowCount(0)
         TxtTitle.clear()
-        TxtAbstract.clear() 
-        self.Filter.clear()   
+        TxtAbstract.clear()
+        self.Filter.clear()
         self.LblWFSLayers.clear()
-        idx = self.cboServerName.currentIndex()         		       
+        idx = self.cboServerName.currentIndex()
         # try:
         ssl._create_default_https_context = ssl._create_unverified_context
         #wfs = urllib.request.urlopen(self.wfs_urls[idx] +'/ows?service=wfs&version=2.0.0&request=GetCapabilities',context=ssl._create_unverified_context())
@@ -402,35 +403,35 @@ class hcmgis_dialog(QtWidgets.QDialog):
         #     print (uri)
         #     wfs = requests.get(uri, stream=True, allow_redirects=True, verify = False)
         #     print (wfs.text)
-       
+
         project = QgsProject.instance()
         home_path = project.homePath()
         if not home_path:
             home_path = os.path.expanduser('~')
-        filename = home_path + "/"+ str(self.wfs_servers[idx])  + ".xml"   
+        filename = home_path + "/"+ str(self.wfs_servers[idx])  + ".xml"
         # print (filename)
-        if  (wfs.status_code == 200):               
-            f = open(filename, 'wb')                           
+        if  (wfs.status_code == 200):
+            f = open(filename, 'wb')
             for chunk in wfs.iter_content(chunk_size = 1024):
                 if not chunk:
                     break
-                f.write(chunk)                                                            
+                f.write(chunk)
             f.close()
-        try:       
-            if wfs is not None:              
+        try:
+            if wfs is not None:
                 #data = wfs.read().decode('utf-8')
                 #data = wfs.text
-                getcapabilities = open(filename, 'r') 
+                getcapabilities = open(filename, 'r')
                 data = getcapabilities.read()
                 getcapabilities.close()
                 os.remove(filename)
                 # print (data)
                 server_title_regex = r'<ows:Title>(.+?)</ows:Title>|<ows:Title/>'
                 #server_title_pattern = re.compile(server_title_regex)
-                
+
                 server_abstract_regex = r'<ows:Abstract>(.+?)</ows:Abstract>|<ows:Abstract/>'
                 #server_abstract_pattern = re.compile(server_abstract_regex)
-                
+
                 server_title = re.findall(server_title_regex,data,re.DOTALL)
                 server_abstract = re.findall(server_abstract_regex,data,re.DOTALL)
 
@@ -445,12 +446,12 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 if len(server_title)>0:
                     TxtTitle.insertPlainText(server_title[0])
                 if len (server_abstract)>0:
-                    TxtAbstract.insertPlainText(server_abstract[0].replace('&#13;','')) #delete unwanted character before \n            
+                    TxtAbstract.insertPlainText(server_abstract[0].replace('&#13;','')) #delete unwanted character before \n
                 # QMessageBox.information(None, "Congrats",str(layer_name))
                 if len(layer_name)>0:
-                    # print (layer_name)  
-                    i = 0              
-                    for i in range (len(layer_name)):                       
+                    # print (layer_name)
+                    i = 0
+                    for i in range (len(layer_name)):
                         # # Feature count
                         # r = requests.get(self.wfs_urls[idx]+'/wfs', params={
                         # 'service': 'WFS',
@@ -468,7 +469,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
 
                         table_widget.item(i,0).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
                         table_widget.item(i,1).setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
-                        # status_callback((i/len(layer_name))*100,None)                
+                        # status_callback((i/len(layer_name))*100,None)
                         status_callback(((i+1)/len(layer_name))*100,None)
                     message = str(i+1) + " WFS layers loaded"
                     self.LblWFSLayers.setText(message)
@@ -476,7 +477,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
                     MessageBar.pushMessage(message, 0, 2)
                     self.Filter.setEnabled(True)
                     self.Filter.setFocus(True)
-                else:  
+                else:
                     message = " 0 WFS layer loaded"
                     self.LblWFSLayers.setText(message)
                     MessageBar = qgis.utils.iface.messageBar()
@@ -485,26 +486,26 @@ class hcmgis_dialog(QtWidgets.QDialog):
                     self.Filter.setFocus(False)
             else: return
         except Exception as e:
-            QMessageBox.warning(None, "WFS Error",str(e))	
-        return    		        
-    
-    def hcmgis_fill_table_widget_with_wfs_layers(self,table_widget, idx, TxtTitle, TxtAbstract, status_callback = None):	
-        table_widget.clear()          
-        table_widget.setRowCount(0) 
+            QMessageBox.warning(None, "WFS Error",str(e))
+        return
+
+    def hcmgis_fill_table_widget_with_wfs_layers(self,table_widget, idx, TxtTitle, TxtAbstract, status_callback = None):
+        table_widget.clear()
+        table_widget.setRowCount(0)
         TxtTitle.clear()
         TxtAbstract.clear()
-        columns = ['Name', 'Title']            
+        columns = ['Name', 'Title']
         table_widget.setColumnCount(len(columns))
-        table_widget.setHorizontalHeaderLabels(columns)       		       
+        table_widget.setHorizontalHeaderLabels(columns)
         try:
-            wfs = WebFeatureService(self.wfs_urls[idx] +'/wfs', version = '2.0.0')             
-            if wfs is not None:              
+            wfs = WebFeatureService(self.wfs_urls[idx] +'/wfs', version = '2.0.0')
+            if wfs is not None:
                 TxtTitle.insertPlainText(wfs.identification.title)
                 TxtAbstract.insertPlainText(wfs.identification.abstract)
                 layer_names = list(wfs.contents)
-                if layer_names is not None: 
+                if layer_names is not None:
                     i = 0
-                    for layer_name  in layer_names:  
+                    for layer_name  in layer_names:
                         table_widget.insertRow(i)
                         table_widget.setItem(i,0, QTableWidgetItem(layer_name))
                         table_widget.setItem(i,1, QTableWidgetItem(wfs[layer_name].title))
@@ -515,62 +516,62 @@ class hcmgis_dialog(QtWidgets.QDialog):
 
                     message = str(i) + " WFS layers loaded"
                     MessageBar = qgis.utils.iface.messageBar()
-                    MessageBar.pushMessage(message, 0, 2)  		
+                    MessageBar.pushMessage(message, 0, 2)
                 else: return
             else: return
         except Exception as e:
-            QMessageBox.warning(None, "WFS ERROR",str(e))	
-            return  
-        
+            QMessageBox.warning(None, "WFS ERROR",str(e))
+            return
+
 # --------------------------------------------------------
 #    HCMGIS Opendata
 # --------------------------------------------------------
 
-class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):	
-    def __init__(self, iface):		
-        hcmgis_dialog.__init__(self, iface)	
+class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
+    def __init__(self, iface):
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.Filter.setFocus(True)
-        QWidget.setTabOrder(self.Filter, self.TblWFSLayers)      
-        self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+        QWidget.setTabOrder(self.Filter, self.TblWFSLayers)
+        self.BtnOutputFolder.clicked.connect(self.browse_outfile)
 
         project = QgsProject.instance()
         home_path = project.homePath()
         if not home_path:
             home_path = os.path.expanduser('~')
-        self.LinOutputFolder.setText(home_path)                                             
+        self.LinOutputFolder.setText(home_path)
         self.ChkSaveShapefile.stateChanged.connect(self.toggleouputfolder)
-        
-        columns = ['Name', 'Title']            
+
+        columns = ['Name', 'Title']
         self.TblWFSLayers.setColumnCount(len(columns))
-        self.TblWFSLayers.setHorizontalHeaderLabels(columns) 
+        self.TblWFSLayers.setHorizontalHeaderLabels(columns)
         self.TblWFSLayers.resizeColumnsToContents()
         self.TblWFSLayers.resizeRowsToContents()
-        self.TblWFSLayers.horizontalHeader().setStretchLastSection(True)	
-         
+        self.TblWFSLayers.horizontalHeader().setStretchLastSection(True)
+
 
         self.Filter.setEnabled(False)
         self.Filter.valueChanged.connect(self.updateWFSTable)
 
-        # self.TblWFSLayers.setDragDropMode(QAbstractItemView.DragOnly)  
-        # self.TblWFSLayers.setDragEnabled(True) 
+        # self.TblWFSLayers.setDragDropMode(QAbstractItemView.DragOnly)
+        # self.TblWFSLayers.setDragEnabled(True)
 
-        self.cboServerType.addItems(self.server_types) 
+        self.cboServerType.addItems(self.server_types)
         self.cboServerType.setCurrentIndex(-1)
         self.cboServerType.currentIndexChanged.connect(self.updateServer)
         self.cboServerName.currentIndexChanged.connect(self.updateURL)
         self.cboServerName.setCurrentIndex(-1)
         # self.cboServerName.currentIndexChanged.connect(self.readwfs)
-        
 
-        
+
+
         self.cboFormat.setEnabled(False)
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
 
-        self.cboServerName.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboServerName.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems
         self.cboServerName.setMaxVisibleItems(10)
-        self.cboServerName.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)        
+        self.cboServerName.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 
         self.TblWFSLayers.doubleClicked.connect(self.run)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
@@ -583,15 +584,15 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
 
     def updateWFSTable(self):
         name = self.Filter.text().lower()
-        if (name != '' and name is not None):    
+        if (name != '' and name is not None):
             visible_row = 0
             for row in range(self.TblWFSLayers.rowCount()):
                 item0 = self.TblWFSLayers.item(row, 0) # Layer Name
                 item1 = self.TblWFSLayers.item(row, 1) # Layer Title
                 # if the search is *not* in the item's text *do not hide* the row
                 if (name not in item0.text().lower() and name not in item1.text().lower()):
-                    match = True               
-                else: 
+                    match = True
+                else:
                     match = False
                     visible_row += 1
                 self.TblWFSLayers.setRowHidden(row, match )
@@ -606,7 +607,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         self.cboServerName.clear()
         self.TxtTitle.clear()
         self.TxtAbstract.clear()
-        self.TblWFSLayers.setRowCount(0) 
+        self.TblWFSLayers.setRowCount(0)
         # if self.cboServerType.currentIndex() == 0:             #'WFS'
         #     self.cboServerName.addItems(self.wfs_servers)
         # elif self.cboServerType.currentIndex() == 1:             #'OGC APIs'
@@ -617,24 +618,24 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
             # self.cboServerName.currentIndexChanged.connect(self.readwfs)
             self.BtnConnect.clicked.connect(self.readwfs)
             self.cboFormat.clear()
-            self.cboFormat.addItems(self.wfs_formats) 
+            self.cboFormat.addItems(self.wfs_formats)
 
         elif self.cboServerType.currentIndex() == 1:             #'OGC APIs'
             self.cboServerName.addItems(self.ogc_servers)
             self.BtnConnect.clicked.connect(self.readwfs)
             self.cboFormat.clear()
-            self.cboFormat.addItems(self.ogc_formats) 
-    
+            self.cboFormat.addItems(self.ogc_formats)
+
     def updateURL(self):
-        self.TblWFSLayers.setRowCount(0) 
+        self.TblWFSLayers.setRowCount(0)
         self.TxtTitle.clear()
-        self.TxtAbstract.clear() 
-        self.Filter.clear() 
+        self.TxtAbstract.clear()
+        self.Filter.clear()
         self.TxtURL.clear()
         self.LblStatus.clear()
-        self.LblWFSLayers.clear() 
+        self.LblWFSLayers.clear()
         idx = self.cboServerName.currentIndex()
-        if (self.cboServerType.currentIndex() == 0 and self.cboServerName.currentIndex()>-1):   
+        if (self.cboServerType.currentIndex() == 0 and self.cboServerName.currentIndex()>-1):
             self.TxtURL.setText(self.wfs_urls[idx])
         elif (self.cboServerType.currentIndex() == 1 and self.cboServerName.currentIndex()>-1):
             self.TxtURL.setText(self.ogc_urls[idx])
@@ -642,23 +643,23 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
     def readwfs(self):
         self.TxtTitle.clear()
         self.TxtAbstract.clear()
-        self.TblWFSLayers.setRowCount(0) 
+        self.TblWFSLayers.setRowCount(0)
         self.LblStatus.clear()
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.BtnConnect.setEnabled(False)
-        # idx = self.cboServerName.currentIndex()       
+        # idx = self.cboServerName.currentIndex()
         # QApplication.setOverrideCursor(Qt.WaitCursor)
         # do lengthy process
         url = self.TxtURL.text().strip()
-        if (self.cboServerType.currentIndex() == 0 and self.cboServerName.currentIndex()>-1):              
+        if (self.cboServerType.currentIndex() == 0 and self.cboServerName.currentIndex()>-1):
             self.LblWFSLayers.setText('WFS Layers')
-            #self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)           
+            #self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)
             self.hcmgis_fill_table_widget_with_wfs_layers0(self.TblWFSLayers,url, self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)
         elif (self.cboServerType.currentIndex() == 1 and self.cboServerName.currentIndex()>-1):
             self.LblWFSLayers.setText('OGC API Layers')
-            #self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)           
+            #self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)
             self.hcmgis_fill_table_widget_with_json(self.TblWFSLayers,url, self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)
-        
+
         self.BtnConnect.setEnabled(True)
         # QApplication.setOverrideCursor(Qt.ArrowCursor)
 
@@ -670,7 +671,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         newname = QFileDialog.getExistingDirectory(None, "Output Folder",self.LinOutputFolder.displayText())
         if newname != None:
             self.LinOutputFolder.setText(newname)
-                    
+
     def toggleouputfolder(self,state):
         if state > 0:
             self.LinOutputFolder.setEnabled(True)
@@ -678,18 +679,18 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
             self.cboFormat.setEnabled(True)
         else:
             self.LinOutputFolder.setEnabled(False)
-            self.BtnOutputFolder.setEnabled(False)	
-            self.cboFormat.setEnabled(False)   
-   
+            self.BtnOutputFolder.setEnabled(False)
+            self.cboFormat.setEnabled(False)
+
     def run(self):
-        if self.cboServerType.currentIndex() == 0: #WFS 
+        if self.cboServerType.currentIndex() == 0: #WFS
             self.loadwfs()
 
-        elif self.cboServerType.currentIndex() == 1: #OGC API  
+        elif self.cboServerType.currentIndex() == 1: #OGC API
             self.loadogc()
 
     def loadwfs(self):
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.LblStatus.clear()
         idx = self.cboServerName.currentIndex()
         # opendata_url =self.wfs_urls[idx]
@@ -705,58 +706,58 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         elif (wfs_format == "gml"):
             wfs_format = "gml3"
 
-        layernames = []	
-        rows = []	
+        layernames = []
+        rows = []
         for index in self.TblWFSLayers.selectedIndexes():
             if index.row() not in rows:
                 rows.append(index.row())
         for row_index in rows:
             if (self.TblWFSLayers.item(row_index, 0) is not None):
                 layernames.append(self.TblWFSLayers.item(row_index, 0).text())
-        # print(rows)       
+        # print(rows)
         if layernames is not None:
             ii = 0
             for layer_name in layernames:
-                # uri = opendata_url + "/wfs?version=1.0.0&request=GetFeature&format_options=CHARSET:UTF-8&typename="+ str(layer_name)    
-                uri = opendata_url + "/wfs?request=GetFeature&format_options=CHARSET:UTF-8&typename="+ str(layer_name)              
-               #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)                                    	
+                # uri = opendata_url + "/wfs?version=1.0.0&request=GetFeature&format_options=CHARSET:UTF-8&typename="+ str(layer_name)
+                uri = opendata_url + "/wfs?request=GetFeature&format_options=CHARSET:UTF-8&typename="+ str(layer_name)
+               #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)
                 if (not self.ChkSaveShapefile.isChecked()):
                     try:
                         qgis.utils.iface.addVectorLayer(uri, layer_name,"WFS")
-                        qgis.utils.iface.zoomToActiveLayer()                         
-                        ii+=1		
-                        self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers added")	    			
+                        qgis.utils.iface.zoomToActiveLayer()
+                        ii+=1
+                        self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers added")
                         percent_complete = ii/len(layernames)*100
                         self.status.setValue(percent_complete)
                         message = str(int(percent_complete)) + "%"
-                        self.status.setFormat(message)                            
-                    except Exception as e:                      
-                        QMessageBox.critical(self.iface.mainWindow(), "WFS", e)                                                                  
-                else:   
-                    #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)                       	                                       	                   
+                        self.status.setFormat(message)
+                    except Exception as e:
+                        QMessageBox.critical(self.iface.mainWindow(), "WFS", e)
+                else:
+                    #uri = opendata_url + "/ows?service=WFS&request=GetFeature&typename="+ str(layer_name)
                     uri += '&outputFormat='
                     uri += wfs_format
                     try:
-                        if wfs_format == "shape-zip":                       
+                        if wfs_format == "shape-zip":
                             headers = ""
                             contents = requests.get(uri, headers=headers, stream=True, allow_redirects=True, verify = False)
-                            filename = outdir + "/"+ str(layer_name).replace(":","_") + ext    
+                            filename = outdir + "/"+ str(layer_name).replace(":","_") + ext
                             # total_size = int(len(contents.content))
                             # total_size_MB = round(total_size*10**(-6),2)
-                            # chunk_size = int(total_size/100)                        
-                            if  (contents.status_code == 200):                               
-                                f = open(filename, 'wb')                           
+                            # chunk_size = int(total_size/100)
+                            if  (contents.status_code == 200):
+                                f = open(filename, 'wb')
                                 for chunk in contents.iter_content(chunk_size = 1024):
                                     if not chunk:
                                         break
-                                    f.write(chunk)                                                                          
+                                    f.write(chunk)
                                 f.close()
                                 unzip_folder = filename.replace('.zip','')
                                 if not os.path.exists (unzip_folder):
-                                    os.mkdir(unzip_folder)                            
+                                    os.mkdir(unzip_folder)
                                 with zipfile.ZipFile(filename) as zip_ref:
                                     zip_ref.extractall(unzip_folder)
-                                wholelist = os.listdir(unzip_folder)                           
+                                wholelist = os.listdir(unzip_folder)
                                 i = 0
                                 for file in wholelist:
                                     if ".cst" in file:
@@ -766,15 +767,15 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                                     if ".shp" in file:
                                         fileroute= unzip_folder+'/'+file
                                         layer = QgsVectorLayer(fileroute,file[:-4],"ogr")
-                                        if (layer.isValid()):                     
+                                        if (layer.isValid()):
                                             QgsProject.instance().addMapLayer(layer)
-                                            qgis.utils.iface.zoomToActiveLayer()                                                     
-                                            ii+=1		
-                                            self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and added")	
+                                            qgis.utils.iface.zoomToActiveLayer()
+                                            ii+=1
+                                            self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and added")
                                             percent_complete = ii/len(layernames)*100
                                             self.status.setValue(percent_complete)
                                             message = str(int(percent_complete)) + "%"
-                                            self.status.setFormat(message)  
+                                            self.status.setFormat(message)
                         else:
                             filename = outdir + "/"+ str(layer_name).replace(":","_") + ext
                             ssl._create_default_https_context = ssl._create_unverified_context
@@ -783,22 +784,22 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                             urllib.request.urlretrieve(uri,filename)
                             layer = QgsVectorLayer(filename, QFileInfo(filename).baseName(), 'ogr')
                             layer.dataProvider().setEncoding(u'UTF-8')
-                            if (layer.isValid()):                     
-                                QgsProject.instance().addMapLayer(layer)   
-                                qgis.utils.iface.zoomToActiveLayer()                      
-                                ii+=1		
-                                self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and added")	
+                            if (layer.isValid()):
+                                QgsProject.instance().addMapLayer(layer)
+                                qgis.utils.iface.zoomToActiveLayer()
+                                ii+=1
+                                self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and added")
                                 percent_complete = ii/len(layernames)*100
                                 self.status.setValue(percent_complete)
                                 message = str(int(percent_complete)) + "%"
-                                self.status.setFormat(message)  
+                                self.status.setFormat(message)
                     except Exception as e:
-                        # qgis.utils.iface.addVectorLayer(uri, str(layer_name),"WFS")    
-                        QMessageBox.critical(self.iface.mainWindow(), "WFS", str(e))                                  
-        return		
-    
+                        # qgis.utils.iface.addVectorLayer(uri, str(layer_name),"WFS")
+                        QMessageBox.critical(self.iface.mainWindow(), "WFS", str(e))
+        return
+
     def loadogc(self):
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.LblStatus.clear()
         idx = self.cboServerName.currentIndex()
         # opendata_url =self.ogc_urls[idx]
@@ -807,16 +808,16 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
         ogc_format  = self.cboFormat.currentText().lower()
         ext = "." + ogc_format
         # if (ogc_format == "json"):
-        #     ogc_format = "application/json"     
+        #     ogc_format = "application/json"
         if (ogc_format == "kml"):
-            ogc_format = "application%2Fvnd.google-earth.kml%2Bxml"  
+            ogc_format = "application%2Fvnd.google-earth.kml%2Bxml"
         elif (ogc_format == "csv"):
-            ogc_format = "text%2Fcsv"     
+            ogc_format = "text%2Fcsv"
         elif (ogc_format == "gml"):
-            ogc_format = "application%2Fgml%2Bxml%3Bversion%3D3.2"                           
+            ogc_format = "application%2Fgml%2Bxml%3Bversion%3D3.2"
 
-        layernames = []	
-        rows = []	
+        layernames = []
+        rows = []
         for index in self.TblWFSLayers.selectedIndexes():
             if index.row() not in rows:
                 rows.append(index.row())
@@ -825,29 +826,29 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                 layernames.append(self.TblWFSLayers.item(row_index, 0).text())
         # print(rows)
         # print(layernames)
-        ii = 0        
+        ii = 0
         if layernames is not None:
-            for layer_name in layernames:                
+            for layer_name in layernames:
                 if (not self.ChkSaveShapefile.isChecked()):
-                    try: 
+                    try:
                         uri = opendata_url + "/collections/"+ str(layer_name) + '/items?f=json'
                         # print (uri)
                         ogc_layer = QgsVectorLayer(uri, layer_name)
-                        if (ogc_layer.isValid()): 
+                        if (ogc_layer.isValid()):
                             QgsProject.instance().addMapLayer(ogc_layer)
                             qgis.utils.iface.zoomToActiveLayer()
                             # success = qgis.utils.iface.addVectorLayer(uri, layer_name,"OGC API - Features")
-                            ii+=1		
-                            self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers added")  
+                            ii+=1
+                            self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers added")
                             percent_complete = ii/len(layernames)*100
                             self.status.setValue(percent_complete)
                             message = str(int(percent_complete)) + "%"
-                            self.status.setFormat(message)    
-                                          
+                            self.status.setFormat(message)
+
                     except Exception as e:
-                        QMessageBox.critical(self.iface.mainWindow(), "OGC API Feature", str(e))   
-                else:  
-                    try: 
+                        QMessageBox.critical(self.iface.mainWindow(), "OGC API Feature", str(e))
+                else:
+                    try:
                         uri = opendata_url + "/collections/"+ str(layer_name) + '/items?f=' + ogc_format
                         # print (uri)
                         filename = outdir + "/"+ str(layer_name).replace(":","_") + ext
@@ -856,34 +857,34 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                         urllib.request.urlretrieve(uri,filename)
                         layer = QgsVectorLayer(filename, QFileInfo(filename).baseName(), 'ogr')
                         layer.dataProvider().setEncoding(u'UTF-8')
-                        if (layer.isValid()):                     
-                            QgsProject.instance().addMapLayer(layer)                        
+                        if (layer.isValid()):
+                            QgsProject.instance().addMapLayer(layer)
                             qgis.utils.iface.zoomToActiveLayer()
-                            ii+=1	     
-                            self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and added")	                     
+                            ii+=1
+                            self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and added")
                             percent_complete = ii/len(layernames)*100
                             self.status.setValue(percent_complete)
                             message = str(int(percent_complete)) + "%"
-                            self.status.setFormat(message)    
-                                
+                            self.status.setFormat(message)
+
                     except Exception as e:
-                        QMessageBox.critical(self.iface.mainWindow(), "OGC API Feature", str(e))                            
-        return		
+                        QMessageBox.critical(self.iface.mainWindow(), "OGC API Feature", str(e))
+        return
 
 
-class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):		
-    def __init__(self, iface):		
-        hcmgis_dialog.__init__(self, iface)		
+class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
+    def __init__(self, iface):
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
-        
-        self.cboRegion.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
-        self.cboCountry.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.BtnOutputFolder.clicked.connect(self.browse_outfile)
+
+        self.cboRegion.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems
+        self.cboCountry.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems
         self.cboCountry.setMaxVisibleItems(10)
         self.cboCountry.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 
-        self.cboProvince.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboProvince.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems
         self.cboProvince.setMaxVisibleItems(10)
         self.cboProvince.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 
@@ -892,15 +893,15 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
         home_path = project.homePath()
         if not home_path:
             home_path = os.path.expanduser('~')
-        self.LinOutputFolder.setText(home_path)    
+        self.LinOutputFolder.setText(home_path)
         self.cboRegion.addItems(self.region)
-        self.cboRegion.currentIndexChanged.connect(self.loadcountry)   
-        self.cboRegion.setCurrentIndex(-1) 
-        self.cboCountry.setCurrentIndex(-1) 
+        self.cboRegion.currentIndexChanged.connect(self.loadcountry)
+        self.cboRegion.setCurrentIndex(-1)
+        self.cboCountry.setCurrentIndex(-1)
         self.cboCountry.setEnabled(False)
         self.cboCountry.currentIndexChanged.connect(self.loadprovince)
         self.cboProvince.setEnabled(False)
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)		
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
 
     ##################### Region
     region = ['Africa','Antarctica','Asia','Australia and Oceania','Central America','Europe','North America','South America']
@@ -908,7 +909,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
     for reg in region:
         reg_name = reg.replace(' and ','-').replace(' ','-').lower()
         region_name.append(reg_name)
-    
+
     ##################### Asia
     asia = ['Afghanistan','Armenia','Azerbaijan','Bangladesh','Bhutan','Cambodia','China','GCC States','India','Indonesia',\
                 'Iran','Iraq','Israel and Palestine','Japan','Jordan','Kazakhstan','Kyrgyzstan','Laos','Lebanon','Malaysia, Singapore, and Brunei',\
@@ -918,7 +919,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
     for country in asia:
         country_name = country.replace('Israel and Palestine','israel-and-palestine' ).replace('Malaysia, Singapore, and Brunei','malaysia-singapore-brunei').replace('Russian Federation','russia').replace(' ','-').lower()
         asia_name.append(country_name)
-    
+
     japan_state = ['Chubu region','Chugoku region','Hokkaido','Kansai region','Kanto region','Kyushu','Shikoku','Tohoku region']
     japan_state_name= []
     for state in japan_state:
@@ -939,7 +940,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
         country_name = country.replace('Congo (Republic/Brazzaville)','congo-brazzaville').replace('Congo (Democratic Republic/Kinshasa)','congo-democratic-republic')\
         .replace('South Africa (includes Lesotho)','south-africa-and-lesotho').replace(' ','-').replace(',','').lower()
         africa_name.append(country_name)
-        
+
     ##################### Australia
     australia = ['Australia','Cook Islands','Fiji','Kiribati','Marshall Islands','Micronesia','Nauru','New Caledonia','New Zealand','Niue',\
                 'Palau','Papua New Guinea','Samoa','Solomon Islands','Tonga','Tuvalu','Vanuatu']
@@ -954,7 +955,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
     for country in centralamerica:
         country_name = country.replace('Dominican Republic','domrep').replace(' ','-').lower()
         centralamerica_name.append(country_name)
-    
+
     ##################### Europe
     europe= ['Albania','Andorra','Austria','Azores','Belarus','Belgium','Bosnia-Herzegovina','Bulgaria','Croatia','Cyprus',\
             'Czech Republic','Denmark','Estonia','Faroe Islands','Finland','France','Georgia (Eastern Europe)','Germany','Great Britain','Greece',\
@@ -981,9 +982,9 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
     for state in germany_state:
         state_name = state.replace('Brandenburg (mit Berlin)','brandenburg').lower()
         germany_state_name.append(state_name)
-    
+
     great_britain_state = ['England','Scotland','Wales']
-    great_britain_state_name = ['england','scotland','wales']	
+    great_britain_state_name = ['england','scotland','wales']
 
     italy_state = ['Centro', 'Isole', 'Nord-Est', 'Nord-Ovest', 'Sud']
     italy_state_name =[]
@@ -997,7 +998,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
     for state in netherlands_state:
         state_name = state.lower()
         netherlands_state_name.append(state_name)
-    
+
 
     poland_state =['Lower Silesian Voivodeship','Kuyavian-Pomeranian Voivodeship','Lodzkie Voivodeship','Lublin Voivodeship','Lubusz Voivodeship',\
         'Lesser Poland Voivodeship','Mazovian Voivodeship','Opole Voivodeship','Subcarpathian Voivodeship','Podlaskie Voivodeship',\
@@ -1005,7 +1006,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
     poland_state_name= ['dolnoslaskie', 'kujawsko-pomorskie', 'lodzkie','lubelskie', 'lubuskie',\
                         'malopolskie', 'mazowieckie', 'opolskie','podkarpackie','podlaskie',\
                         'pomorskie', 'slaskie', 'swietokrzyskie', 'warminsko-mazurskie', 'wielkopolskie','zachodniopomorskie']
-    
+
 
     russian_federation_state = ['Central Federal District','Crimean Federal District','Far Eastern Federal District','North Caucasus Federal District','Northwestern Federal District',\
             'Siberian Federal District','South Federal District','Ural Federal District','Volga Federal District','Kaliningrad']
@@ -1013,7 +1014,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
     for state in russian_federation_state:
         state_name = state.replace('Federal','fed').replace(' ','-').lower()
         russian_federation_state_name.append(state_name)
-    
+
     ##################### North America
     northamerica= ['Canada','Greenland','Mexico','United States of America',\
         'US Midwest','US Northeast','US Pacific','US South','US West']# special regions of US
@@ -1038,14 +1039,14 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
     for state in canada_state:
         state_name = state.replace(' ','-').lower()
         canada_state_name.append(state_name)
-    
+
     ##################### South America
     southamerica= ['Argentina','Bolivia','Brazil','Chile','Colombia','Ecuador','Paraguay','Peru','Suriname','Uruguay','Venezuela']
     southamerica_name = []
     for country in southamerica:
         country_name = country.replace(' ','-').lower()
         southamerica_name.append(country_name)
-    
+
     brazil_state = ['centro-oeste','nordeste','norte','sudeste','sul']
     brazil_state_name = brazil_state
 
@@ -1055,7 +1056,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
 
         if newname != None:
             self.LinOutputFolder.setText(newname)
-                    
+
     def loadcountry(self):
         self.cboCountry.clear()
         self.cboCountry.setEnabled(True)
@@ -1078,7 +1079,7 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
             self.cboCountry.insertSeparator(len(self.northamerica)-5)
         elif (self.cboRegion.currentText() == 'South America'):
             self.cboCountry.addItems(self.southamerica)
-    
+
     def loadprovince(self):
         self.cboProvince.clear()
         self.cboProvince.setEnabled(True)
@@ -1097,30 +1098,30 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
         elif (self.cboCountry.currentText() == 'Italy'):
             self.cboProvince.addItems(self.italy_state)
         elif (self.cboCountry.currentText() == 'Netherlands'):
-            self.cboProvince.addItems(self.netherlands_state)	
+            self.cboProvince.addItems(self.netherlands_state)
         elif (self.cboCountry.currentText() == 'Poland'):
             self.cboProvince.addItems(self.poland_state)
         elif (self.cboCountry.currentText() == 'Russian Federation'):
-            self.cboProvince.addItems(self.russian_federation_state)	
+            self.cboProvince.addItems(self.russian_federation_state)
         elif (self.cboCountry.currentText() == 'Japan'):
-            self.cboProvince.addItems(self.japan_state)	
+            self.cboProvince.addItems(self.japan_state)
         self.cboProvince.setCurrentIndex(-1)
-        
-    
+
+
     def run(self):
         outdir = unicode(self.LinOutputFolder.displayText())
         if (self.cboProvince.currentIndex()<0):
             if (self.cboRegion.currentText() == 'Asia'):
                 country_idx = self.asia.index(self.cboCountry.currentText())
                 if self.cboCountry.currentText() == 'Russian Federation':
-                    message = hcmgis_geofabrik('',self.asia_name[country_idx], outdir,self.hcmgis_status_callback)	
+                    message = hcmgis_geofabrik('',self.asia_name[country_idx], outdir,self.hcmgis_status_callback)
                 else:
-                    message = hcmgis_geofabrik('asia',self.asia_name[country_idx], outdir,self.hcmgis_status_callback)	
+                    message = hcmgis_geofabrik('asia',self.asia_name[country_idx], outdir,self.hcmgis_status_callback)
             elif (self.cboRegion.currentText() == 'Africa'):
                 country_idx = self.africa.index(self.cboCountry.currentText())
-                message = hcmgis_geofabrik('africa',self.africa_name[country_idx], outdir,self.hcmgis_status_callback)	
+                message = hcmgis_geofabrik('africa',self.africa_name[country_idx], outdir,self.hcmgis_status_callback)
             elif (self.cboRegion.currentText() == 'Antarctica'):
-                message = hcmgis_geofabrik('','antarctica', outdir)	
+                message = hcmgis_geofabrik('','antarctica', outdir)
             elif (self.cboRegion.currentText() == 'Australia and Oceania'):
                 country_idx = self.australia.index(self.cboCountry.currentText())
                 message = hcmgis_geofabrik('australia-oceania',self.australia_name[country_idx], outdir,self.hcmgis_status_callback)
@@ -1130,9 +1131,9 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
             elif (self.cboRegion.currentText() == 'Europe'):
                 country_idx = self.europe.index(self.cboCountry.currentText())
                 if self.cboCountry.currentText() == 'Russian Federation':
-                    message = hcmgis_geofabrik('',self.europe_name[country_idx], outdir,self.hcmgis_status_callback)	
+                    message = hcmgis_geofabrik('',self.europe_name[country_idx], outdir,self.hcmgis_status_callback)
                 else:
-                    message = hcmgis_geofabrik('europe',self.europe_name[country_idx], outdir,self.hcmgis_status_callback)	
+                    message = hcmgis_geofabrik('europe',self.europe_name[country_idx], outdir,self.hcmgis_status_callback)
             elif (self.cboRegion.currentText() == 'North America'):
                 country_idx = self.northamerica.index(self.cboCountry.currentText())
                 message = hcmgis_geofabrik('north-america',self.northamerica_name[country_idx], outdir,self.hcmgis_status_callback)
@@ -1142,8 +1143,8 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
         else:
             if (self.cboCountry.currentText() == 'Japan'):
                 state_idx = self.japan_state.index(self.cboProvince.currentText())
-                message = hcmgis_geofabrik2('asia','japan',self.japan_state_name[state_idx], outdir,self.hcmgis_status_callback)	
-            
+                message = hcmgis_geofabrik2('asia','japan',self.japan_state_name[state_idx], outdir,self.hcmgis_status_callback)
+
             elif (self.cboCountry.currentText() == 'France'):
                 state_idx = self.france_state.index(self.cboProvince.currentText())
                 message = hcmgis_geofabrik2('europe','france',self.france_state_name[state_idx], outdir,self.hcmgis_status_callback)
@@ -1165,42 +1166,42 @@ class hcmgis_geofabrik_dialog(hcmgis_dialog, Ui_hcmgis_geofabrik_form):
             elif (self.cboCountry.currentText() == 'Russian Federation'):
                 state_idx = self.russian_federation_state.index(self.cboProvince.currentText())
                 message = hcmgis_geofabrik2('','russia',self.russian_federation_state_name[state_idx], outdir,self.hcmgis_status_callback)
-                    
+
             elif (self.cboCountry.currentText() == 'United States of America'):
                 state_idx = self.us_state.index(self.cboProvince.currentText())
                 message = hcmgis_geofabrik2('north-america','us',self.us_state_name[state_idx], outdir,self.hcmgis_status_callback)
             elif (self.cboCountry.currentText() == 'Canada'):
                 state_idx = self.canada_state.index(self.cboProvince.currentText())
                 message = hcmgis_geofabrik2('north-america','canada',self.canada_state_name[state_idx], outdir,self.hcmgis_status_callback)
-            
+
             elif (self.cboCountry.currentText() == 'Brazil'):
                 state_idx = self.brazil_state.index(self.cboProvince.currentText())
                 message = hcmgis_geofabrik2('south-america','brazil',self.brazil_state_name[state_idx], outdir,self.hcmgis_status_callback)
-        return		
+        return
 
 ########################################################
 # GADM
 #########################################################
-class hcmgis_gadm_dialog(hcmgis_dialog, Ui_hcmgis_gadm_form):	
-    def __init__(self, iface):		
-        hcmgis_dialog.__init__(self, iface)        
+class hcmgis_gadm_dialog(hcmgis_dialog, Ui_hcmgis_gadm_form):
+    def __init__(self, iface):
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.BtnOutputFolder.clicked.connect(self.browse_outfile)	
+        self.BtnOutputFolder.clicked.connect(self.browse_outfile)
         project = QgsProject.instance()
         home_path = project.homePath()
         if not home_path:
             home_path = os.path.expanduser('~')
-        self.LinOutputFolder.setText(home_path)    
+        self.LinOutputFolder.setText(home_path)
         self.cboCountry.addItems(self.country)
-        self.cboCountry.currentIndexChanged.connect(self.updateLOD)   
-        self.cboCountry.setCurrentIndex(-1) 
+        self.cboCountry.currentIndexChanged.connect(self.updateLOD)
+        self.cboCountry.setCurrentIndex(-1)
         self.LinLOD.setText('')
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
-        
-        self.cboCountry.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
+
+        self.cboCountry.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems
         self.cboCountry.setMaxVisibleItems(10)
-        self.cboCountry.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)         
+        self.cboCountry.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 
     # country = ['Afghanistan','Akrotiri and Dhekelia','Åland','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica',\
     #         'Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh',\
@@ -1267,44 +1268,82 @@ class hcmgis_gadm_dialog(hcmgis_dialog, Ui_hcmgis_gadm_form):
 
         if newname != None:
             self.LinOutputFolder.setText(newname)
-                    
+
     def updateLOD(self):
         idx = self.cboCountry.currentIndex()
         self.LinLOD.setText(str(self.lod[idx]))
-    
+
     def run(self):
         outdir = unicode(self.LinOutputFolder.displayText())
         idx = self.cboCountry.currentIndex()
-        hcmgis_gadm(self.country[idx],self.country_short[idx], outdir,self.hcmgis_status_callback)				
-        return		
+        hcmgis_gadm(self.country[idx],self.country_short[idx], outdir,self.hcmgis_status_callback)
+        return
+
+########################################################
+# WOF
+#########################################################
+class hcmgis_wof_dialog(hcmgis_dialog, Ui_hcmgis_wof_form):
+    def __init__(self, iface):
+        hcmgis_dialog.__init__(self, iface)
+        self.setupUi(self)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+        self.BtnOutputFolder.clicked.connect(self.browse_outfile)
+        project = QgsProject.instance()
+        home_path = project.homePath()
+        if not home_path:
+            home_path = os.path.expanduser('~')
+        self.LinOutputFolder.setText(home_path)
+        self.cboCountry.addItems(self.country)
+        self.cboCountry.setCurrentIndex(-1)
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
+
+        self.cboCountry.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems
+        self.cboCountry.setMaxVisibleItems(10)
+        self.cboCountry.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+
+    country_short=['AD','AE','AF','AG','AI','AL','AM','AO','AQ','AR','AS','AT','AU','AW','AX','AZ','BA','BB','BD','BE','BF','BG','BH','BI','BJ','BL','BM','BN','BO','BQ','BR','BS','BT','BW','BY','BZ','CA','CC','CD','CF','CG','CH','CI','CK','CL','CM','CN','CO','CR','CU','CV','CW','CX','CY','CZ','DE','DJ','DK','DM','DO','DZ','EC','EE','EG','EH','ER','ES','ET','FI','FJ','FK','FM','FO','FR','GA','GB','GD','GE','GF','GG','GH','GI','GL','GM','GN','GP','GQ','GR','GS','GT','GU','GW','GY','HK','HN','HR','HT','HU','ID','IE','IL','IM','IN','IO','IQ','IR','IS','IT','JE','JM','JO','JP','KE','KG','KH','KI','KM','KN','KP','KR','KW','KY','KZ','LA','LB','LC','LI','LK','LR','LS','LT','LU','LV','LY','MA','MC','MD','ME','MF','MG','MH','MK','ML','MM','MN','MO','MP','MQ','MR','MS','MT','MU','MV','MW','MX','MY','MZ','NA','NC','NE','NF','NG','NI','NL','NO','NP','NR','NU','NZ','OM','PA','PE','PF','PG','PH','PK','PL','PM','PN','PR','PS','PT','PW','PY','QA','RE','RO','RS','RU','RW','SA','SB','SC','SD','SE','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SR','SS','ST','SV','SX','SY','SZ','TC','TD','TF','TG','TH','TJ','TK','TL','TM','TN','TO','TR','TT','TV','TW','TZ','UA','UG','UM','UN','US','UY','UZ','VA','VC','VE','VG','VI','VN','VU','WF','WS','XK','XS','XX','XY','XZ','YE','YT','ZA','ZM','ZW']
+    country=["Andorra","United Arab Emirates (الإمارات العربيّة المتّحدة)","Afghanistan (افغانستان)","Antigua and Barbuda","Anguilla","Albania (Shqipëria)","Armenia (Hayastán / Հայաստան)","Angola (Ngola)","Antarctica","Argentina","American Samoa (Amerika Sāmoa)","Austria (Österreich)","Australia","Aruba","Åland Islands (Åland / Ahvenanmaa)","Azerbaijan (Azərbaycan)","Bosnia and Herzegovina (Босна и Херцеговина)","Barbados","Bangladesh (বাংলাদেশ)","Belgium (België / Belgique / Belgien)","Burkina Faso","Bulgaria (Bălgariya / България)","Bahrain (البحرين)","Burundi (Uburundi)","Benin (Bénin)","Saint Barthélemy (Saint-Barthélemy)","Bermuda","Brunei (بروني)","Bolivia (Buliwya / Wuliwya / Volívia)","Bonaire, Sint Eustatius, Saba","Brazil (Brasil)","Bahamas (The Bahamas)","Bhutan (Druk Yul / འབྲུག་ཡུལ)","Botswana","Belarus (Bielaruś / Беларусь)","Belize","Canada","Cocos (Keeling) Islands","Congo (DRC) (République démocratique du Congo)","Central African Republic (Centrafrique / Bêafrîka)","Congo (République du Congo / Repubilika ya Kôngo)","Switzerland (Schweiz / Suisse / Svizzera / Svizra)","Côte d'Ivoire (Ivory Coast)","Cook Islands (Kūki 'Āirani)","Chile","Cameroon (Cameroun)","China (中国)","Colombia","Costa Rica","Cuba","Cabo Verde (Cape Verde)","Curaçao (Kòrsou)","Christmas Island","Cyprus (Κύπρος / Kıbrıs)","Czechia (Česká republika / Česko)","Germany (Deutschland)","Djibouti (جيبوتي)","Denmark (Danmark)","Dominica","Dominican Republic (República Dominicana)","Algeria (ⴷⵣⴰⵢⴻⵔ / الجزائر)","Ecuador","Estonia (Eesti)","Egypt (مصر)","Western Sahara (الجمهورية العربية الصحراوية الديمقراطية)","Eritrea ( إرتريا / ኤርትራ)","Spain (España / Espanya / Espainia)","Ethiopia (ኢትዮጵያ)","Finland (Suomi)","Fiji (Viti / फ़िजी)","Falkland Islands / Malvinas","Micronesia","Faroe Islands (Føroyar / Færøerne)","France","Gabon (République gabonaise)","United Kingdom","Grenada","Georgia (საქართველო)","French Guiana (Guyane)","Guernsey","Ghana (Gaana / Gana)","Gibraltar","Greenland (Kalaallit Nunaat / Grønland)","Gambia (the) (The Gambia)","Guinea (Guinée / Gine)","Guadeloupe","Equatorial Guinea (Guinea Ecuatorial / Guinée équatoriale / Guiné Equatorial)","Greece (Ελλάδα)","South Georgia and the South Sandwich Islands","Guatemala","Guam (Guåhån)","Guinea-Bissau (Guiné-Bissau)","Guyana","Hong Kong (香港)","Honduras","Croatia (Hrvatska)","Haiti (Haïti / Ayiti)","Hungary (Magyarország)","Indonesia","Ireland (Éire)","Israel (ישראל / إسرائيل)","Isle of Man (Ellan Vannin)","India (ભારત / भारत / ಭಾರತ)","British Indian Ocean Territory","Iraq (العراق / عێراق)","Iran (ایران)","Iceland (Ísland)","Italy (Italia)","Jersey (Jèrri)","Jamaica","Jordan (الأردن)","Japan (日本)","Kenya","Kyrgyzstan (Кыргызстан)","Cambodia (កម្ពុជា)","Kiribati","Comoros ( Komori / Comores / جزر القمر)","Saint Kitts and Nevis","Korea (DPR) (조선 / 북조선 / 朝鮮)","Korea (ROK) (한국 / 남한 / 韓國)","Kuwait (دولة الكويت / الكويت)","Cayman Islands","Kazakhstan (Қазақстан)","Laos (ປະເທດລາວ)","Lebanon (لبنان)","Saint Lucia","Liechtenstein","Sri Lanka (ශ්‍රී ලංකාව / இலங்கை)","Liberia","Lesotho","Lithuania (Lietuva)","Luxembourg (Lëtzebuerg / Luxemburg)","Latvia (Latvija)","Libya (ⵍⵉⴱⵢⴰ / ليبيا)","Morocco (ⴰⵎⵔⵔⵓⴽ / ⵍⵎⵖⵔⵉⴱ / المغرب)","Monaco (Múnegu)","Moldova","Montenegro (Црна Гора)","Saint Martin (French part) (Saint-Martin)","Madagascar (Madagasikara)","Marshall Islands (Aorōkin Ṃajeḷ)","North Macedonia (Северна Македонија / Maqedonia e Veriut)","Mali","Myanmar (မြန်မာ)","Mongolia (Монгол Улс / ᠮᠤᠩᠭᠤᠯ / ᠤᠯᠤᠰ)","Macao (澳門)","Northern Mariana Islands (Notte Mariånas)","Martinique","Mauritania (ⵎⵓⵔⵉⵜⴰⵏ / ⴰⴳⴰⵡⵛ / موريتانيا)","Montserrat","Malta","Mauritius (Maurice / Moris)","Maldives (ދިވެހިރާއްޖެ)","Malawi (Malaŵi)","Mexico (México / Mēxihco)","Malaysia","Mozambique (Moçambique)","Namibia (Namibië)","New Caledonia (Nouvelle-Calédonie)","Niger","Norfolk Island (Norf'k Ailen)","Nigeria (Nijeriya / Naìjíríyà / Nàìjíríà)","Nicaragua","Netherlands (Nederland / Nederlân)","Norway (Norge / Noreg / Norga / Vuodna / Nöörje)","Nepal (नेपाल)","Nauru (Naoero)","Niue (Niuē)","New Zealand (Aotearoa)","Oman (عُمان)","Panama (Panamá)","Peru (Perú / Piruw)","French Polynesia (Polynésie française)","Papua New Guinea (Papua New Guinea / Papua Niugini / Papua Niu Gini)","Philippines (Pilipinas)","Pakistan (پاکستان)","Poland (Polska)","Saint Pierre and Miquelon (Saint-Pierre et Miquelon)","Pitcairn (Pitkern Ailen)","Puerto Rico","Palestine (فلسطين)","Portugal","Palau (Belau)","Paraguay (Paraguái)","Qatar (قطر)","Réunion (La Réunion)","Romania (România)","Serbia (Србија)","Russia (Россия)","Rwanda","Saudi Arabia (المملكة العربية السعودية)","Solomon Islands (Solomon Aelan)","Seychelles (Sesel)","Sudan (the) (السودان)","Sweden (Sverige)","Singapore (Singapura / 新加坡 / சிங்கப்பூர்)","Saint Helena, Ascension Island, Tristan da Cunha","Slovenia (Slovenija)","Svalbard and Jan Mayen","Slovakia (Slovensko)","Sierra Leone","San Marino","Senegal (Sénégal / Senegaal)","Somalia (Soomaaliya / الصومال)","Suriname","South Sudan (Sudan Kusini / Paguot Thudän)","Sao Tome and Principe (São Tomé e Príncipe)","El Salvador","Sint Maarten (Dutch part)","Syria (سورية)","Eswatini (eSwatini)","Turks and Caicos Islands","Chad (Tchad / تشاد)","French Southern Territories (Terres australes françaises)","Togo","Thailand (ไทย, ประเทศไทย, ราชอาณาจักรไทย)","Tajikistan (Тоҷикистон)","Tokelau","Timor-Leste (Timor Lorosa'e)","Turkmenistan (Türkmenistan)","Tunisia (ⵜⵓⵏⵙ / تونس)","Tonga","Türkiye (Türkiye)","Trinidad and Tobago","Tuvalu","Taiwan (中華民國 / 臺灣/台灣)","Tanzania","Ukraine (Україна)","Uganda","U.S. Minor Outlying Islands","United Nations (Les Nations Unies)","United States of America (Estados Unidos / ‘Amelika Hui Pū ‘ia)","Uruguay","Uzbekistan (Ўзбекистон)","Holy See (Civitas Vaticana / Città del Vaticano)","Saint Vincent and the Grenadines","Venezuela","Virgin Islands (British)","Virgin Islands (U.S.)","Viet Nam (Việt Nam)","Vanuatu","Wallis and Futuna (Wallis-et-Futuna / ʻUvea mo Futuna)","Samoa (Sāmoa)","Kosovo (Kosova / Косово)","Somaliland (Soomaaliland / جمهورية صوماليلاند )","Disputed territories (Territoires contestés)","Undetermined country (Pays indéterminé)","Multiple ISO country parents (Parents de plusieurs pays ISO)","Yemen (اليمن)","Mayotte (Maore)","South Africa (Suid-Afrika / iNingizimu Afrika / uMzantsi Afrika / Afrika-Borwa)","Zambia","Zimbabwe"]
+
+    def browse_outfile(self):
+        newname = QFileDialog.getExistingDirectory(None, "Output Folder",self.LinOutputFolder.displayText())
+
+        if newname != None:
+            self.LinOutputFolder.setText(newname)
+
+    def run(self):
+        outdir = unicode(self.LinOutputFolder.displayText())
+        idx = self.cboCountry.currentIndex()
+        hcmgis_wof(self.country[idx],self.country_short[idx], outdir,self.hcmgis_status_callback)
+        return
+
 
 ################################
 # Microsoft Building Footprints - Releases
 ##################################
-class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):	
-    def __init__(self, iface):		
-        hcmgis_dialog.__init__(self, iface)        
+class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
+    def __init__(self, iface):
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.BtnOutputFolder.clicked.connect(self.browse_outfile)       
+        self.BtnOutputFolder.clicked.connect(self.browse_outfile)
 
         project = QgsProject.instance()
         home_path = project.homePath()
         if not home_path:
             home_path = os.path.expanduser('~')
-        self.LinOutputFolder.setText(home_path)    
+        self.LinOutputFolder.setText(home_path)
         self.cboCountry.addItems(self.country)
-        self.cboCountry.currentIndexChanged.connect(self.loadprovince)   
-        self.cboCountry.setCurrentIndex(-1) 
-        self.cboProvince.setCurrentIndex(-1) 
+        self.cboCountry.currentIndexChanged.connect(self.loadprovince)
+        self.cboCountry.setCurrentIndex(-1)
+        self.cboProvince.setCurrentIndex(-1)
         self.cboProvince.setEnabled(False)
         self.cboProvince.currentIndexChanged.connect(self.updateinfo)
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	   
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.LblHyperlink.setOpenExternalLinks(True)
 
-        self.cboProvince.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboProvince.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems
         self.cboProvince.setMaxVisibleItems(10)
-        self.cboProvince.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)	     
+        self.cboProvince.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
     import locale
     try:
         locale.setlocale(locale.LC_ALL, 'en_US')
@@ -1313,7 +1352,7 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
         #locale.resetlocale()
         pass
 
-    country = ['Australia','Canada', 'United States of America', 'South America', 'Uganda', 'Tanzania', 'Nigeria', 'Kenya', 'Indonesia', 'Philippines', 'Malaysia']    
+    country = ['Australia','Canada', 'United States of America', 'South America', 'Uganda', 'Tanzania', 'Nigeria', 'Kenya', 'Indonesia', 'Philippines', 'Malaysia']
     us_states = ['Alabama','Alaska','Arizona','Arkansas','California',\
                 'Colorado','Connecticut','Delaware','District of Columbia','Florida',\
                 'Georgia','Hawaii','Idaho','Illinois','Indiana',\
@@ -1323,7 +1362,7 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
                 'New Jersey','New Mexico','New York','North Carolina','North Dakota',\
                 'Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island',\
                 'South Carolina','South Dakota','Tennessee','Texas','Utah',\
-                'Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming']    
+                'Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming']
     us_buildings= [2455168,111042,2738732,1571198,11542912,\
                    2185953,1215624,357534,77851,7263195,\
                    3981792,252908,942132,5194010,3739648,\
@@ -1339,25 +1378,25 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
               410.84 ,566.87 ,1240,762.08 ,394.08 ,840.28 ,200.45 ,302.72 ,296.10 ,146.40 ,\
               681.55 ,291.54 ,1250,1220,143.54 ,1420,582.14 ,545.94 ,1230,105.21 ,\
               612.67 ,166.31 ,890.22 ,2830,306.98 ,87.92 ,797.04 ,884.38 ,260.33 ,817.06 ,99.32 ]
-    
+
     canada_states = ['Alberta',	'British Columbia',	'Manitoba',	'New Brunswick', 'Newfoundland And Labrador','Northwest Territories',\
         	        'Nova Scotia',	'Nunavut',	'Ontario',	'Prince Edward Island',	'Quebec','Saskatchewan','Yukon Territory']
     canada_buildings = [1777439,1359628,632982,350989,255568,13161,\
                         402358,2875,3781847,76590,2495801,681553,11395]
     canada_size = [389,301,135,71,51,3,\
-                   81,1,808,16,512,146,3]  
+                   81,1,808,16,512,146,3]
 
     south_america_states = ['Argentina','Bolivia','Brazil','Chile','Colombia',\
                 'Ecuador','Guyana','Paraguay','Peru','Uruguay', 'Venezuela',\
-                'Whole Continent']    
+                'Whole Continent']
     south_america_buildings= [3427787,1015151, 18711536, 2208744, 6083821,\
                    3674190,3339,990756,1710431, 2656, 6572969,\
                     44495865
                    ]
     south_america_size= [323,82, 1600, 187, 482, \
                         287, 0.236, 73, 144, 0.2, 497,\
-                        15000]    
-    
+                        15000]
+
     us_states_code = [x.replace(" ", "") for x in us_states]
     canada_states_code = [x.replace(" ", "") for x in canada_states]
     south_america_states_code = [x.replace(" ", "") for x in south_america_states]
@@ -1367,12 +1406,12 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
         newname = QFileDialog.getExistingDirectory(None, "Output Folder",self.LinOutputFolder.displayText())
         if newname != None:
             self.LinOutputFolder.setText(newname)
-                    
+
     def loadprovince(self):
         self.cboProvince.clear()
         self.LblHyperlink.clear()
-        self.cboProvince.setEnabled(True)  
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)      
+        self.cboProvince.setEnabled(True)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)
         if 	(self.cboCountry.currentText() == 'United States of America'):
             self.cboProvince.addItems(self.us_states)
         elif (self.cboCountry.currentText() == 'Canada'):
@@ -1394,17 +1433,17 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
             self.LinBuidings.setText(locale.format_string("%d", 11014267, grouping=True))
             self.LinSize.setText(locale.format_string("%d", 2202, grouping=True))
             self.LblHyperlink.setText('File size is too big. Please download directly at '+ '<a href=https://usbuildingdata.blob.core.windows.net/tanzania-uganda-buildings/Tanzania_2019-09-16.zip>Tanzania Building Footprints</a>' +' instead!')
-        
+
         elif (self.cboCountry.currentText() == 'Nigeria'):
             self.LinBuidings.setText(locale.format_string("%d", 35767509, grouping=True))
             self.LinSize.setText(locale.format_string("%d", 2300, grouping=True))
             self.LblHyperlink.setText('File size is too big. Please download directly at '+ '<a href=https://minedbuildings.blob.core.windows.net/africa/nigeria.geojsonl.zip>Nigeria Building Footprints</a>' +' instead!')
-        
+
         elif (self.cboCountry.currentText() == 'Kenya'):
             self.LinBuidings.setText(locale.format_string("%d", 14748685, grouping=True))
             self.LinSize.setText(locale.format_string("%d", 984, grouping=True))
             self.LblHyperlink.setText('File size is too big. Please download directly at '+ '<a href=https://minedbuildings.blob.core.windows.net/africa/kenya.geojsonl.zip>Kenya Building Footprints</a>' +' instead!')
-        
+
         elif (self.cboCountry.currentText() == 'Indonesia'):
             self.LinBuidings.setText(locale.format_string("%d", 63947880, grouping=True))
             self.LinSize.setText(locale.format_string("%d", 4400, grouping=True))
@@ -1420,23 +1459,23 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
             self.LinSize.setText(locale.format_string("%d", 548, grouping=True))
             self.LblHyperlink.setText('File size is too big. Please download directly at '+ '<a href=https://minedbuildings.blob.core.windows.net/southeast-asia/malaysia.geojsonl.zip>Malaysia Building Footprints</a>' +' instead!')
 
-     
+
         self.cboProvince.setCurrentIndex(-1)
 
     def updateinfo(self):
         self.LinBuidings.clear()
         self.LinSize.clear()
-        self.LblHyperlink.clear()        
-        province_index = self.cboProvince.currentIndex()          
-        if (province_index >=0):      
-            self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(True)     
-            if (self.cboCountry.currentText() == 'United States of America'):                
+        self.LblHyperlink.clear()
+        province_index = self.cboProvince.currentIndex()
+        if (province_index >=0):
+            self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(True)
+            if (self.cboCountry.currentText() == 'United States of America'):
                 self.LinBuidings.setText(locale.format_string("%d", self.us_buildings[province_index], grouping=True))
                 self.LinSize.setText(locale.format_string("%.2f", self.us_size[province_index], grouping=True))
                 if (self.us_size[province_index]>=500):
                     link_message = 'File size is too big. Please download directly at '+ '<a href='+ 'https://usbuildingdata.blob.core.windows.net/usbuildings-v1-1/'+str(self.us_states_code[province_index])+'.zip>'+str (self.cboProvince.currentText()) +' Building Footprints</a>' +' instead!'
                     self.LblHyperlink.setText(link_message)
-                    self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)               
+                    self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)
             elif (self.cboCountry.currentText() == 'Canada'):
                 self.LinBuidings.setText(locale.format_string("%d", self.canada_buildings[province_index], grouping=True))
                 self.LinSize.setText(locale.format_string("%.2f", self.canada_size[province_index], grouping=True))
@@ -1452,31 +1491,31 @@ class hcmgis_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_microsoft_form):
                     if (self.cboProvince.currentText() != 'Whole Continent'):
                         link_message = 'File size is too big. Please download directly at '+ '<a href='+ 'https://minedbuildings.blob.core.windows.net/southamerica/'+str(self.south_america_states_code[province_index])+'geojsonl.zip>'+str (self.cboProvince.currentText()) +' Building Footprints</a>' +' instead!'
                     else:
-                        link_message = 'File size is too big. Please download directly at '+ '<a href='+ 'https://minedbuildings.blob.core.windows.net/southamerica/SouthAmericaPolygons.zip>'+' South America Building Footprints</a>' +' instead!'    
+                        link_message = 'File size is too big. Please download directly at '+ '<a href='+ 'https://minedbuildings.blob.core.windows.net/southamerica/SouthAmericaPolygons.zip>'+' South America Building Footprints</a>' +' instead!'
                     self.LblHyperlink.setText(link_message)
-                    self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)                    
+                    self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)
 
-        else:   self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)    
-           
+        else:   self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).setEnabled(False)
+
     def run(self):
         outdir = unicode(self.LinOutputFolder.displayText())
         country_idx = self.cboCountry.currentIndex()
         province_idx = self.cboProvince.currentIndex()
         if (self.country[country_idx] == 'United States of America'):
-            hcmgis_microsoft(self.country[country_idx],self.us_states_code[province_idx], outdir,self.hcmgis_status_callback)				
+            hcmgis_microsoft(self.country[country_idx],self.us_states_code[province_idx], outdir,self.hcmgis_status_callback)
         elif  (self.country[country_idx] == 'Canada'):
             hcmgis_microsoft(self.country[country_idx],self.canada_states_code[province_idx], outdir,self.hcmgis_status_callback)
         elif  (self.country[country_idx] == 'South America'):
-            hcmgis_microsoft(self.country[country_idx],self.south_america_states_code[province_idx], outdir,self.hcmgis_status_callback)	
+            hcmgis_microsoft(self.country[country_idx],self.south_america_states_code[province_idx], outdir,self.hcmgis_status_callback)
         else: 	hcmgis_microsoft(self.country[country_idx],None, outdir,self.hcmgis_status_callback)
-        return		
+        return
 
 ################################
 # Global Microsoft Building Footprints
 ##################################
-class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_form):	
-    def __init__(self, iface):		
-        hcmgis_dialog.__init__(self, iface)	
+class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_form):
+    def __init__(self, iface):
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
@@ -1489,19 +1528,19 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
         self.TblCountries.horizontalHeader().setStretchLastSection(True)
         self.TblCountries.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.Filter.valueChanged.connect(self.updateCountriesTable)
-        self.TblCountries.itemDoubleClicked.connect(self.run)    
+        self.TblCountries.itemDoubleClicked.connect(self.run)
 
-           
+
     def updateCountriesTable(self):
         name = self.Filter.text().lower()
-        if (name != '' and name is not None):    
+        if (name != '' and name is not None):
             visible_row = 0
             for row in range(self.TblCountries.rowCount()):
                 item = self.TblCountries.item(row, 0) # Country Name
                 # if the search is *not* in the item's text *do not hide* the row
                 if (name not in item.text().lower()):
-                    match = True               
-                else: 
+                    match = True
+                else:
                     match = False
                     visible_row += 1
                 self.TblCountries.setRowHidden(row, match )
@@ -1511,29 +1550,29 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 
     def readcsv(self):
         csv_file = os.path.dirname(__file__) + "/buildingfootprints.csv"
-        #self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)           
+        #self.hcmgis_fill_table_widget_with_wfs_layers(self.TblWFSLayers,self.cboServerName.currentIndex(), self.TxtTitle,self.TxtAbstract,self.hcmgis_status_callback)
         self.hcmgis_fill_table_widget_with_csv(self.TblCountries,csv_file,self.hcmgis_status_callback)
-       
 
-    def run(self):  
-        row=self.TblCountries.currentRow() 
-        value=self.TblCountries.item(row,3).text().strip() 
-        print(value) 
+
+    def run(self):
+        row=self.TblCountries.currentRow()
+        value=self.TblCountries.item(row,3).text().strip()
+        print(value)
         if value.startswith("http://") or value.startswith("https://"):
-            webbrowser.open(value)  
-        return		
+            webbrowser.open(value)
+        return
 
 # --------------------------------------------------------
 #    VN-2000 Projections
 # --------------------------------------------------------
 
-# class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections_form):		
+# class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections_form):
 # 	provinces = ['Lai Châu', 'Điện Biên',
 # 				'Sơn La',
 # 				'Kiên Giang', 'Cà Mau',
 # 				'Lào Cai', 'Yên Bái', 'Nghệ An', 'Phú Thọ', 'An Giang',
 # 				'Thanh Hoá', 'Vĩnh Phúc', 'Đồng Tháp','Cần Thơ', 'Hậu Giang', 'Bạc Liêu', 'Hà Nội', 'Ninh Bình', 'Hà Nam',
-# 				'Hà Giang', 'Hải Dương', 'Hà Tĩnh', 'Bắc Ninh', 'Hưng Yên', 'Thái Bình', 'Nam Định', 'Tây Ninh', 'Vĩnh Long', 'Sóc Trăng', 'Trà Vinh', 
+# 				'Hà Giang', 'Hải Dương', 'Hà Tĩnh', 'Bắc Ninh', 'Hưng Yên', 'Thái Bình', 'Nam Định', 'Tây Ninh', 'Vĩnh Long', 'Sóc Trăng', 'Trà Vinh',
 # 				'Cao Bằng','Long An','Tiền Giang','Bến Tre','Hải Phòng','TP.HCM','Bình Dương',
 # 				'Tuyên Quang', 'Hoà Bình', 'Quảng Bình',
 # 				'Quảng Trị', 'Bình Phước',
@@ -1547,42 +1586,42 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 				'Đắk Lắk', 'Đắk Nông', 'Phú Yên','Gia Lai','Bình Thuận']
 # 	ktt = [	103,103,
 # 			104,
-# 			104.5, 104.5, 
-# 			104.75, 104.75, 104.75, 104.75, 104.75, 
-# 			105, 105, 105, 105, 105, 105, 105, 105, 105,  
+# 			104.5, 104.5,
+# 			104.75, 104.75, 104.75, 104.75, 104.75,
+# 			105, 105, 105, 105, 105, 105, 105, 105, 105,
 # 			105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5, 105.5,
-# 			105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 
-# 			106, 106, 106, 
+# 			105.75, 105.75, 105.75, 105.75, 105.75, 105.75, 105.75,
+# 			106, 106, 106,
 # 			106.25,106.25,
-# 			106.5, 106.5, 
+# 			106.5, 106.5,
 # 			107, 107,
 # 			107.25,
-# 			107.5, 		
-# 			107.75, 107.75, 107.75, 107.75, 107.75, 107.75,	
-# 			108, 
-# 			108.25, 108.25, 108.25, 
+# 			107.5,
+# 			107.75, 107.75, 107.75, 107.75, 107.75, 107.75,
+# 			108,
+# 			108.25, 108.25, 108.25,
 # 			108.5, 108.5, 108.5, 108.5,108.5]
-# 	epsg_code = [9205, 9205, 
-# 				9206, 
-# 				9207, 9207, 
-# 				9208, 9208, 9208, 9208, 9208, 
-# 				5897, 5897, 5897, 5897, 5897, 5897, 5897, 5897, 5897, 
-# 				9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 	
-# 				9210, 9210, 9210, 9210, 9210, 9210, 9210,			
-# 				9211, 9211, 9211, 
-# 				9212, 9212, 
-# 				9213, 9213, 
-# 				9214, 9214, 
+# 	epsg_code = [9205, 9205,
+# 				9206,
+# 				9207, 9207,
+# 				9208, 9208, 9208, 9208, 9208,
+# 				5897, 5897, 5897, 5897, 5897, 5897, 5897, 5897, 5897,
+# 				9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209, 9209,
+# 				9210, 9210, 9210, 9210, 9210, 9210, 9210,
+# 				9211, 9211, 9211,
+# 				9212, 9212,
+# 				9213, 9213,
+# 				9214, 9214,
 # 				9215,
 # 				9216,
 # 				5899, 5899, 5899, 5899, 5899, 5899,
-# 				5898, 
-# 				9217, 9217, 9217,			
+# 				5898,
+# 				9217, 9217, 9217,
 # 				9218, 9218, 9218, 9218, 9218
 # 				]
-# 	def __init__(self, iface):		
+# 	def __init__(self, iface):
 # 		hcmgis_dialog.__init__(self, iface)
-# 		
+#
 # 		self.setupUi(self)
 # 		#self.BtnApplyClose.accepted.connect(self.run)
 # 		self.cboProvinces.setCurrentIndex(-1)
@@ -1590,19 +1629,19 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 		self.cboZone.setCurrentIndex(0)
 # 		self.cboKTT.setEnabled(False)
 # 		self.cboZone.setEnabled(False)
-        
+
 # 		self.rad3do.toggled.connect(self.togglerad3do)
 # 		self.radcustom.toggled.connect(self.toggleradcustom)
 # 		self.cboZone.currentIndexChanged.connect(self.zonechange)
-    
+
 # 		self.cboProvinces.currentIndexChanged.connect(self.update_proj)
 # 		self.cboFormat.currentIndexChanged.connect(self.update_proj)
 # 		self.cboParameters.currentIndexChanged.connect(self.update_proj)
 # 		self.cboKTT.currentTextChanged.connect(self.update_proj)
 # 		self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 
-# 	def update_proj(self):		
-# 		self.txtProjections.clear()		
+# 	def update_proj(self):
+# 		self.txtProjections.clear()
 # 		parameters = self.cboParameters.currentText()
 # 		format_id = self.cboFormat.currentIndex()
 
@@ -1614,7 +1653,7 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 			self.cboKTT.setEnabled(False)
 # 			k = 0.9999
 # 			self.txtProjections.setText(self.hcmgis_projections_generate(parameters, self.ktt[i],k,format_id))
-        
+
 # 		elif self.radcustom.isChecked():
 # 			if ((self.cboKTT.currentText() is not None) and  (self.cboKTT.currentText().strip() != '') and (self.cboKTT.currentIndex() != -1)):
 # 				ktt = self.cboKTT.currentText().strip()
@@ -1622,8 +1661,8 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 					k = 0.9999
 # 				else: k = 0.9996
 # 				self.txtProjections.setText(self.hcmgis_projections_generate(parameters,ktt,k,format_id))
-    
-# 	def QGIS_WKT(self):		
+
+# 	def QGIS_WKT(self):
 # 		parameters = self.cboParameters.currentText()
 # 		QGIS_WKT_text = ''
 # 		if self.rad3do.isChecked():
@@ -1634,7 +1673,7 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 			self.cboKTT.setEnabled(False)
 # 			k = 0.9999
 # 			QGIS_WKT_text = self.hcmgis_projections_generate(parameters, self.ktt[i],k,0)
-        
+
 # 		elif self.radcustom.isChecked():
 # 			if ((self.cboKTT.currentText() is not None) and  (self.cboKTT.currentText().strip() != '') and (self.cboKTT.currentIndex() != -1)):
 # 				ktt = self.cboKTT.currentText().strip()
@@ -1644,7 +1683,7 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 				QGIS_WKT_text = self.hcmgis_projections_generate(parameters,ktt,k,0)
 # 		return QGIS_WKT_text
 
-# 	def ProJ_4(self):		
+# 	def ProJ_4(self):
 # 		parameters = self.cboParameters.currentText()
 # 		ProJ_4_text = ''
 # 		if self.rad3do.isChecked():
@@ -1655,7 +1694,7 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 			self.cboKTT.setEnabled(False)
 # 			k = 0.9999
 # 			ProJ_4_text = self.hcmgis_projections_generate(parameters, self.ktt[i],k,1)
-        
+
 # 		elif self.radcustom.isChecked():
 # 			if ((self.cboKTT.currentText() is not None) and  (self.cboKTT.currentText().strip() != '') and (self.cboKTT.currentIndex() != -1)):
 # 				ktt = self.cboKTT.currentText().strip()
@@ -1664,23 +1703,23 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 				else: k = 0.9996
 # 				ProJ_4_text = self.hcmgis_projections_generate(parameters,ktt,k,1)
 # 		return ProJ_4_text
-    
+
 # 	def run(self):
 # 		import sqlite3
 # 		from qgis.core import QgsApplication
 # 		import random
-# 		db = sqlite3.connect(QgsApplication.qgisUserDatabaseFilePath())		
+# 		db = sqlite3.connect(QgsApplication.qgisUserDatabaseFilePath())
 # 		i = self.cboProvinces.currentIndex()
 # 		ProJ_4_text = self.ProJ_4()
 # 		QGIS_WKT_text = self.QGIS_WKT()
 
-# 		if ((self.rad3do.isChecked()) and (self.cboProvinces.currentIndex() != -1)):			
+# 		if ((self.rad3do.isChecked()) and (self.cboProvinces.currentIndex() != -1)):
 # 			cursor = db.cursor()
 # 			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:ProJ_4_text,NULL,NULL,NULL,0,0,NULL)"
 # 			srs_id = 20000 + self.cboProvinces.currentIndex()
-# 			desc = "VN_2000_" +  self.provinces[i].replace(" ", "_")+ "_3deg"				
+# 			desc = "VN_2000_" +  self.provinces[i].replace(" ", "_")+ "_3deg"
 # 			# parameters = "+proj=tmerc +lat_0=0 +lon_0="
-# 			# parameters += str(self.ktt[i]) 
+# 			# parameters += str(self.ktt[i])
 # 			# parameters += " +k=0.9999 +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84="
 # 			# parameters +=  str(self.cboParameters.currentText())
 # 			# parameters += " +units=m +no_defs"
@@ -1688,14 +1727,14 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 			cursor.execute(sql, {'srs_id': srs_id, 'desciprtion': desc, 'ProJ_4_text': ProJ_4_text, })
 # 			# Commit changes
 # 			db.commit()
-             
+
 # 		elif ((self.radcustom.isChecked()) and (self.cboZone.currentIndex() != -1) and (self.cboKTT.currentText() is not None)):
 # 			cursor = db.cursor()
 # 			sql = "INSERT OR REPLACE INTO [tbl_srs] VALUES (:srs_id,:desciprtion,'tmerc','WGS84',:ProJ_4_text,NULL,NULL,NULL,0,0,:QGIS_WKT_text)"
 # 			srs_id = 30000 + random.randint(0,1000)
-# 			desc = "VN_2000_" + self.cboKTT.currentText() + "_"+self.cboZone.currentText()		
+# 			desc = "VN_2000_" + self.cboKTT.currentText() + "_"+self.cboZone.currentText()
 # 			# parameters = "+proj=tmerc +lat_0=0 +lon_0="
-# 			# parameters += str(self.cboKTT.currentText()) 
+# 			# parameters += str(self.cboKTT.currentText())
 # 			# k = 0
 # 			# if (self.cboZone.currentIndex() == 1): #"6 degree"
 # 			# 	k = 0.9996
@@ -1705,29 +1744,29 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 # 			# parameters +=  str(self.cboParameters.currentText())
 # 			# parameters += " +units=m +no_defs"
 # 			#parameters = self.txtProjections.toPlainText()
-# 			#cursor.execute(sql, {'srs_id': srs_id, 'desciprtion': desc, 'parameters': parameters })					
+# 			#cursor.execute(sql, {'srs_id': srs_id, 'desciprtion': desc, 'parameters': parameters })
 # 			cursor.execute(sql, {'srs_id': srs_id, 'desciprtion': desc, 'ProJ_4_text': ProJ_4_text, 'QGIS_WKT_text': QGIS_WKT_text })
 # 			# Commit changes
 # 			db.commit()
-# 		db.close() 
+# 		db.close()
 # 		return
 
-    # def hcmgis_projections_generate(self,parameters,ktt,scale_factor, format_id):	
+    # def hcmgis_projections_generate(self,parameters,ktt,scale_factor, format_id):
     # 	projections_text =''
-    # 	parameters_list = parameters.split(",")		
+    # 	parameters_list = parameters.split(",")
     # 	ktt = self.cboKTT.currentText().strip()
     # 	try:
     # 		srid = int(float(self.cboKTT.currentText().strip())*100)
     # 	except:
     # 		srid = 10500
-        
+
     # 	if self.cboZone.currentIndex() == 0 :
     # 		k = 0.9999
-    # 	else: k = 0.9996	
-        
-    # 	#QGIS WKT		
+    # 	else: k = 0.9996
+
+    # 	#QGIS WKT
     # 	#self.cboFormat.currentIndex()
-    # 	if  format_id == 0:	
+    # 	if  format_id == 0:
     # 		projections_text += 'BOUNDCRS[SOURCECRS[PROJCS["VN-2000 / '+  str(srid) +'",'
     # 		projections_text += 'BASEGEOGCRS["VN-2000",DATUM["Vietnam 2000",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4756]],CONVERSION["unnamed",METHOD["Transverse Mercator",ID["EPSG",9807]],'
     # 		projections_text += 'PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",'
@@ -1756,7 +1795,7 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 
 
     # 	#Proj.4
-    # 	elif format_id == 1: 
+    # 	elif format_id == 1:
     # 		projections_text = '+proj=tmerc +lat_0=0 +lon_0='
     # 		projections_text+= str(ktt)
     # 		projections_text+=' +k='
@@ -1764,30 +1803,30 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
     # 		projections_text+= ' +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84='
     # 		projections_text+= parameters
     # 		projections_text+= ' +units=m +no_defs'
-    
+
     # 	#ESRI WKT
     # 	#PROJCS["VN_2000_UTM_zone_48N",GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1]]
-    # 	elif format_id == 2:			
+    # 	elif format_id == 2:
     # 		projections_text = 'PROJCS['
     # 		projections_text += '"VN-2000 / '+  str(srid) +'"'
     # 		projections_text += ',GEOGCS["GCS_VN-2000",DATUM["D_Vietnam_2000",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",'
     # 		projections_text += ktt + ']'
     # 		projections_text +=',PARAMETER["scale_factor",'
     # 		projections_text += str(k) +']'
-    # 		projections_text +=',PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1]]'			
-        
+    # 		projections_text +=',PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1]]'
+
     # 	#PostGIS
     # 	#INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 3405, 'EPSG', 3405, '+proj=utm +zone=48 +ellps=WGS84 +towgs84=-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188 +units=m +no_defs ', 'PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3405"]]');
-    # 	elif format_id == 3:		
+    # 	elif format_id == 3:
     # 		projections_text = 'INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values('
-    # 		projections_text += str(srid) 
-    # 		projections_text += ',\'' 
+    # 		projections_text += str(srid)
+    # 		projections_text += ',\''
     # 		projections_text +=	'HCMGIS'
-    # 		projections_text += '\',' 
+    # 		projections_text += '\','
     # 		projections_text += str(srid)
     # 		projections_text += ',\''
     # 		projections_text += '+proj=utm +ellps=WGS84 +towgs84='
-    # 		projections_text +=	parameters 
+    # 		projections_text +=	parameters
     # 		projections_text += ' +units=m +no_defs'
     # 		projections_text += '\''
     # 		projections_text += ',\''
@@ -1810,7 +1849,7 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
 
     # 	#GeoServer:
     # 	#3405=PROJCS["VN-2000 / UTM zone 48N",GEOGCS["VN-2000",DATUM["Vietnam_2000",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],TOWGS84[-192.873,-39.382,-111.202,-0.00205,-0.0005,0.00335,0.0188],AUTHORITY["EPSG","6756"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4756"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",105],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3405"]]
-    # 	elif format_id == 4:			
+    # 	elif format_id == 4:
     # 		projections_text = str(srid)
     # 		projections_text += '=PROJCS['
     # 		projections_text += '"'
@@ -1827,12 +1866,12 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
     # 		projections_text += str(srid)
     # 		projections_text += '"'
     # 		projections_text += ']]'
-        
+
     # 	return projections_text
 
     # def zonechange(self):
     # 	self.txtProjections.clear()
-        
+
     # 	listKTT6do = ['105','111','117']
     # 	listKTT3do = ['102', '103', '104','104.5', '104.75', '105','105.5', '105.75','106', '106.25', '106.5',
     # 	'107','107.25','107.5','107.75','108','108.25','108.5', '111','114', '117']
@@ -1841,12 +1880,12 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
     # 		self.cboKTT.clear()
     # 		self.cboKTT.addItems(listKTT6do)
     # 		self.cboKTT.setCurrentIndex(-1)
-    
+
     # 	elif (self.cboZone.currentIndex() == 0):
     # 		self.cboKTT.clear()
     # 		self.cboKTT.addItems(listKTT3do)
     # 		self.cboKTT.setCurrentIndex(-1)
-             
+
     # def togglerad3do(self):
     # 	self.txtProjections.clear()
     # 	self.cboKTT.clear()
@@ -1857,25 +1896,25 @@ class hcmgis_global_microsoft_dialog(hcmgis_dialog, Ui_hcmgis_global_microsoft_f
     # 		self.cboProvinces.setEnabled(True)
     # 		self.cboKTT.setEnabled(False)
     # 		self.cboZone.setEnabled(False)
-        
+
     # def toggleradcustom(self):
     # 	self.txtProjections.clear()
     # 	self.cboKTT.clear()
-    # 	if self.radcustom.isChecked():			
+    # 	if self.radcustom.isChecked():
     # 		self.cboProvinces.setCurrentIndex(-1)
     # 		self.cboKTT.setCurrentIndex(-1)
     # 		self.cboZone.setCurrentIndex(-1)
     # 		self.cboProvinces.setEnabled(False)
     # 		self.cboKTT.setEnabled(True)
     # 		self.cboZone.setEnabled(True)
-    
-class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections_form):	
+
+class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections_form):
     provinces = ['Lai Châu', 'Điện Biên',
                 'Sơn La',
                 'Kiên Giang', 'Cà Mau',
                 'Lào Cai', 'Yên Bái', 'Nghệ An', 'Phú Thọ', 'An Giang',
                 'Thanh Hoá', 'Vĩnh Phúc', 'Đồng Tháp','Cần Thơ', 'Hậu Giang', 'Bạc Liêu', 'Hà Nội', 'Ninh Bình', 'Hà Nam',
-                'Hà Giang', 'Hải Dương', 'Hà Tĩnh', 'Bắc Ninh', 'Hưng Yên', 'Thái Bình', 'Nam Định', 'Tây Ninh', 'Vĩnh Long', 'Sóc Trăng', 'Trà Vinh', 
+                'Hà Giang', 'Hải Dương', 'Hà Tĩnh', 'Bắc Ninh', 'Hưng Yên', 'Thái Bình', 'Nam Định', 'Tây Ninh', 'Vĩnh Long', 'Sóc Trăng', 'Trà Vinh',
                 'Cao Bằng','Long An','Tiền Giang','Bến Tre','Hải Phòng','TP.HCM','Bình Dương',
                 'Tuyên Quang', 'Hoà Bình', 'Quảng Bình',
                 'Quảng Trị', 'Bình Phước',
@@ -1887,8 +1926,8 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
                 'Quảng Ngãi',
                 'Ninh Thuận','Khánh Hoà','Bình Định',
                 'Đắk Lắk', 'Đắk Nông', 'Phú Yên','Gia Lai','Bình Thuận']
-    
-    zone = ['VN-2000 / TM-3 103-00','VN-2000 / TM-3 103-00', 
+
+    zone = ['VN-2000 / TM-3 103-00','VN-2000 / TM-3 103-00',
             'VN-2000 / TM-3 104-00',
             'VN-2000 / TM-3 104-30','VN-2000 / TM-3 104-30',
             'VN-2000 / TM-3 104-45','VN-2000 / TM-3 104-45','VN-2000 / TM-3 104-45','VN-2000 / TM-3 104-45','VN-2000 / TM-3 104-45',
@@ -1896,138 +1935,138 @@ class hcmgis_customprojections_dialog(hcmgis_dialog, Ui_hcmgis_customprojections
             'VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30','VN-2000 / TM-3 105-30',
             'VN-2000 / TM-3 105-45','VN-2000 / TM-3 105-45','VN-2000 / TM-3 105-45','VN-2000 / TM-3 105-45','VN-2000 / TM-3 105-45','VN-2000 / TM-3 105-45','VN-2000 / TM-3 105-45',
             'VN-2000 / TM-3 106-00','VN-2000 / TM-3 106-00','VN-2000 / TM-3 106-00',
-            'VN-2000 / TM-3 106-15', 'VN-2000 / TM-3 106-15', 
-            'VN-2000 / TM-3 106-30', 'VN-2000 / TM-3 106-30', 
-            'VN-2000 / TM-3 107-00', 'VN-2000 / TM-3 107-00', 
+            'VN-2000 / TM-3 106-15', 'VN-2000 / TM-3 106-15',
+            'VN-2000 / TM-3 106-30', 'VN-2000 / TM-3 106-30',
+            'VN-2000 / TM-3 107-00', 'VN-2000 / TM-3 107-00',
             'VN-2000 / TM-3 107-15',
-            'VN-2000 / TM-3 107-30', 
-            'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45', 
-            'VN-2000 / TM-3 zone 491',			
+            'VN-2000 / TM-3 107-30',
+            'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45', 'VN-2000 / TM-3 107-45',
+            'VN-2000 / TM-3 zone 491',
             'VN-2000 / TM-3 108-15','VN-2000 / TM-3 108-15','VN-2000 / TM-3 108-15',
             'VN-2000 / TM-3 108-30','VN-2000 / TM-3 108-30','VN-2000 / TM-3 108-30','VN-2000 / TM-3 108-30','VN-2000 / TM-3 108-30'
             ]
-    epsg_code = ['9205', '9205', 
-                '9206', 
-                '9207', '9207', 
-                '9208', '9208', '9208', '9208', '9208', 
-                '5897', '5897', '5897', '5897', '5897', '5897', '5897', '5897','5897', 
-                '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', 	
-                '9210', '9210', '9210', '9210', '9210', '9210', '9210',			
-                '9211', '9211', '9211', 
-                '9212', '9212', 
-                '9213', '9213', 
-                '9214', '9214', 
+    epsg_code = ['9205', '9205',
+                '9206',
+                '9207', '9207',
+                '9208', '9208', '9208', '9208', '9208',
+                '5897', '5897', '5897', '5897', '5897', '5897', '5897', '5897','5897',
+                '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209', '9209',
+                '9210', '9210', '9210', '9210', '9210', '9210', '9210',
+                '9211', '9211', '9211',
+                '9212', '9212',
+                '9213', '9213',
+                '9214', '9214',
                 '9215',
                 '9216',
                 '5899', '5899', '5899', '5899', '5899', '5899',
-                '5898', 
-                '9217', '9217', '9217',			
+                '5898',
+                '9217', '9217', '9217',
                 '9218', '9218', '9218', '9218', '9218'
                 ]
-    
-    def __init__(self, iface):		
-        hcmgis_dialog.__init__(self, iface)		
+
+    def __init__(self, iface):
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
         self.BtnClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
-        self.cboProvinces.addItems(self.provinces) 
-        self.cboProvinces.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboProvinces.addItems(self.provinces)
+        self.cboProvinces.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems
         self.cboProvinces.setMaxVisibleItems(21)
         self.cboProvinces.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 
-        self.cboEPSG.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems        
+        self.cboEPSG.setStyleSheet("QComboBox {combobox-popup: 0; }") # To enable the setMaxVisibleItems
         self.cboEPSG.setMaxVisibleItems(21)
         self.cboEPSG.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 
 
 
-        
+
         self.cboProvinces.setCurrentIndex(-1)
-        self.cboEPSG.setCurrentIndex(-1)	
+        self.cboEPSG.setCurrentIndex(-1)
         self.cboProvinces.checked = True
         self.cboEPSG.checked = False
         self.cboEPSG.setEnabled(False)
-        self.TxtEPSGInfo.setReadOnly(True)     
+        self.TxtEPSGInfo.setReadOnly(True)
         self.TxtEPSGInfo.clear()
 
         self.radEPSG.toggled.connect(self.togglerad)
         self.cboEPSG.currentIndexChanged.connect(self.EPSGChange)
         self.radProvinces.toggled.connect(self.togglerad)
         self.cboProvinces.currentIndexChanged.connect(self.ProvincesChange)
-       
-   
+
+
     def ProvincesChange(self):
         self.TxtEPSGInfo.clear()
-        if self.cboProvinces.currentIndex() != -1:  
+        if self.cboProvinces.currentIndex() != -1:
             i = self.cboProvinces.currentIndex()
-            EPSGCode = self.epsg_code[i] 
-            EPSGInfoZoneName = '- Zone name: ' + self.zone[i] 
-            EPSGInfoEPSGCode = '\n- EPSG Code: ' + EPSGCode            
+            EPSGCode = self.epsg_code[i]
+            EPSGInfoZoneName = '- Zone name: ' + self.zone[i]
+            EPSGInfoEPSGCode = '\n- EPSG Code: ' + EPSGCode
             indices = [i for i, x in enumerate(self.epsg_code) if x == EPSGCode]
             provinces_list = ''
             for indice in indices:
                 provinces_list+= str(self.provinces[indice]) + ', '
 
-            ProvincesText = '\n- Provinces: ' + provinces_list 
+            ProvincesText = '\n- Provinces: ' + provinces_list
 
-            if ProvincesText.endswith(', '):     						
-                ProvincesText = ProvincesText[:-(len(', '))] + '.'
-            self.TxtEPSGInfo.setText(EPSGInfoZoneName + EPSGInfoEPSGCode +ProvincesText)        
-
-    def EPSGChange(self):
-        self.TxtEPSGInfo.clear()
-        if self.cboEPSG.currentIndex() != -1:            
-            EPSGCode = self.cboEPSG.currentText().strip()  
-            i = self.epsg_code.index(EPSGCode) 
-            EPSGInfoZoneName = '- Zone name: ' + self.zone[i] 
-            EPSGInfoEPSGCode = '\n- EPSG Code: ' + EPSGCode            
-            
-            indices = [i for i, x in enumerate(self.epsg_code) if x == EPSGCode]
-            provinces_list = ''
-            for indice in indices:
-                provinces_list+= str(self.provinces[indice]) + ', '
-
-            ProvincesText = '\n- Provinces: ' + provinces_list 
-
-            if ProvincesText.endswith(', '):     						
+            if ProvincesText.endswith(', '):
                 ProvincesText = ProvincesText[:-(len(', '))] + '.'
             self.TxtEPSGInfo.setText(EPSGInfoZoneName + EPSGInfoEPSGCode +ProvincesText)
 
-        
+    def EPSGChange(self):
+        self.TxtEPSGInfo.clear()
+        if self.cboEPSG.currentIndex() != -1:
+            EPSGCode = self.cboEPSG.currentText().strip()
+            i = self.epsg_code.index(EPSGCode)
+            EPSGInfoZoneName = '- Zone name: ' + self.zone[i]
+            EPSGInfoEPSGCode = '\n- EPSG Code: ' + EPSGCode
+
+            indices = [i for i, x in enumerate(self.epsg_code) if x == EPSGCode]
+            provinces_list = ''
+            for indice in indices:
+                provinces_list+= str(self.provinces[indice]) + ', '
+
+            ProvincesText = '\n- Provinces: ' + provinces_list
+
+            if ProvincesText.endswith(', '):
+                ProvincesText = ProvincesText[:-(len(', '))] + '.'
+            self.TxtEPSGInfo.setText(EPSGInfoZoneName + EPSGInfoEPSGCode +ProvincesText)
+
+
     def togglerad(self):
         if self.radProvinces.isChecked():
             self.cboEPSG.setEnabled(False)
             self.cboEPSG.setCurrentIndex(-1)
             self.cboProvinces.setEnabled(True)
             self.TxtEPSGInfo.clear()
-            
+
         elif self.radEPSG.isChecked():
             self.cboProvinces.setEnabled(False)
             self.cboProvinces.setCurrentIndex(-1)
             self.cboEPSG.setEnabled(True)
             self.TxtEPSGInfo.clear()
 
-#   Split Polygons into (almost) equal parts       
-class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):		
+#   Split Polygons into (almost) equal parts
+class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)	
-        self.setupUi(self)	
+        hcmgis_dialog.__init__(self, iface)
+        self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)		
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
-        self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'splitted')    
-   
-              
-    def run(self):             		
+        self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'splitted')
+
+
+    def run(self):
         layer = self.CboInput.currentLayer()
         if layer is None:
-            return u'No selected Layer!'  
+            return u'No selected Layer!'
         parts = self.spParts.value()
         randompoints = self.spRandomPoints.value()
         output = str(self.output_file_name.filePath())
-        split_layers = []        
+        split_layers = []
 
-        if layer.selectedFeatureCount()>0:	
+        if layer.selectedFeatureCount()>0:
             for feat in layer.selectedFeatures():
                 # mem_layer = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr')
                 mem_layer = QgsVectorLayer('Polygon','polygon','memory')
@@ -2040,15 +2079,15 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
                 mem_layer.startEditing()
                 mem_layer.addFeature(feat)
                 mem_layer.commitChanges()
-                # QgsProject.instance().addMapLayer(mem_layer)                 
+                # QgsProject.instance().addMapLayer(mem_layer)
                 message = hcmgis_split_polygon(mem_layer,parts,randompoints,self.hcmgis_status_callback)
                 if message != None:
-                    QMessageBox.critical(self.iface.mainWindow(), "Split Polygons", message)						               
-                else: 
-                    self.LblStatus.setText('Completed! ')  
+                    QMessageBox.critical(self.iface.mainWindow(), "Split Polygons", message)
+                else:
+                    self.LblStatus.setText('Completed! ')
                 del(mem_layer)
         else:
-            #return u'Please select at least 1 feature to Split Polygon	
+            #return u'Please select at least 1 feature to Split Polygon
             for feat in layer.getFeatures():
                 # mem_layer = QgsVectorLayer(layer, QFileInfo(layer).baseName(), 'ogr')
                 mem_layer = QgsVectorLayer('Polygon','polygon','memory')
@@ -2061,21 +2100,21 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
                 mem_layer.startEditing()
                 mem_layer.addFeature(feat)
                 mem_layer.commitChanges()
-                # QgsProject.instance().addMapLayer(mem_layer) 
+                # QgsProject.instance().addMapLayer(mem_layer)
                 message = hcmgis_split_polygon(mem_layer,parts,randompoints,self.hcmgis_status_callback)
                 if message != None:
-                    QMessageBox.critical(self.iface.mainWindow(), "Split Polygons", message)						               
-                else: 
-                    self.LblStatus.setText('Completed! ') 
-                del(mem_layer)        
+                    QMessageBox.critical(self.iface.mainWindow(), "Split Polygons", message)
+                else:
+                    self.LblStatus.setText('Completed! ')
+                del(mem_layer)
 
         #  layers named "Intersection"
         layers = [layer.id() for layer in QgsProject.instance().mapLayersByName('Intersection') if layer.type() == QgsMapLayer.VectorLayer \
             and layer.geometryType() == QgsWkbTypes.PolygonGeometry and layer.dataProvider().name() == 'memory'] # Polygon
 
-        parameters = {'LAYERS': layers,                
-                     'OUTPUT' : 'memory:merge'} 
-        merge = processing.run('qgis:mergevectorlayers', parameters) 
+        parameters = {'LAYERS': layers,
+                     'OUTPUT' : 'memory:merge'}
+        merge = processing.run('qgis:mergevectorlayers', parameters)
 
         output_layer = merge['OUTPUT']
         # Create the output file
@@ -2086,82 +2125,82 @@ class hcmgis_split_polygon_dialog(hcmgis_dialog, Ui_hcmgis_spit_polygon_form):
 
         file_formats = { ".shp":"ESRI Shapefile", ".geojson":"GeoJSON", ".kml":"KML", ".sqlite":"SQLite", ".gpkg":"GPKG" }
         output_file_format = file_formats[os.path.splitext(output)[1]]
-    
-        error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), layer.crs(), output_file_format, False)# Bool: slected feature only      
+
+        error, error_string = QgsVectorFileWriter.writeAsVectorFormat(output_layer, output, layer.dataProvider().encoding(), layer.crs(), output_file_format, False)# Bool: slected feature only
 
         if error == QgsVectorFileWriter.NoError:
             try:
                 split = QgsVectorLayer(output, QFileInfo(output).baseName(), 'ogr')
                 QgsProject.instance().addMapLayer(split)
                 qgis.utils.iface.setActiveLayer(split)
-                qgis.utils.iface.zoomToActiveLayer()  
+                qgis.utils.iface.zoomToActiveLayer()
             except :
                 print('output: '+ str(output))
         else:
             message = "Failure creating output file: " + str(error_string)
             print (message)
-            # return message 
-        
+            # return message
+
         #Remove all memory Layers
         QgsProject.instance().removeMapLayers(layers)
 
         return
 
-        # for layer in QgsProject.instance().mapLayers().values():  
-        #     if layer.type() == QgsMapLayer.VectorLayer and layer.name() == 'Intersection' and layer.geometryType() == QgsWkbTypes.PolygonGeometry: 
+        # for layer in QgsProject.instance().mapLayers().values():
+        #     if layer.type() == QgsMapLayer.VectorLayer and layer.name() == 'Intersection' and layer.geometryType() == QgsWkbTypes.PolygonGeometry:
         #         QgsProject.instance().removeMapLayers([layer.id()])
         # return
 
 
-class hcmgis_medialaxis_dialog(hcmgis_dialog, Ui_hcmgis_medialaxis_form):		
+class hcmgis_medialaxis_dialog(hcmgis_dialog, Ui_hcmgis_medialaxis_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)	
+        hcmgis_dialog.__init__(self, iface)
+        self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
-        self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
+        self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.CboField.setLayer (self.CboInput.currentLayer())
-        self.CboInput.activated.connect(self.update_field) 
+        self.CboInput.activated.connect(self.update_field)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'skeleton')
 
-               
+
     def update_field(self):
         self.CboField.setLayer(self.CboInput.currentLayer () )
-        
+
         if (self.CboField.count()>0):
             self.CboField.setCurrentIndex(0)
-    
-                
-    def run(self):             	
-        self.LblStatus.clear()	
+
+
+    def run(self):
+        self.LblStatus.clear()
         layer = self.CboInput.currentLayer()
         if layer is None:
-            return u'No selected Layer!'  
+            return u'No selected Layer!'
         field = self.CboField.currentText()
         density = self.spinBox.value()
         output = str(self.output_file_name.filePath())
         if layer.selectedFeatureCount() in range (1,3000):
             message = hcmgis_medialaxis(layer,field, density,output,self.hcmgis_status_callback)
             if message != None:
-                QMessageBox.critical(self.iface.mainWindow(), "Skeleton/ Media Axis", message)	
-            else: 
-                self.LblStatus.setText('Completed ' + str(layer.selectedFeatureCount()) + ' features')          
+                QMessageBox.critical(self.iface.mainWindow(), "Skeleton/ Media Axis", message)
+            else:
+                self.LblStatus.setText('Completed ' + str(layer.selectedFeatureCount()) + ' features')
         else:
-            #return u'Please select 1..100 features to create Skeleton/ Media Axis'		
-            QMessageBox.information(None,  "Skeleton/ Media Axis",u'Please select 1..100 features to create Skeleton/ Media Axis!') 
+            #return u'Please select 1..100 features to create Skeleton/ Media Axis'
+            QMessageBox.information(None,  "Skeleton/ Media Axis",u'Please select 1..100 features to create Skeleton/ Media Axis!')
         return
 
-class hcmgis_centerline_dialog(hcmgis_dialog, Ui_hcmgis_centerline_form):		
+class hcmgis_centerline_dialog(hcmgis_dialog, Ui_hcmgis_centerline_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)	
-        self.setupUi(self)	
+        hcmgis_dialog.__init__(self, iface)
+        self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
-        self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)	
+        self.CboInput.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.chksurround.checked = False
         self.lblsurround.setEnabled(False)
-        self.distance.setEnabled(False)			
+        self.distance.setEnabled(False)
         self.chksurround.stateChanged.connect(self.toggleSurround)
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'centerline')
@@ -2172,50 +2211,50 @@ class hcmgis_centerline_dialog(hcmgis_dialog, Ui_hcmgis_centerline_form):
             self.distance.setEnabled(True)
         else:
             self.lblsurround.setEnabled(False)
-            self.distance.setEnabled(False)	
-            
-    def run(self):             		
+            self.distance.setEnabled(False)
+
+    def run(self):
         layer = self.CboInput.currentLayer()
         if layer is None:
-            return u'No selected Layer!'  
+            return u'No selected Layer!'
         density = self.spinBox.value()
-        chksurround = self.chksurround.isChecked() 
+        chksurround = self.chksurround.isChecked()
         distance = self.distance.value()
         output = str(self.output_file_name.filePath())
-        if layer.selectedFeatureCount()>0:		
+        if layer.selectedFeatureCount()>0:
             message = hcmgis_centerline(layer,density,chksurround,distance,output,self.hcmgis_status_callback)
             if message != None:
-                QMessageBox.critical(self.iface.mainWindow(), "Centerline in Polygon's Gaps", message)						               
-            else: 
-                self.LblStatus.setText('Completed! ')  	
+                QMessageBox.critical(self.iface.mainWindow(), "Centerline in Polygon's Gaps", message)
+            else:
+                self.LblStatus.setText('Completed! ')
         else:
-            #return u'Please select at least 1 feature to create centerline		
-            QMessageBox.information(None,  "Centerline",u'Please select at least 1 feature to create Centerline!') 
+            #return u'Please select at least 1 feature to create centerline
+            QMessageBox.information(None,  "Centerline",u'Please select at least 1 feature to create Centerline!')
         return
-        
+
 # --------------------------------------------------------
 #   Finding closest pair of Points
-# --------------------------------------------------------			
-class hcmgis_closestpair_dialog(hcmgis_dialog, Ui_hcmgis_closestpair_form):		
+# --------------------------------------------------------
+class hcmgis_closestpair_dialog(hcmgis_dialog, Ui_hcmgis_closestpair_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.CboInput.setFilters(QgsMapLayerProxyModel.PointLayer)
-        self.CboField.setLayer (self.CboInput.currentLayer () )		
+        self.CboField.setLayer (self.CboInput.currentLayer () )
         self.CboInput.activated.connect(self.update_field)
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)           
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.hcmgis_initialize_spatial_output_file_widget(self.closest,'closest')
         self.hcmgis_initialize_spatial_output_file_widget(self.farthest,'farthest')
 
 
     def update_field(self):
-        self.CboField.setLayer (self.CboInput.currentLayer () )	
+        self.CboField.setLayer (self.CboInput.currentLayer () )
         if (self.CboField.count()>0):
             self.CboField.setCurrentIndex(0)
-        
-    def run(self):             		
+
+    def run(self):
         layer = self.CboInput.currentLayer()
         field = self.CboField.currentText()
         closest = str(self.closest.filePath())
@@ -2224,116 +2263,116 @@ class hcmgis_closestpair_dialog(hcmgis_dialog, Ui_hcmgis_closestpair_form):
         #message = hcmgis_closestpair(self.iface,layer,field,self.hcmgis_status_callback)
         message = hcmgis_closest_farthest(layer,field,closest,farthest,self.hcmgis_status_callback)
         if message != None:
-            QMessageBox.critical(self.iface.mainWindow(), "Closest/ farthest pair of Points", message)						               
-        else: self.LblStatus.setText('Completed! ')  			
+            QMessageBox.critical(self.iface.mainWindow(), "Closest/ farthest pair of Points", message)
+        else: self.LblStatus.setText('Completed! ')
         return
 
 # --------------------------------------------------------
 #   Finding largest empty circle
-# --------------------------------------------------------			
-class hcmgis_lec_dialog(hcmgis_dialog, Ui_hcmgis_lec_form):		
+# --------------------------------------------------------
+class hcmgis_lec_dialog(hcmgis_dialog, Ui_hcmgis_lec_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.CboInput.setFilters(QgsMapLayerProxyModel.PointLayer)
-        self.CboField.setLayer (self.CboInput.currentLayer () )	
-        self.CboInput.activated.connect(self.update_field)         
+        self.CboField.setLayer (self.CboInput.currentLayer () )
+        self.CboInput.activated.connect(self.update_field)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
         self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'lec')
 
     def update_field(self):
-        self.CboField.setLayer (self.CboInput.currentLayer () )	
+        self.CboField.setLayer (self.CboInput.currentLayer () )
         if (self.CboField.count()>0):
             self.CboField.setCurrentIndex(0)
-    
-    def run(self):             		
+
+    def run(self):
         layer = self.CboInput.currentLayer()
         field = self.CboField.currentText()
         if layer is None:
-            return u'No selected point layer!'		
+            return u'No selected point layer!'
         else:
-            output = str(self.output_file_name.filePath())	
+            output = str(self.output_file_name.filePath())
             message = hcmgis_lec(layer,field, output ,self.hcmgis_status_callback)
             if message != None:
-                QMessageBox.critical(self.iface.mainWindow(), "Largest Empty Circle", message)						               
-            else: self.LblStatus.setText('Completed! ')  		
+                QMessageBox.critical(self.iface.mainWindow(), "Largest Empty Circle", message)
+            else: self.LblStatus.setText('Completed! ')
         return
-    
-class hcmgis_font_convert_dialog(hcmgis_dialog, Ui_hcmgis_font_convert_form):	
+
+class hcmgis_font_convert_dialog(hcmgis_dialog, Ui_hcmgis_font_convert_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
-        self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)		
+        self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	 
-        self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'fontconvert')              
-         
-                
-    def run(self):             		
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
+        self.hcmgis_initialize_spatial_output_file_widget(self.output_file_name,'fontconvert')
+
+
+    def run(self):
         input_layer = self.CboInput.currentLayer()
-        output_layer = str(self.output_file_name.filePath())				
+        output_layer = str(self.output_file_name.filePath())
         sE = GetEncodeIndex(self.CboSourceFont.currentText())
         dE = GetEncodeIndex(self.CboDestFont.currentText())
-        caseI = GetCaseIndex(self.CboOption.currentText())                
-        message = hcmgis_convertfont(input_layer,sE, dE, caseI,output_layer,self.hcmgis_status_callback) 
+        caseI = GetCaseIndex(self.CboOption.currentText())
+        message = hcmgis_convertfont(input_layer,sE, dE, caseI,output_layer,self.hcmgis_status_callback)
         if message != None:
-            QMessageBox.critical(self.iface.mainWindow(), "Convert Font", message)						               
-        else: self.LblStatus.setText('Completed! ')  
+            QMessageBox.critical(self.iface.mainWindow(), "Convert Font", message)
+        else: self.LblStatus.setText('Completed! ')
 
 #---------------------------
 # Split Fields
-#----------------------------				
-class hcmgis_split_field_dialog(hcmgis_dialog, Ui_hcmgis_split_field_form):	
+#----------------------------
+class hcmgis_split_field_dialog(hcmgis_dialog, Ui_hcmgis_split_field_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
-        self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)			
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
+        self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)
         self.CboField.setLayer (self.CboInput.currentLayer () )
-        self.CboInput.activated.connect(self.update_field)                
+        self.CboInput.activated.connect(self.update_field)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
-                
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
+
     def update_field(self):
-        self.CboField.setLayer(self.CboInput.currentLayer () )        
+        self.CboField.setLayer(self.CboInput.currentLayer () )
         if (self.CboField.count()>0):
             self.CboField.setCurrentIndex(0)
-             
-    def run(self):             		
+
+    def run(self):
         layer = self.CboInput.currentLayer()
         char = self.CboChar.currentText()
         field = self.CboField.currentText()
         message = hcmgis_split_field(layer, field, char,self.hcmgis_status_callback)
         if message != None:
-            QMessageBox.critical(self.iface.mainWindow(), "Split Fields", message)						               
-        else: self.LblStatus.setText('Completed! ')  		
+            QMessageBox.critical(self.iface.mainWindow(), "Split Fields", message)
+        else: self.LblStatus.setText('Completed! ')
         return
 
 #------------------------------
 # Merge Fields
-#------------------------------			
-class hcmgis_merge_field_dialog(hcmgis_dialog, Ui_hcmgis_merge_field_form):	
+#------------------------------
+class hcmgis_merge_field_dialog(hcmgis_dialog, Ui_hcmgis_merge_field_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.CboInput.setFilters(QgsMapLayerProxyModel.VectorLayer)
         self.update_fields()
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
         self.CboInput.activated.connect(self.update_fields)
-        self.hcmgis_set_status_bar(self.status,self.LblStatus)	
-                
+        self.hcmgis_set_status_bar(self.status,self.LblStatus)
+
     def update_fields(self):
         self.ListFields.clear()
-        if self.CboInput.currentLayer() != None:                        
-            layer = self.CboInput.currentLayer ()  # gets selected layer              
-            for field in layer.fields():                               
-                self.ListFields.addItem(field.name()) # lists layer fields             
-                
-    def run(self):             				
+        if self.CboInput.currentLayer() != None:
+            layer = self.CboInput.currentLayer ()  # gets selected layer
+            for field in layer.fields():
+                self.ListFields.addItem(field.name()) # lists layer fields
+
+    def run(self):
         layer = self.CboInput.currentLayer()
         char = self.CboChar.currentText()
         selectedfields = []
@@ -2342,25 +2381,25 @@ class hcmgis_merge_field_dialog(hcmgis_dialog, Ui_hcmgis_merge_field_form):
         if len(selectedfields) > 0:
             message = hcmgis_merge_field(layer, selectedfields, char,self.hcmgis_status_callback)
             if message != None:
-                QMessageBox.critical(self.iface.mainWindow(), "Merge Fields", message)						               
-            else: self.LblStatus.setText('Completed! ')  
+                QMessageBox.critical(self.iface.mainWindow(), "Merge Fields", message)
+            else: self.LblStatus.setText('Completed! ')
         return
 
 # Format Convert
-class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form):	
+class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)	
+        hcmgis_dialog.__init__(self, iface)
         self.setupUi(self)
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
-        self.lsFiles.clear() 
+        self.lsFiles.clear()
         self.txtError.clear()
-        self.BtnInputFolder.clicked.connect(self.read_files)		                           
+        self.BtnInputFolder.clicked.connect(self.read_files)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        self.cboInputFormat.currentIndexChanged.connect(self.update_files) 
+        self.cboInputFormat.currentIndexChanged.connect(self.update_files)
         self.cboOutputFormat.clear()
-        self.cboOutputFormat.addItems(self.out_put_format)  
-        self.cboOutputFormat.currentIndexChanged.connect(self.update_status)      
+        self.cboOutputFormat.addItems(self.out_put_format)
+        self.cboOutputFormat.currentIndexChanged.connect(self.update_status)
     #out_put_format = ['AmigoCloud','BNA','Carto','Cloudant','CouchDB','CSV','DB2ODBC','DGN','DXF','ElasticSearch','ESRI Shapefile',\
     #				'Geoconcept','GeoJSON','GeoJSONSeq','GeoRSS','GFT','GML','GPKG','GPSBabel','GPSTrackMaker','GPX','Interlis 1',\
     #				'Interlis 2','JML','KML','LIBKML','MapInfo File','MBTiles','Memory','MSSQLSpatial','MVT','MySQL','netCDF','NGW',\
@@ -2373,10 +2412,10 @@ class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form)
         self.LblStatus.clear()
         self.txtError.clear()
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
-        
+
     def update_files(self):
         if self.LinInputFolder.displayText() != None:
-            self.lsFiles.clear() 			
+            self.lsFiles.clear()
             PATH = self.LinInputFolder.displayText()
             EXT = "*." + self.cboInputFormat.currentText()
             all_files = [file
@@ -2393,8 +2432,8 @@ class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form)
     def read_files(self):
         newname = QFileDialog.getExistingDirectory(None, "Input Folder",self.LinInputFolder.displayText())
         if newname != None and os.path.basename(newname)!='' : #prevent choose the whole Disk like C:\:
-            self.LinInputFolder.setText(newname)	
-            self.lsFiles.clear()		
+            self.LinInputFolder.setText(newname)
+            self.lsFiles.clear()
             PATH = newname
             EXT = "*." + self.cboInputFormat.currentText()
             all_files = [file
@@ -2406,10 +2445,10 @@ class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form)
             self.LblStatus.clear()
             self.txtError.clear()
             self.hcmgis_set_status_bar(self.status,self.LblStatus)
-        else:            
+        else:
             QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:/')
-        
-    def run(self):      
+
+    def run(self):
         item_count = 0
         error_count = 0
         items = []
@@ -2420,18 +2459,18 @@ class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form)
         self.LinInputFolder.setEnabled(False)
         self.BtnInputFolder.setEnabled(False)
         self.cboInputFormat.setEnabled(False)
-        self.cboOutputFormat.setEnabled(False)		
-        self.status_bar.setEnabled(False)			
-    
+        self.cboOutputFormat.setEnabled(False)
+        self.status_bar.setEnabled(False)
+
         for item in items:
-            self.lsFiles.setCurrentRow(item_count)	
-            ogr_driver_name = str(self.cboOutputFormat.currentText())	
+            self.lsFiles.setCurrentRow(item_count)
+            ogr_driver_name = str(self.cboOutputFormat.currentText())
             input_file_name = item.text()
             temp_file_name = item.text()
             input_ext = "." + str(self.cboInputFormat.currentText()).lower()
             idx = self.cboOutputFormat.currentIndex()
             output_ext = "." + self.out_put_ext[idx]
-            output_file_name = temp_file_name.replace(input_ext, output_ext, 1)		
+            output_file_name = temp_file_name.replace(input_ext, output_ext, 1)
             message = hcmgis_format_convert(input_file_name, output_file_name,ogr_driver_name)
             if message:
                 #QMessageBox.critical(self.iface.mainWindow(), "Vector Format Convert", message)
@@ -2440,42 +2479,42 @@ class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form)
                 continue
             else:
                 item_count +=1
-                self.LblStatus.setText (str(item_count)+"/ "+ str(self.lsFiles.count()) + " files converted")	
+                self.LblStatus.setText (str(item_count)+"/ "+ str(self.lsFiles.count()) + " files converted")
                 percent_complete = item_count/self.lsFiles.count()*100
                 self.status_bar.setValue(percent_complete)
                 message = str(int(percent_complete)) + "%"
                 self.status_bar.setFormat(message)
-        
+
         self.lsFiles.blockSignals(False)
         self.LinInputFolder.setEnabled(True)
         self.BtnInputFolder.setEnabled(True)
         self.cboInputFormat.setEnabled(True)
-        self.cboOutputFormat.setEnabled(True)	
-        self.status_bar.setEnabled(True)	
-    
+        self.cboOutputFormat.setEnabled(True)
+        self.status_bar.setEnabled(True)
+
 
 # csv2shp
-class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):		
+class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)	
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)	
+        hcmgis_dialog.__init__(self, iface)
+        self.setupUi(self)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Close).setAutoDefault(False)
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
-        self.lsCSV.clear() 
+        self.lsCSV.clear()
         self.txtError.clear()
-        self.BtnInputFolder.clicked.connect(self.read_csv)			
-        self.lsCSV.currentRowChanged.connect(self.set_field_names)                             
+        self.BtnInputFolder.clicked.connect(self.read_csv)
+        self.lsCSV.currentRowChanged.connect(self.set_field_names)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
 
     def set_field_names(self):
-        try: 
+        try:
             header = self.hcmgis_read_csv_header(self.lsCSV.currentItem().text())
         except:
             return
         if not header:
             return
         self.longitude_field.clear()
-        self.latitude_field.clear()		
+        self.latitude_field.clear()
         self.longitude_field.addItems(header)
         self.latitude_field.addItems(header)
 
@@ -2496,8 +2535,8 @@ class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
     def read_csv(self):
         newname = QFileDialog.getExistingDirectory(None, "Input Folder",self.LinInputFolder.displayText())
         if newname != None and os.path.basename(newname)!='' : #prevent choose the whole Disk like C:\
-            self.LinInputFolder.setText(newname)	
-            self.lsCSV.clear() 				
+            self.LinInputFolder.setText(newname)
+            self.lsCSV.clear()
             PATH = newname
             EXT = "*.csv"
             all_csv_files = [file
@@ -2511,8 +2550,8 @@ class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
         else:
             QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:/')
 
-        
-    def run(self):             		
+
+    def run(self):
         item_count = 0
         error_count = 0
         items = []
@@ -2523,11 +2562,11 @@ class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
         self.LinInputFolder.setEnabled(False)
         self.BtnInputFolder.setEnabled(False)
         self.longitude_field.setEnabled(False)
-        self.latitude_field.setEnabled(False)		
-        self.status_bar.setEnabled(False)			
-    
+        self.latitude_field.setEnabled(False)
+        self.status_bar.setEnabled(False)
+
         for item in items:
-            self.lsCSV.setCurrentRow(item_count)		
+            self.lsCSV.setCurrentRow(item_count)
             input_csv_name = item.text()
             longitude_field = str(self.longitude_field.currentText())
             latitude_field = str(self.latitude_field.currentText())
@@ -2544,32 +2583,32 @@ class hcmgis_csv2shp_dialog(hcmgis_dialog, Ui_hcmgis_csv2shp_form):
                 continue
             else:
                 item_count +=1
-                self.LblStatus.setText (str(item_count)+"/ "+ str(self.lsCSV.count()) + " files converted")	
-        
+                self.LblStatus.setText (str(item_count)+"/ "+ str(self.lsCSV.count()) + " files converted")
+
         self.lsCSV.blockSignals(False)
         self.LinInputFolder.setEnabled(True)
         self.BtnInputFolder.setEnabled(True)
         self.longitude_field.setEnabled(True)
-        self.latitude_field.setEnabled(True)	
+        self.latitude_field.setEnabled(True)
         self.status_bar.setEnabled(True)
 
 
 # txt2csv
-class hcmgis_txt2csv_dialog(hcmgis_dialog, Ui_hcmgis_txt2csv_form):		
+class hcmgis_txt2csv_dialog(hcmgis_dialog, Ui_hcmgis_txt2csv_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)	
+        hcmgis_dialog.__init__(self, iface)
+        self.setupUi(self)
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
-        self.lsTXT.clear() 
+        self.lsTXT.clear()
         self.txtError.clear()
-        self.BtnInputFolder.clicked.connect(self.read_txt)			
+        self.BtnInputFolder.clicked.connect(self.read_txt)
         self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
-        
+
     def read_txt(self):
         newname = QFileDialog.getExistingDirectory(None, "Input Folder",self.LinInputFolder.displayText())
         if newname != None and os.path.basename(newname)!='' : #prevent choose the whole Disk like C:\:
-            self.LinInputFolder.setText(newname)	
-            self.lsTXT.clear()		
+            self.LinInputFolder.setText(newname)
+            self.lsTXT.clear()
             PATH = newname
             EXT = "*.txt"
             all_txt_files = [file
@@ -2582,8 +2621,8 @@ class hcmgis_txt2csv_dialog(hcmgis_dialog, Ui_hcmgis_txt2csv_form):
             self.hcmgis_set_status_bar(self.status,self.LblStatus)
         else:
             QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:/')
-        
-    def run(self):             		
+
+    def run(self):
         item_count = 0
         error_count = 0
         items = []
@@ -2593,11 +2632,11 @@ class hcmgis_txt2csv_dialog(hcmgis_dialog, Ui_hcmgis_txt2csv_form):
         self.lsTXT.blockSignals(True)
         self.LinInputFolder.setEnabled(False)
         self.BtnInputFolder.setEnabled(False)
-    
-        self.status_bar.setEnabled(False)			
-    
+
+        self.status_bar.setEnabled(False)
+
         for item in items:
-            self.lsTXT.setCurrentRow(item_count)		
+            self.lsTXT.setCurrentRow(item_count)
             input_txt_name = item.text()
 
             temp_file_name = item.text()
@@ -2611,29 +2650,29 @@ class hcmgis_txt2csv_dialog(hcmgis_dialog, Ui_hcmgis_txt2csv_form):
                 continue
             else:
                 item_count +=1
-                self.LblStatus.setText (str(item_count)+"/ "+ str(self.lsTXT.count()) + " files converted")	
-        
+                self.LblStatus.setText (str(item_count)+"/ "+ str(self.lsTXT.count()) + " files converted")
+
         self.lsTXT.blockSignals(False)
         self.LinInputFolder.setEnabled(True)
-        self.BtnInputFolder.setEnabled(True)	
-        self.status_bar.setEnabled(True)	
+        self.BtnInputFolder.setEnabled(True)
+        self.status_bar.setEnabled(True)
 
 # xls2csv
-class hcmgis_xls2csv_dialog(hcmgis_dialog, Ui_hcmgis_xls2csv_form):		
+class hcmgis_xls2csv_dialog(hcmgis_dialog, Ui_hcmgis_xls2csv_form):
     def __init__(self, iface):
-        hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)	
+        hcmgis_dialog.__init__(self, iface)
+        self.setupUi(self)
         self.hcmgis_set_status_bar(self.status,self.LblStatus)
-        self.lsXLS.clear() 
+        self.lsXLS.clear()
         self.txtError.clear()
-        self.BtnInputFolder.clicked.connect(self.read_xls)			
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)	
-        
+        self.BtnInputFolder.clicked.connect(self.read_xls)
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+
     def read_xls(self):
         newname = QFileDialog.getExistingDirectory(None, "Input Folder",self.LinInputFolder.displayText())
-        if newname != None and os.path.basename(newname)!='' : #prevent choose the whole Disk like C:\: 
-            self.LinInputFolder.setText(newname)	
-            self.lsXLS.clear()			
+        if newname != None and os.path.basename(newname)!='' : #prevent choose the whole Disk like C:\:
+            self.LinInputFolder.setText(newname)
+            self.lsXLS.clear()
             PATH = newname
             EXT = "*.xlsx"
             all_txt_files = [file
@@ -2646,9 +2685,9 @@ class hcmgis_xls2csv_dialog(hcmgis_dialog, Ui_hcmgis_xls2csv_form):
             self.hcmgis_set_status_bar(self.status,self.LblStatus)
         else:
             QMessageBox.warning(None, "Choose Folder", 'Please choose a folder, not a disk like C:/')
-        
-        
-    def run(self):             		
+
+
+    def run(self):
         item_count = 0
         error_count = 0
         items = []
@@ -2658,11 +2697,11 @@ class hcmgis_xls2csv_dialog(hcmgis_dialog, Ui_hcmgis_xls2csv_form):
         self.lsXLS.blockSignals(True)
         self.LinInputFolder.setEnabled(False)
         self.BtnInputFolder.setEnabled(False)
-    
-        self.status_bar.setEnabled(False)			
-    
+
+        self.status_bar.setEnabled(False)
+
         for item in items:
-            self.lsXLS.setCurrentRow(item_count)		
+            self.lsXLS.setCurrentRow(item_count)
             input_xls_name = item.text()
             temp_file_name = item.text()
             output_file_name = temp_file_name.replace(".xlsx", ".csv", 1)
@@ -2674,31 +2713,31 @@ class hcmgis_xls2csv_dialog(hcmgis_dialog, Ui_hcmgis_xls2csv_form):
                 continue
             else:
                 item_count +=1
-                self.LblStatus.setText (str(item_count)+"/ "+ str(self.lsXLS.count()) + " files converted")	
-        
+                self.LblStatus.setText (str(item_count)+"/ "+ str(self.lsXLS.count()) + " files converted")
+
         self.lsXLS.blockSignals(False)
         self.LinInputFolder.setEnabled(True)
-        self.BtnInputFolder.setEnabled(True)	
+        self.BtnInputFolder.setEnabled(True)
         self.status_bar.setEnabled(True)
 
-class hcmgis_mapbox_dialog(hcmgis_dialog, Ui_hcmgis_mapbox_form):	
-    def __init__(self, iface):		
-        hcmgis_dialog.__init__(self, iface)		
-        self.setupUi(self)    
+class hcmgis_mapbox_dialog(hcmgis_dialog, Ui_hcmgis_mapbox_form):
+    def __init__(self, iface):
+        hcmgis_dialog.__init__(self, iface)
+        self.setupUi(self)
         self.CboStyleType.currentIndexChanged.connect(self.StyleTypeChange)
         self.CboMapboxStyle.currentIndexChanged.connect(self.MapboxStyleChange)
         self.LblView.openExternalLinks()
         self.CboMapboxStyle.setCurrentIndex(-1)
-        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)            
-        self.LinAccessToken.setText('pk.eyJ1IjoidGhhbmdxZCIsImEiOiJucHFlNFVvIn0.j5yb-N8ZR3d4SJAYZz-TZA')   
+        self.BtnApplyClose.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.run)
+        self.LinAccessToken.setText('pk.eyJ1IjoidGhhbmdxZCIsImEiOiJucHFlNFVvIn0.j5yb-N8ZR3d4SJAYZz-TZA')
         self.TxtStyleWMTS.clear()
-       
+
     def StyleTypeChange(self):
         self.TxtStyleWMTS.clear()
         if (self.CboStyleType.currentIndex() == 0 ): #Mapbox default Style
             self.CboMapboxStyle.setEnabled(True)
             self.TxtStyleWMTS.setReadOnly(True)
-        else: 
+        else:
             self.CboMapboxStyle.setCurrentIndex(-1)
             self.CboMapboxStyle.setEnabled(False)
             self.TxtStyleWMTS.setReadOnly(False)
@@ -2707,20 +2746,19 @@ class hcmgis_mapbox_dialog(hcmgis_dialog, Ui_hcmgis_mapbox_form):
         self.TxtStyleWMTS.clear()
         if self.CboStyleType.currentIndex() == 0: #Mapbox default Style
             ViewURL = 'https://api.mapbox.com/styles/v1/mapbox/' + self.CboMapboxStyle.currentText()
-            ViewURL += '.html?fresh=true&title=copy&access_token='+ self.LinAccessToken.text()      
-     
+            ViewURL += '.html?fresh=true&title=copy&access_token='+ self.LinAccessToken.text()
+
             StyleWMTS = 'https://api.mapbox.com/styles/v1/mapbox/' + self.CboMapboxStyle.currentText()
-            StyleWMTS += '/wmts?service=WMTS&request=GetCapabilities&access_token='+ self.LinAccessToken.text()   
+            StyleWMTS += '/wmts?service=WMTS&request=GetCapabilities&access_token='+ self.LinAccessToken.text()
             self.TxtStyleWMTS.setPlainText(StyleWMTS)
         else:
             if (self.TxtStyleWMTS.toPlainText() != None):
                 StyleWMTS =  self.TxtStyleWMTS.toPlainText()
                 ViewURL = StyleWMTS.replace('/wms?','.html?fresh=true&title=view')
-   
-      
+
+
     def run(self):
-        hcmgis_mapbox(self.TxtStyleWMTS.toPlainText())	
-        return		
+        hcmgis_mapbox(self.TxtStyleWMTS.toPlainText())
+        return
 
 
- 

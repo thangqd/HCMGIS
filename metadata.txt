@@ -2,9 +2,9 @@
 name=HCMGIS
 qgisMinimumVersion=3.0
 description= HCMGIS - Basemaps, Download OpenData, Batch Converter, VN-2000 Projections, Geometry Processing and Field Calculation Utilities
-about=- Basemaps: Add global basemaps from Google, Carto, ESRI, OSM Stamen, etc;- Batch Converter: Batch convert CSV to Point Shapefiles and other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;- Download OpenData:  Download Open Data from OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, Open Development Mekong, World Food Programme, Standford University, etc;- Vn-2000 Projections: Lookup EPSG Code for Vn-2000/ TM3 Projection for all Provinces in Vietnam;- Spatial Processing: Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures, create Centerline in Polygons' gaps (E.g building blocks), finding closest/ farthest pair of Points, Largest Empty Circle of a Point set;  - Attribute Calculation: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case.;
+about=- Basemaps: Add global basemaps from Google, Carto, ESRI, etc;- Batch Converter: Batch convert CSV to Point Shapefiles and other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;- Download OpenData:  Download Open Data from OSM Geofabrik, GADM, Microsoft Building Footprints, HCMGIS OpenData, BecaGIS OpenData, Standford University, etc;- Vn-2000 Projections: Lookup EPSG Code for Vn-2000/ TM3 Projection for all Provinces in Vietnam;- Spatial Processing: Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures, create Centerline in Polygons' gaps (E.g building blocks), finding closest/ farthest pair of Points, Largest Empty Circle of a Point set;  - Attribute Calculation: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case.;
 category=Vector
-version=23.7.19
+version=23.11.23
 author=Thang Quach
 email=quachdongthang@gmai.com
 homepage= https://thangqd.github.io

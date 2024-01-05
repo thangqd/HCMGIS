@@ -204,28 +204,30 @@ class hcmgis_dialog(QtWidgets.QDialog):
     arcgis_urls = []
     wfs_servers = [
                 'HCMGIS OpenData',
-                'OpenDevelopment Mekong',
-                'OpenDevelopment Cambodia',
-                'OpenDevelopment Laos',
-                'OpenDevelopment Myanmar',
-                'OpenDevelopment Vietnam',
+                'BecaGIS OpenData',
+                # 'OpenDevelopment Mekong',
+                # 'OpenDevelopment Cambodia',
+                # 'OpenDevelopment Laos',
+                # 'OpenDevelopment Myanmar',
+                # 'OpenDevelopment Vietnam',
                 'ISTI-CNR Pisa',
                 'Stanford University',
                 # 'CAEARTE-CONAE',
                 'IBGE',
                 'INDE',
                 # 'ISRIC Data Hub',
-                'World Food Programme',
+                # 'World Food Programme',
                 # 'PUMA - World Bank Group' ,
                 ]
 
     wfs_urls = [
         'https://opendata.hcmgis.vn/geoserver',
-        'https://data.opendevelopmentmekong.net/geoserver/ODMekong',
-        'https://data.opendevelopmentmekong.net/geoserver/ODCambodia',
-        'https://data.opendevelopmentmekong.net/geoserver/ODLao',
-        'https://data.opendevelopmentmekong.net/geoserver/ODMyanmar',
-        'https://data.opendevelopmentmekong.net/geoserver/ODVietnam',
+        'https://opendata.becagis.vn/geoserver',
+        # 'https://data.opendevelopmentmekong.net/geoserver/ODMekong',
+        # 'https://data.opendevelopmentmekong.net/geoserver/ODCambodia',
+        # 'https://data.opendevelopmentmekong.net/geoserver/ODLao',
+        # 'https://data.opendevelopmentmekong.net/geoserver/ODMyanmar',
+        # 'https://data.opendevelopmentmekong.net/geoserver/ODVietnam',
         'http://geoserver.d4science.org:80/geoserver',
         'https://geowebservices.stanford.edu:443/geoserver',
         # 'http://ambiente.caearte.conae.gov.ar/geoserver',
@@ -233,15 +235,15 @@ class hcmgis_dialog(QtWidgets.QDialog):
         'https://geoservicos.ibge.gov.br/geoserver',
         'https://geoservicos.inde.gov.br/geoserver',
         # 'https://data.isric.org/geoserver',
-        'https://geonode.wfp.org/geoserver',
+        # 'https://geonode.wfp.org/geoserver',
         # 'https://puma.worldbank.org/geoserver'
          ]
 
     ogc_servers = [
                 # 'Local GeoServer',
-                # 'Local PyGeoAPI',
+                # 'Local PyGeoAPI',                  
                 'GeoSolutions (GeoServer)',
-
+                
                 'Sammeldienst Kreis Viersen (QGIS Server)',
                 'OSM-Daten Kreis Viersen (QGIS Server)',
 
@@ -261,9 +263,9 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 ]
 
     ogc_urls = [
-                # 'http://localhost:8080/geoserver/ogc/features',
+                # 'http://localhost:8080/geoserver/ogc/features',  
                 # 'http://localhost:5000',
-                'https://gs-main.geosolutionsgroup.com/geoserver/ogc/features',
+                # 'https://gs-main.geosolutionsgroup.com/geoserver/ogc/features',
 
                 'https://geo.kreis-viersen.de/ows/sammeldienst/wfs3',
                 'https://geo.kreis-viersen.de/ows/osm-daten/wfs3',

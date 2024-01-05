@@ -238,50 +238,50 @@ class hcmgis_menu ():
         #Stamen Toner
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
         self.stamentoner_action = QAction(icon, u'Stamen Toner', self.iface.mainWindow())
-        self.stamentoner_action.triggered.connect(lambda: hcmgis_basemap('Stamen Toner'))
+        self.stamentoner_action.triggered.connect(lambda: hcmgis_basemap('Stamen Toner'))		
         self.basemap_menu.addAction(self.stamentoner_action)
 
         # Stamen Toner Background
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
         self.stamentonerbkg_action = QAction(icon, u'Stamen Toner Background', self.iface.mainWindow())
-        self.stamentonerbkg_action.triggered.connect(lambda: hcmgis_basemap('Stamen Toner Background'))
+        self.stamentonerbkg_action.triggered.connect(lambda: hcmgis_basemap('Stamen Toner Background'))		
         self.basemap_menu.addAction(self.stamentonerbkg_action)
 
         # Stamen Toner Hybrid
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
         self.stamentonerhybrid_action = QAction(icon, u'Stamen Toner Hybrid', self.iface.mainWindow())
-        self.stamentonerhybrid_action.triggered.connect(lambda: hcmgis_basemap('Stamen Toner Hybrid'))
+        self.stamentonerhybrid_action.triggered.connect(lambda: hcmgis_basemap('Stamen Toner Hybrid'))		
         self.basemap_menu.addAction(self.stamentonerhybrid_action)
 
         # Stamen Toner Lite
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
         self.stamentonerlite_action = QAction(icon, u'Stamen Toner Lite', self.iface.mainWindow())
-        self.stamentonerlite_action.triggered.connect(lambda: hcmgis_basemap('Stamen Toner Lite'))
+        self.stamentonerlite_action.triggered.connect(lambda: hcmgis_basemap('Stamen Toner Lite'))		
         self.basemap_menu.addAction(self.stamentonerlite_action)
-
+        
         # Stamen Terrain
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
         self.stamenterrain_action = QAction(icon, u'Stamen Terrain', self.iface.mainWindow())
-        self.stamenterrain_action.triggered.connect(lambda: hcmgis_basemap('Stamen Terrain'))
+        self.stamenterrain_action.triggered.connect(lambda: hcmgis_basemap('Stamen Terrain'))		
         self.basemap_menu.addAction(self.stamenterrain_action)
 
         # Stamen Terrain Background
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
         self.stamenterrainbkg_action = QAction(icon, u'Stamen Terrain Background', self.iface.mainWindow())
-        self.stamenterrainbkg_action.triggered.connect(lambda: hcmgis_basemap('Stamen Terrain Background'))
+        self.stamenterrainbkg_action.triggered.connect(lambda: hcmgis_basemap('Stamen Terrain Background'))		
         self.basemap_menu.addAction(self.stamenterrainbkg_action)
-
+        
         # Stamen Watercolor
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_stamen.png")
         self.stamenwatercolor_action = QAction(icon, u'Stamen Watercolor', self.iface.mainWindow())
-        self.stamenwatercolor_action.triggered.connect(lambda: hcmgis_basemap('Stamen Watercolor'))
+        self.stamenwatercolor_action.triggered.connect(lambda: hcmgis_basemap('Stamen Watercolor'))		
         self.basemap_menu.addAction(self.stamenwatercolor_action)
-
-        self.basemap_menu.addSeparator()
+        
+        self.basemap_menu.addSeparator()        
         # NASA
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_nasa_black.png")
         self.nasa_black_action = QAction(icon, u'NASA Black Marble', self.iface.mainWindow())
-        self.nasa_black_action.triggered.connect(lambda: hcmgis_basemap('NASA Black Marble'))
+        self.nasa_black_action.triggered.connect(lambda: hcmgis_basemap('NASA Black Marble'))		
         self.basemap_menu.addAction(self.nasa_black_action)
 
 
@@ -314,7 +314,7 @@ class hcmgis_menu ():
         #Vietnam OSM Mapss
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_becamaps.png")
         self.hcmgis_osm_action = QAction(icon, u'Vietnam OSM BecaMaps', self.iface.mainWindow())
-        self.hcmgis_osm_action.triggered.connect(lambda: hcmgis_basemap('Vietnam OSM BecaMaps'))
+        self.hcmgis_osm_action.triggered.connect(lambda: hcmgis_basemap('Vietnam OSM BecaMaps'))		
         self.basemap_menu.addAction(self.hcmgis_osm_action)
 
         #Viet Ban do

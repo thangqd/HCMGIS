@@ -203,7 +203,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
     arcgis_servers = []
     arcgis_urls = []
     wfs_servers = [
-                'HCMGIS OpenData',
+                # 'HCMGIS OpenData',
                 'BecaGIS OpenData',
                 # 'OpenDevelopment Mekong',
                 # 'OpenDevelopment Cambodia',
@@ -221,7 +221,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 ]
 
     wfs_urls = [
-        'https://opendata.hcmgis.vn/geoserver',
+        # 'https://opendata.hcmgis.vn/geoserver',
         'https://opendata.becagis.vn/geoserver',
         # 'https://data.opendevelopmentmekong.net/geoserver/ODMekong',
         # 'https://data.opendevelopmentmekong.net/geoserver/ODCambodia',
@@ -250,7 +250,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 'MS4W Demo OGCAPI Server (UMN MapServer)',
 
                 'NRW Topographie (Ldproxy)',
-                'Montreal Building (Ldproxy)',
+                # 'Montreal Building (Ldproxy)',
                 'CShapes Dataset of Historical Country Boundaries (Ldproxy)',
                 'Daraa - Syria (Ldproxy)',
                 'OS Open Zoomstack (Ldproxy)',
@@ -273,7 +273,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
                 'https://demo.mapserver.org/cgi-bin/mapserv/localdemo/ogcapi',
 
                 'https://www.ldproxy.nrw.de/topographie',
-                'https://d123.ldproxy.net/montreal',
+                # 'https://d123.ldproxy.net/montreal',
                 'https://demo.ldproxy.net/cshapes',
                 'https://demo.ldproxy.net/daraa',
                 'https://demo.ldproxy.net/zoomstack',

@@ -100,8 +100,8 @@ basemap_names = ['Google Maps', 'Google Satellite',\
                 'Wikimedia Maps',\
                 'Vietbando Maps','BecaGIS Maps'
              ]
-basemap_urls = ['https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',\
-                'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}','https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',\
+basemap_urls = ["https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}","https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",\
+                "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}","https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",\
                 'https://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=1',\
                 'https://cartocdn_a.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png','https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',\
                 'https://cartocdn_a.global.ssl.fastly.net/base-eco/{z}/{x}/{y}.png', 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.pn',\
@@ -152,12 +152,12 @@ def hcmgis_basemap_load():
 
 def hcmgis_basemap(basemap_name):
     idx = basemap_names.index(basemap_name)
-    basemap_url = basemap_urls[idx]
-    if ( basemap_name == 'Vietbando Maps'):
-        basemap_uri = "type=xyz&url="+basemap_url
-    else:
-        basemap_uri = "type=xyz&url="+ requests.utils.quote(basemap_url)
-
+    basemap_url = basemap_urls[idx]   
+    basemap_uri = "type=xyz&url="+basemap_url
+    if (basemap_name.startswith('Google')):
+        basemap_uri = "type=xyz&url="+ requests.utils.quote(basemap_url).replace('%3A', ':', 1)
+    # basemap_uri = "type=xyz&url="+basemap_url
+    print (basemap_uri)    
     xyz_layer = QgsRasterLayer(basemap_uri,basemap_name, 'wms')
     if xyz_layer.isValid():
         QgsProject.instance().addMapLayer(xyz_layer)
@@ -175,123 +175,123 @@ def hcmgis_basemap(basemap_name):
     else:
         print('Add basemap failed!')
 
-def hcmgis_covid19():
-        uri_live_update = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Coronavirus_2019_nCoV_Cases/FeatureServer/2/query?where=1%3D1&outFields=*&outSR=4326&f=geojson'
-        layer_name= 'global_covid19_live_update'
-        project = QgsProject.instance()
-        home_path = project.homePath()
-        if not home_path:
-           home_path = os.path.expanduser('~')
-        #json_name_live_update = os.path.join(os.getcwd(), layer_name + '.json')
-        json_name_live_update = os.path.join(home_path, layer_name + '.json')
-        urllib.request.urlretrieve(uri_live_update, json_name_live_update)
-        print ('Download completed: '+ str(json_name_live_update))
-        json_file_live_update  = QgsVectorLayer(json_name_live_update,layer_name,"ogr")
-        try:
-            if not json_file_live_update.isValid:
-                QMessageBox.warning(None, "Invalid Layer", "Global COVID-19 Live Update Download failed!")
-                return
-            else:
-                QgsProject.instance().addMapLayer(json_file_live_update)
-        except: pass
+# def hcmgis_covid19():
+#         uri_live_update = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Coronavirus_2019_nCoV_Cases/FeatureServer/2/query?where=1%3D1&outFields=*&outSR=4326&f=geojson'
+#         layer_name= 'global_covid19_live_update'
+#         project = QgsProject.instance()
+#         home_path = project.homePath()
+#         if not home_path:
+#            home_path = os.path.expanduser('~')
+#         #json_name_live_update = os.path.join(os.getcwd(), layer_name + '.json')
+#         json_name_live_update = os.path.join(home_path, layer_name + '.json')
+#         urllib.request.urlretrieve(uri_live_update, json_name_live_update)
+#         print ('Download completed: '+ str(json_name_live_update))
+#         json_file_live_update  = QgsVectorLayer(json_name_live_update,layer_name,"ogr")
+#         try:
+#             if not json_file_live_update.isValid:
+#                 QMessageBox.warning(None, "Invalid Layer", "Global COVID-19 Live Update Download failed!")
+#                 return
+#             else:
+#                 QgsProject.instance().addMapLayer(json_file_live_update)
+#         except: pass
 
 
-def hcmgis_covid19_timeseries():
-    uri = ['https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
-     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
-     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
-    ]
-    layername = [
-        'global_time_series_covid19_confirmed',
-        'global_time_series_covid19_recovered',
-        'global_time_series_covid19_deaths'
-        ]
-    length = len(uri)
+# def hcmgis_covid19_timeseries():
+#     uri = ['https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
+#      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
+#      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
+#     ]
+#     layername = [
+#         'global_time_series_covid19_confirmed',
+#         'global_time_series_covid19_recovered',
+#         'global_time_series_covid19_deaths'
+#         ]
+#     length = len(uri)
 
-    from osgeo import ogr
-    # driver = ogr.GetDriverByName('ESRI Shapefile')
-    # driver.DeleteDataSource('path_to_your_shape.shp')
-    for i in range(length):
-        project = QgsProject.instance()
-        home_path = project.homePath()
-        if not home_path:
-           home_path = os.path.expanduser('~')
-        csv_name = os.path.join(home_path, layername[i] + '.csv')
-        shapefile_name = os.path.join(home_path, layername[i] + '.geojson')
+#     from osgeo import ogr
+#     # driver = ogr.GetDriverByName('ESRI Shapefile')
+#     # driver.DeleteDataSource('path_to_your_shape.shp')
+#     for i in range(length):
+#         project = QgsProject.instance()
+#         home_path = project.homePath()
+#         if not home_path:
+#            home_path = os.path.expanduser('~')
+#         csv_name = os.path.join(home_path, layername[i] + '.csv')
+#         shapefile_name = os.path.join(home_path, layername[i] + '.geojson')
 
-        #urllib.request.urlretrieve(uri[i], csv_name)
-        hcmgis_csv2shp(uri[i], "Lat", "Long", shapefile_name)
-        print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))
-        covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
-        try:
-            if not covidlayer.isValid():
-                QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')
-            else:
-                QgsProject.instance().addMapLayer(covidlayer)
-        except:
-            pass
+#         #urllib.request.urlretrieve(uri[i], csv_name)
+#         hcmgis_csv2shp(uri[i], "Lat", "Long", shapefile_name)
+#         print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))
+#         covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
+#         try:
+#             if not covidlayer.isValid():
+#                 QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')
+#             else:
+#                 QgsProject.instance().addMapLayer(covidlayer)
+#         except:
+#             pass
 
-def hcmgis_covid19_vaccination_timeseries():
-    uri = ['https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/global_data/time_series_covid19_vaccine_doses_admin_global.csv'
-        ]
-    layername = [
-        'global_time_series_covid19_vaccination',
-        ]
-    length = len(uri)
+# def hcmgis_covid19_vaccination_timeseries():
+#     uri = ['https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/global_data/time_series_covid19_vaccine_doses_admin_global.csv'
+#         ]
+#     layername = [
+#         'global_time_series_covid19_vaccination',
+#         ]
+#     length = len(uri)
 
-    from osgeo import ogr
-    # driver = ogr.GetDriverByName('ESRI Shapefile')
-    # driver.DeleteDataSource('path_to_your_shape.shp')
-    for i in range(length):
-        project = QgsProject.instance()
-        home_path = project.homePath()
-        if not home_path:
-           home_path = os.path.expanduser('~')
-        csv_name = os.path.join(home_path, layername[i] + '.csv')
-        shapefile_name = os.path.join(home_path, layername[i] + '.geojson')
+#     from osgeo import ogr
+#     # driver = ogr.GetDriverByName('ESRI Shapefile')
+#     # driver.DeleteDataSource('path_to_your_shape.shp')
+#     for i in range(length):
+#         project = QgsProject.instance()
+#         home_path = project.homePath()
+#         if not home_path:
+#            home_path = os.path.expanduser('~')
+#         csv_name = os.path.join(home_path, layername[i] + '.csv')
+#         shapefile_name = os.path.join(home_path, layername[i] + '.geojson')
 
-        #urllib.request.urlretrieve(uri[i], csv_name)
-        hcmgis_csv2shp(uri[i], "Lat", "Long_", shapefile_name)
-        print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))
-        covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
-        try:
-            if not covidlayer.isValid():
-                QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')
-            else:
-                QgsProject.instance().addMapLayer(covidlayer)
-        except:
-            pass
+#         #urllib.request.urlretrieve(uri[i], csv_name)
+#         hcmgis_csv2shp(uri[i], "Lat", "Long_", shapefile_name)
+#         print ('Download completed: '+ str(i+1) +'. ' + str(shapefile_name))
+#         covidlayer = QgsVectorLayer(shapefile_name, layername[i], "ogr")
+#         try:
+#             if not covidlayer.isValid():
+#                 QMessageBox.warning(None, "Invalid Layer", layername[i] + ' download failed or Please remove Layers from Layers Panel before redownload!')
+#             else:
+#                 QgsProject.instance().addMapLayer(covidlayer)
+#         except:
+#             pass
 
-def hcmgis_covid19_vietnam0():
-    uri_vietnam = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam'
+# def hcmgis_covid19_vietnam0():
+#     uri_vietnam = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam'
 
-    vietnam = QgsVectorLayer(uri_vietnam, "Vietnam COVID-19 Live Update", "WFS")
+#     vietnam = QgsVectorLayer(uri_vietnam, "Vietnam COVID-19 Live Update", "WFS")
 
-    if not vietnam.isValid():
-        QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed or Please remove Layers from Layers Panel before redownload!")
-        return
-    else:
-        QgsProject.instance().addMapLayer(vietnam)
+#     if not vietnam.isValid():
+#         QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed or Please remove Layers from Layers Panel before redownload!")
+#         return
+#     else:
+#         QgsProject.instance().addMapLayer(vietnam)
 
-def hcmgis_covid19_vietnam():
-    uri_live_update = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam&format=application/json'
-    layer_name= 'vietnam_covid19_live_update'
-    project = QgsProject.instance()
-    home_path = project.homePath()
-    if not home_path:
-       home_path = os.path.expanduser('~')
-    json_name_live_update = os.path.join(home_path, layer_name + '.json')
+# def hcmgis_covid19_vietnam():
+#     uri_live_update = 'https://opendata.hcmgis.vn/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:covid_19_vietnam&format=application/json'
+#     layer_name= 'vietnam_covid19_live_update'
+#     project = QgsProject.instance()
+#     home_path = project.homePath()
+#     if not home_path:
+#        home_path = os.path.expanduser('~')
+#     json_name_live_update = os.path.join(home_path, layer_name + '.json')
 
-    urllib.request.urlretrieve(uri_live_update, json_name_live_update)
-    print ('Download completed: '+ str(json_name_live_update))
-    json_file_live_update  = QgsVectorLayer(json_name_live_update,layer_name,"ogr")
-    try:
-        if not json_file_live_update.isValid:
-            QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed!")
-            return
-        else:
-            QgsProject.instance().addMapLayer(json_file_live_update)
-    except: pass
+#     urllib.request.urlretrieve(uri_live_update, json_name_live_update)
+#     print ('Download completed: '+ str(json_name_live_update))
+#     json_file_live_update  = QgsVectorLayer(json_name_live_update,layer_name,"ogr")
+#     try:
+#         if not json_file_live_update.isValid:
+#             QMessageBox.warning(None, "Invalid Layer", "Vietnam COVID-19 Live Update Download failed!")
+#             return
+#         else:
+#             QgsProject.instance().addMapLayer(json_file_live_update)
+#     except: pass
 
 #--------------------------------------------------------
 #    hcmgis_split_polygon - Split Polygons into (almost) equal parts

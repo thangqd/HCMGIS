@@ -1,6 +1,6 @@
 # HCMGIS - Basemaps, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
-**- Basemap**: Add global basemaps from Google, Carto, ESRI, OSM Stamen, etc.
+**- Basemap**: Add global basemaps from Google, Carto, ESRI, etc.
 
 **- Batch Converter**: Batch convert CSV to Point Shapefile and other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;
 

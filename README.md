@@ -1,6 +1,6 @@
 # HCMGIS - Basemaps, Download OpenData, Batch Converter,  VN-2000 Projections, Geometry Processing and Field Calculation Utilities for QGIS 3
 
-**- Basemap**: Add global basemaps from Google, Carto, ESRI, etc.
+**- Basemap**: Add global basemaps from Google, Carto, ESRI, OSM Stamen, etc.
 
 **- Batch Converter**: Batch convert CSV to Point Shapefile and other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;
 
@@ -9,10 +9,10 @@
 **- Vn-2000 Projections**:  Look up EPSG Code for Vn-2000/ TM3 Projections for all Provinces in Vietnam
 
 
-**- Spatial Processing**:
+**- Spatial Processing**: has been moved to [BecaGIS Plugin](URhttps://plugins.qgis.org/plugins/becagis/) since Sep, 2024
+
 
 + Create Skeleton/Medial Axis/ Centerline for road/ river networks and similar linear structures
-+ Create Centerline in Polygons' gaps (E.g building blocks)
 + Finding closest/ farthest pair of Points in a Point set based on Voronoi Diagram
 + Finding Largest Empty Circle of a Point set
 

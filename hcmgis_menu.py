@@ -323,7 +323,13 @@ class hcmgis_menu ():
         self.hcmgis_osm_action.triggered.connect(lambda: hcmgis_basemap('BecaGIS Maps'))		
         self.basemap_menu.addAction(self.hcmgis_osm_action)
 
-        
+        #HCMC OneMap
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_dxcenter.png")
+        self.hcmgis_osm_action = QAction(icon, u'HCMC OneMap', self.iface.mainWindow())
+        self.hcmgis_osm_action.triggered.connect(lambda: hcmgis_basemap('HCMC OneMap'))		
+        self.basemap_menu.addAction(self.hcmgis_osm_action)
+
+       
 
 
         # TXT to CSV
@@ -458,9 +464,9 @@ class hcmgis_menu ():
 
 
         # Geoprocessing submenu
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_geoprocess.png")
-        self.geoprocessing_menu = QMenu(u'Geometry Processing')
-        self.hcmgis_add_submenu2(self.geoprocessing_menu, icon)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_geoprocess.png")
+        # self.geoprocessing_menu = QMenu(u'Geometry Processing')
+        # self.hcmgis_add_submenu2(self.geoprocessing_menu, icon)
 
         # # Split Polygon Submenu
         # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_split_polygon.png")
@@ -469,29 +475,29 @@ class hcmgis_menu ():
         # self.geoprocessing_menu.addAction(self.split_polygon_action)
 
         # Media Axis Submenu
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_skeleton.png")
-        self.medialaxis_action = QAction(icon, u'Skeleton/ Medial Axis', self.iface.mainWindow())
-        self.medialaxis_action.triggered.connect(self.medialaxis)
-        self.geoprocessing_menu.addAction(self.medialaxis_action)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_skeleton.png")
+        # self.medialaxis_action = QAction(icon, u'Skeleton/ Medial Axis', self.iface.mainWindow())
+        # self.medialaxis_action.triggered.connect(self.medialaxis)
+        # self.geoprocessing_menu.addAction(self.medialaxis_action)
 
-        # Centerline Submenu
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_centerline.png")
-        self.centerline_action = QAction(icon, u"Centerline in Polygons' Gaps", self.iface.mainWindow())
-        self.centerline_action.triggered.connect(self.centerline)
-        self.geoprocessing_menu.addAction(self.centerline_action)
+        # # Centerline Submenu
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_centerline.png")
+        # self.centerline_action = QAction(icon, u"Centerline in Polygons' Gaps", self.iface.mainWindow())
+        # self.centerline_action.triggered.connect(self.centerline)
+        # self.geoprocessing_menu.addAction(self.centerline_action)
 
         # Closest pair of Points Submenu
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_closestpair.png")
-        self.closestpair_action = QAction(icon, u"Closest/ farthest pair of Points", self.iface.mainWindow())
-        self.closestpair_action.triggered.connect(self.closestpair)
-        self.geoprocessing_menu.addAction(self.closestpair_action)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_closestpair.png")
+        # self.closestpair_action = QAction(icon, u"Closest/ farthest pair of Points", self.iface.mainWindow())
+        # self.closestpair_action.triggered.connect(self.closestpair)
+        # self.geoprocessing_menu.addAction(self.closestpair_action)
 
 
         # Largest Empty Circle Submenu
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_lec.png")
-        self.lec_action = QAction(icon, u"Largest Empty Circle", self.iface.mainWindow())
-        self.lec_action.triggered.connect(self.lec)
-        self.geoprocessing_menu.addAction(self.lec_action)
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_lec.png")
+        # self.lec_action = QAction(icon, u"Largest Empty Circle", self.iface.mainWindow())
+        # self.lec_action.triggered.connect(self.lec)
+        # self.geoprocessing_menu.addAction(self.lec_action)
 
 
 
@@ -582,34 +588,34 @@ class hcmgis_menu ():
         dialog = hcmgis_split_field_dialog(self.iface)
         dialog.exec_()
 
-    def splitpolygon(self):
-        dialog = hcmgis_split_polygon_dialog(self.iface)
-        dialog.exec_()
+    # def splitpolygon(self):
+    #     dialog = hcmgis_split_polygon_dialog(self.iface)
+    #     dialog.exec_()
 
-    def medialaxis(self):
-        dialog = hcmgis_medialaxis_dialog(self.iface)
-        dialog.exec_()
+    # def medialaxis(self):
+    #     dialog = hcmgis_medialaxis_dialog(self.iface)
+    #     dialog.exec_()
 
-    def centerline(self):
-        dialog = hcmgis_centerline_dialog(self.iface)
-        dialog.exec_()
+    # def centerline(self):
+    #     dialog = hcmgis_centerline_dialog(self.iface)
+    #     dialog.exec_()
 
-    def closestpair(self):
-        dialog = hcmgis_closestpair_dialog(self.iface)
-        dialog.exec_()
+    # def closestpair(self):
+    #     dialog = hcmgis_closestpair_dialog(self.iface)
+    #     dialog.exec_()
 
-    def lec(self):
-        dialog = hcmgis_lec_dialog(self.iface)
-        dialog.exec_()
+    # def lec(self):
+    #     dialog = hcmgis_lec_dialog(self.iface)
+    #     dialog.exec_()
 
 
-    def merge(self):
-        dialog = hcmgis_merge_dialog(self.iface)
-        dialog.exec_()
+    # def merge(self):
+    #     dialog = hcmgis_merge_dialog(self.iface)
+    #     dialog.exec_()
 
-    def split(self):
-        dialog = hcmgis_split_dialog(self.iface)
-        dialog.exec_()
+    # def split(self):
+    #     dialog = hcmgis_split_dialog(self.iface)
+    #     dialog.exec_()
 
     def fontconverter(self):
         dialog = hcmgis_font_convert_dialog(self.iface)

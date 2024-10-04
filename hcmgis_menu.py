@@ -329,7 +329,16 @@ class hcmgis_menu ():
         self.hcmgis_osm_action.triggered.connect(lambda: hcmgis_basemap('HCMC OneMap'))		
         self.basemap_menu.addAction(self.hcmgis_osm_action)
 
-       
+        self.basemap_menu.addSeparator()
+        ##############################
+        # F4map - 2D
+        #############################
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vgrid.png")
+        self.f4map_action = QAction(icon, u'Vgrid', self.iface.mainWindow())
+        self.f4map_action.triggered.connect(lambda: hcmgis_basemap('Vgrid'))
+        self.basemap_menu.addAction(self.f4map_action)
+
+
 
 
         # TXT to CSV

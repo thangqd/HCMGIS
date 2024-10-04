@@ -99,7 +99,8 @@ basemap_names = ['Google Maps', 'Google Satellite',\
                 'NASA Black Marble',\
                 'Wikimedia Maps',\
                 'Vietbando Maps','BecaGIS Maps', 
-                'HCMC OneMap'
+                'HCMC OneMap',
+                'Vgrid'
              ]
 basemap_urls = ["https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}","https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",\
                 "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}","https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",\
@@ -120,7 +121,8 @@ basemap_urls = ["https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}","https://mt
                 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',\
                 'http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D',\
                 'https://maps.becagis.vn/tiles/basemap/light/{z}/{x}/{y}.png',
-                'https://bando.tphcm.gov.vn/service/gisp/tile/raster/{z}/{x}/{y}'
+                'https://bando.tphcm.gov.vn/service/gisp/tile/raster/{z}/{x}/{y}',
+                'https://vgridserve.sovereignsolutions.app/vgrid/{z}/{x}/{y}.png'
                 #'https://becamaps.vntts.vn/geoserver/gwc/service/wmts?layer=osm:osm_vietnam&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
                 ]
 

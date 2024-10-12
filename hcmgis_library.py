@@ -81,6 +81,57 @@ u'e',u'E',u'e',u'E',u'e',u'E',u'e',u'E',u'e',u'E',u'e',u'E',u'e','uE',u'e',u'E',
 u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',u'o',u'O',
 u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'u',u'U',u'y',u'Y',u'y',u'Y',u'y',u'Y',u'y',u'Y',u'y',u'Y'
 ]
+
+vectortiles_basemap_names=[
+                # ESRI         
+                'ESRI Colored Pencil',
+                'ESRI Dark',
+                'ESRI Modern Antique',
+                'ESRI Nova',
+                'ESRI Night',
+                'ESRI Topo',
+                # ESRI         
+                'Versatiles Colorful',
+                'Versatiles Eclipse',
+                'Versatiles Neutrino',
+                # OpenMapTiles         
+                'OpenMapTiles Basic',
+                'OpenMapTiles Dark',
+                'OpenMapTiles Fiord',
+                'OpenMapTiles Liberty',
+                'OpenMapTiles Positron',
+                'OpenMapTiles Toner',
+                # Vgrid         
+                'Vgrid Bright'
+                ]
+
+vectortiles_style_urls = [
+                # ESRI         
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/esri_coloredpencil.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/esri_dark.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/esri_modern_antique.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/esri_nova.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/esri_night.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/esri_topography.json',
+                ############################################ 
+                # Versatiles         
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/colorful.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/eclipse.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/neutrino.json',
+                ############################################ 
+                # OpenMaptiles  
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/basic.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/dark.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/fiord.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/osmliberty.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/positron.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/refs/heads/main/openmaptiles/toner.json',
+                ############################################
+                # Vgrid  
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/vstyles/bright/style.json'
+            ]
+            
+
 basemap_names = ['Google Maps', 'Google Satellite',\
                 'Google Satellite Hybrid','Google Terrain Hybrid', \
                 'Bing Virtual Earth',\
@@ -100,7 +151,7 @@ basemap_names = ['Google Maps', 'Google Satellite',\
                 'Wikimedia Maps',\
                 'Vietbando Maps','BecaGIS Maps', 
                 'HCMC OneMap',
-                'Vgrid'
+                'Vgrid'              
              ]
 basemap_urls = ["https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}","https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",\
                 "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}","https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",\
@@ -122,9 +173,9 @@ basemap_urls = ["https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}","https://mt
                 'http://images.vietbando.com/ImageLoader/GetImage.ashx?Ver%3D2016%26LayerIds%3DVBD%26Y%3D%7By%7D%26X%3D%7Bx%7D%26Level%3D%7Bz%7D',\
                 'https://maps.becagis.vn/tiles/basemap/light/{z}/{x}/{y}.png',
                 'https://bando.tphcm.gov.vn/service/gisp/tile/raster/{z}/{x}/{y}',
-                'https://vgridserve.sovereignsolutions.app/vgrid/{z}/{x}/{y}.png'
+                'https://vgridserve.sovereignsolutions.app/vgrid/{z}/{x}/{y}.png',
                 #'https://becamaps.vntts.vn/geoserver/gwc/service/wmts?layer=osm:osm_vietnam&style=&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:900913:{z}&TileCol={x}&TileRow={y}'
-                ]
+            ]
 
 #--------------------------------------------------------
 #    Add basemap
@@ -160,8 +211,10 @@ def hcmgis_basemap(basemap_name):
     basemap_uri = "type=xyz&url="+basemap_url
     if (basemap_name.startswith('Google')):
         basemap_uri = "type=xyz&url="+ requests.utils.quote(basemap_url).replace('%3A', ':', 1)
+    elif (basemap_name == 'Vgrid'):
+        basemap_uri += "&zmax=24"
     # basemap_uri = "type=xyz&url="+basemap_url
-    print (basemap_uri)    
+    # print (basemap_uri)    
     xyz_layer = QgsRasterLayer(basemap_uri,basemap_name, 'wms')
     if xyz_layer.isValid():
         QgsProject.instance().addMapLayer(xyz_layer)
@@ -178,6 +231,30 @@ def hcmgis_basemap(basemap_name):
         qgis.utils.iface.reloadConnections()
     else:
         print('Add basemap failed!')
+
+def hcmgis_vectortiles_basemap(vectortiles_basemap_name):
+    idx = vectortiles_basemap_names.index(vectortiles_basemap_name)
+    style_url = vectortiles_style_urls[idx]   
+    if (vectortiles_basemap_name.startswith("ESRI")):
+        vectortiles_basemap_url= 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf'
+    elif (vectortiles_basemap_name.startswith("Versatile")):
+        vectortiles_basemap_url = 'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'
+    
+    elif (vectortiles_basemap_name.startswith("OpenMapTiles")):
+        vectortiles_basemap_url = 'https://map-api-new.sovereignsolutions.net/sovereign/v20240410/vietnam/{z}/{x}/{y}.pbf'
+        
+    elif (vectortiles_basemap_name.startswith("Vgrid")):
+        vectortiles_basemap_url = 'https://map-api-new.sovereignsolutions.net/sovereign/v20240410/vietnam/{z}/{x}/{y}.pbf'
+
+    vectortiles_basemap_uri = f"styleUrl={style_url}&type=xyz&url={vectortiles_basemap_url}"
+    vectortiles_layer = QgsVectorTileLayer(vectortiles_basemap_uri,vectortiles_basemap_name)
+    vectortiles_layer.loadDefaultStyle()
+
+    if vectortiles_layer.isValid():
+        # Add the layer to the QGIS project
+        QgsProject.instance().addMapLayer(vectortiles_layer)
+    else:
+        print("Failed to add the layer.")
 
 # def hcmgis_covid19():
 #         uri_live_update = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Coronavirus_2019_nCoV_Cases/FeatureServer/2/query?where=1%3D1&outFields=*&outSR=4326&f=geojson'

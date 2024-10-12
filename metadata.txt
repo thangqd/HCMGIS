@@ -2,9 +2,9 @@
 name=HCMGIS
 qgisMinimumVersion=3.0
 description= HCMGIS - Basemaps, Download OpenData, Batch Converter, VN-2000 Projections, and Field Calculation Utilities
-about=- Basemaps: Add global basemaps from Google, Carto, ESRI, OSM Stamen, etc;- Batch Converter: Batch convert CSV to Point Shapefiles and other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;- Download OpenData:  Download Open Data from OSM Geofabrik, GADM, Who's On First (WOF), Microsoft Building Footprints, HCMGIS OpenData, Standford University, etc;- Vn-2000 Projections: Lookup EPSG Code for Vn-2000/ TM3 Projection for all Provinces in Vietnam;- Spatial Processing: has been moved to BecaGIS Plugin;  - Attribute Calculation: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case.;
+about=- Basemaps: Add global basemaps from Google, Carto, ESRI, OSM Stamen, Vgrid, etc;- Batch Converter: Batch convert CSV to Point Shapefiles and other GIS formats (including OSM pbf, GeoPackage) in a folder and its subfolders;- Download OpenData:  Download Open Data from OSM Geofabrik, GADM, Who's On First (WOF), Microsoft Building Footprints, HCMGIS OpenData, Standford University, etc;- Vn-2000 Projections: Lookup EPSG Code for Vn-2000/ TM3 Projection for all Provinces in Vietnam;- Spatial Processing: has been moved to BecaGIS Plugin;  - Attribute Calculation: merge/ split data fields, Vietnamese Font Converter: Unicode <-> TCVN3 <-> Vni-Windows, UPPER CASE, lower case.;
 category=Vector
-version=24.10.4
+version=24.10.20
 author=Thang Quach
 email=quachdongthang@gmai.com
 homepage= https://thangqd.github.io

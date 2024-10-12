@@ -45,6 +45,13 @@ class hcmgis_menu ():
         else:
             self.iface.addPluginToMenu("&hcmgis", submenu.menuAction())
 
+    def hcmgis_add_submenu3(self, submenu, icon):
+        if self.basemap_menu != None:
+            submenu.setIcon(QIcon(icon))
+            self.basemap_menu.addMenu(submenu)
+        else:
+            self.iface.addPluginToMenu("&basemap", submenu.menuAction())
+
     def initGui(self):
         # Uncomment the following two lines to have hcmgis accessible from a top-level menu
         self.hcmgis_menu = QMenu(QCoreApplication.translate("hcmgis", "HCMGIS"))
@@ -55,8 +62,131 @@ class hcmgis_menu ():
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_basemaps.png")
         self.hcmgis_add_submenu2(self.basemap_menu, icon)
 
+        ############################################
+        # Add Vector Tile Basemaps
+        ############################################
+        # Adding "Vector tiles" submenu under "Basemaps"
+        self.vectortiles_menu = QMenu(u'Vector tiles')
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vectortiles.png")
+        self.hcmgis_add_submenu3(self.vectortiles_menu,icon)
+
+        ############################################
+        # ESRI Vector Tiles
+        ############################################
+
+        # ESRI Colored Pencil action under "Vector tiles" submenu
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esricoloredpencile_action = QAction(icon, u'ESRI Colored Pencil', self.iface.mainWindow())
+        self.esricoloredpencile_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI Colored Pencil'))
+        self.vectortiles_menu.addAction(self.esricoloredpencile_action)
+        
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esridark_action = QAction(icon, u'ESRI Dark', self.iface.mainWindow())
+        self.esridark_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI Dark'))
+        self.vectortiles_menu.addAction(self.esridark_action)
+
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esrimodenantique_action = QAction(icon, u'ESRI Modern Antique', self.iface.mainWindow())
+        self.esrimodenantique_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI Modern Antique'))
+        self.vectortiles_menu.addAction(self.esrimodenantique_action)
+
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esrinova_action = QAction(icon, u'ESRI Nova', self.iface.mainWindow())
+        self.esrinova_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI Nova'))
+        self.vectortiles_menu.addAction(self.esrinova_action)
+
+        # ESRI Night
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esrinight_action = QAction(icon, u'ESRI Night', self.iface.mainWindow())
+        self.esrinight_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI Night'))
+        self.vectortiles_menu.addAction(self.esrinight_action)
+
+        #ESRI Topo
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esritopo_action = QAction(icon, u'ESRI Topo', self.iface.mainWindow())
+        self.esritopo_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI Topo'))
+        self.vectortiles_menu.addAction(self.esritopo_action)
+                
+        self.vectortiles_menu.addSeparator()
+        ############################################
+        # OpenMapTiles
+        ############################################
+        'OpenMapTiles Basic',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
+        self.omtbasic_action = QAction(icon, u'OpenMapTiles Basic', self.iface.mainWindow())
+        self.omtbasic_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Basic'))
+        self.vectortiles_menu.addAction(self.omtbasic_action)
+
+        'OpenMapTiles Dark',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
+        self.omtdark_action = QAction(icon, u'OpenMapTiles Dark', self.iface.mainWindow())
+        self.omtdark_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Dark'))
+        self.vectortiles_menu.addAction(self.omtdark_action)
+        
+        'OpenMapTiles Fiord',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
+        self.omtfiord_action = QAction(icon, u'OpenMapTiles Fiord', self.iface.mainWindow())
+        self.omtfiord_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Fiord'))
+        self.vectortiles_menu.addAction(self.omtfiord_action)
+
+        'OpenMapTiles Liberty',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
+        self.omtliberty_action = QAction(icon, u'OpenMapTiles Liberty', self.iface.mainWindow())
+        self.omtliberty_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Liberty'))
+        self.vectortiles_menu.addAction(self.omtliberty_action)
+
+        'OpenMapTiles Positron',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
+        self.omtpositron_action = QAction(icon, u'OpenMapTiles Positron', self.iface.mainWindow())
+        self.omtpositron_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Positron'))
+        self.vectortiles_menu.addAction(self.omtpositron_action)
+
+        'OpenMapTiles Toner',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
+        self.omtoner_action = QAction(icon, u'OpenMapTiles Toner', self.iface.mainWindow())
+        self.omtoner_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Toner'))
+        self.vectortiles_menu.addAction(self.omtoner_action)
+
+          
+        self.vectortiles_menu.addSeparator()
+        ############################################
+        # Versatiles
+        ############################################
+        'Versatiles Colorful',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_versatiles.png")  
+        self.versatilescolorful_action = QAction(icon, u'Versatiles Colorful', self.iface.mainWindow())
+        self.versatilescolorful_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Versatiles Colorful'))
+        self.vectortiles_menu.addAction(self.versatilescolorful_action)
+                
+        'Versatiles Eclipse',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_versatiles.png")  
+        self.versatileseclipse_action = QAction(icon, u'Versatiles Eclipse', self.iface.mainWindow())
+        self.versatileseclipse_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Versatiles Eclipse'))
+        self.vectortiles_menu.addAction(self.versatileseclipse_action)
+                
+        'Versatiles Neutrino',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_versatiles.png")  
+        self.versatilesneutrino_action = QAction(icon, u'Versatiles Neutrino', self.iface.mainWindow())
+        self.versatilesneutrino_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Versatiles Neutrino'))
+        self.vectortiles_menu.addAction(self.versatilesneutrino_action)
+
+
+        self.vectortiles_menu.addSeparator()
+        ############################################
+        # Vgrid
+        ###########################################
+        'Vgrid Bright',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vgrid.png")  
+        self.vgridbright_action = QAction(icon, u'Vgrid Bright', self.iface.mainWindow())
+        self.vgridbright_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Vgrid Bright'))
+        self.vectortiles_menu.addAction(self.vgridbright_action)
+
         ##https://mc.bbbike.org/mc/?num=2&mt0=mapnik&mt1=watercolor
         #https://gitlab.com/GIS-projects/Belgium-XYZ-tiles/tree/b538df2c2de0d16937641742f25e4709ca94e42e
+        
+        ############################################
+        # Add Raster Tile Basemaps
+        ############################################
 
         #############
         #Google Maps

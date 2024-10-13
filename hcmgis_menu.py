@@ -67,7 +67,8 @@ class hcmgis_menu ():
         ############################################
         # Adding "Vector tiles" submenu under "Basemaps"
         self.vectortiles_menu = QMenu(u'Vector tiles')
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vectortiles.png")
+        # icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vectortiles.png")
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vgrid.png")
         self.hcmgis_add_submenu3(self.vectortiles_menu,icon)
 
         ############################################
@@ -106,48 +107,77 @@ class hcmgis_menu ():
         self.esritopo_action = QAction(icon, u'ESRI Topo', self.iface.mainWindow())
         self.esritopo_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI Topo'))
         self.vectortiles_menu.addAction(self.esritopo_action)
-                
+
+        #ESRI OSM Standard
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esriosmstandard_action = QAction(icon, u'ESRI OSM Standard', self.iface.mainWindow())
+        self.esriosmstandard_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI OSM Standard'))
+        self.vectortiles_menu.addAction(self.esriosmstandard_action)
+        
+        #ESRI OSM Street
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esriosmstreet_action = QAction(icon, u'ESRI OSM Street', self.iface.mainWindow())
+        self.esriosmstreet_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI OSM Street'))
+        self.vectortiles_menu.addAction(self.esriosmstreet_action)
+
+        #ESRI OSM Light Grey
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esriosmlightgrey_action = QAction(icon, u'ESRI OSM Light Grey', self.iface.mainWindow())
+        self.esriosmlightgrey_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI OSM Light Grey'))
+        self.vectortiles_menu.addAction(self.esriosmlightgrey_action)
+
+         #ESRI OSM Dark Grey
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esriosmdarkgrey_action = QAction(icon, u'ESRI OSM Dark Grey', self.iface.mainWindow())
+        self.esriosmdarkgrey_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI OSM Dark Grey'))
+        self.vectortiles_menu.addAction(self.esriosmdarkgrey_action)
+
+        #ESRI OSM Dark Grey
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
+        self.esriosmdarkgrey_action = QAction(icon, u'ESRI OSM Dark Grey', self.iface.mainWindow())
+        self.esriosmdarkgrey_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI OSM Dark Grey'))
+        self.vectortiles_menu.addAction(self.esriosmdarkgrey_action)
+        
         self.vectortiles_menu.addSeparator()
         ############################################
-        # OpenMapTiles
+        # Carto
         ############################################
-        'OpenMapTiles Basic',
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
-        self.omtbasic_action = QAction(icon, u'OpenMapTiles Basic', self.iface.mainWindow())
-        self.omtbasic_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Basic'))
-        self.vectortiles_menu.addAction(self.omtbasic_action)
+        'Carto Basic',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")  
+        self.Cartobasic_action  = QAction(icon, u'Carto Basic', self.iface.mainWindow())
+        self.Cartobasic_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Carto Basic'))
+        self.vectortiles_menu.addAction(self.Cartobasic_action)
 
-        'OpenMapTiles Dark',
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
-        self.omtdark_action = QAction(icon, u'OpenMapTiles Dark', self.iface.mainWindow())
-        self.omtdark_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Dark'))
-        self.vectortiles_menu.addAction(self.omtdark_action)
+        'Carto Dark',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")  
+        self.cartodark_action = QAction(icon, u'Carto Dark', self.iface.mainWindow())
+        self.cartodark_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Carto Dark'))
+        self.vectortiles_menu.addAction(self.cartodark_action)
         
-        'OpenMapTiles Fiord',
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
-        self.omtfiord_action = QAction(icon, u'OpenMapTiles Fiord', self.iface.mainWindow())
-        self.omtfiord_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Fiord'))
-        self.vectortiles_menu.addAction(self.omtfiord_action)
+        'Carto Fiord',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")  
+        self.cartofiord_action = QAction(icon, u'Carto Fiord', self.iface.mainWindow())
+        self.cartofiord_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Carto Fiord'))
+        self.vectortiles_menu.addAction(self.cartofiord_action)
 
-        'OpenMapTiles Liberty',
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
-        self.omtliberty_action = QAction(icon, u'OpenMapTiles Liberty', self.iface.mainWindow())
-        self.omtliberty_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Liberty'))
-        self.vectortiles_menu.addAction(self.omtliberty_action)
+        'Carto Liberty',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")  
+        self.cartoliberty_action = QAction(icon, u'Carto Liberty', self.iface.mainWindow())
+        self.cartoliberty_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Carto Liberty'))
+        self.vectortiles_menu.addAction(self.cartoliberty_action)
 
-        'OpenMapTiles Positron',
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
-        self.omtpositron_action = QAction(icon, u'OpenMapTiles Positron', self.iface.mainWindow())
-        self.omtpositron_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Positron'))
-        self.vectortiles_menu.addAction(self.omtpositron_action)
+        'Carto Positron',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")  
+        self.cartopositron_action = QAction(icon, u'Carto Positron', self.iface.mainWindow())
+        self.cartopositron_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Carto Positron'))
+        self.vectortiles_menu.addAction(self.cartopositron_action)
 
-        'OpenMapTiles Toner',
-        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_openmaptiles.png")  
-        self.omtoner_action = QAction(icon, u'OpenMapTiles Toner', self.iface.mainWindow())
-        self.omtoner_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('OpenMapTiles Toner'))
-        self.vectortiles_menu.addAction(self.omtoner_action)
+        'Carto Toner',
+        icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_carto.png")  
+        self.cartoner_action = QAction(icon, u'Carto Toner', self.iface.mainWindow())
+        self.cartoner_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Carto Toner'))
+        self.vectortiles_menu.addAction(self.cartoner_action)
 
-          
         self.vectortiles_menu.addSeparator()
         ############################################
         # Versatiles

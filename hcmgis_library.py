@@ -90,17 +90,24 @@ vectortiles_basemap_names=[
                 'ESRI Nova',
                 'ESRI Night',
                 'ESRI Topo',
-                # ESRI         
+                'ESRI OSM Standard',
+                'ESRI OSM Street',
+                'ESRI OSM Light Grey',
+                'ESRI OSM Dark Grey',
+                'ESRI OSM Blueprint',
+                # Carto         
+                'Carto Basic',
+                'Carto Dark',
+                'Carto Fiord',
+                'Carto Liberty',
+                'Carto Positron',
+                'Carto Toner',
+
+                # Versatiles         
                 'Versatiles Colorful',
                 'Versatiles Eclipse',
                 'Versatiles Neutrino',
-                # OpenMapTiles         
-                'OpenMapTiles Basic',
-                'OpenMapTiles Dark',
-                'OpenMapTiles Fiord',
-                'OpenMapTiles Liberty',
-                'OpenMapTiles Positron',
-                'OpenMapTiles Toner',
+                # Apache
                 # Vgrid         
                 'Vgrid Bright'
                 ]
@@ -113,19 +120,32 @@ vectortiles_style_urls = [
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/esri_nova.json',
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/esri_night.json',
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/esri_topography.json',
+
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/osm_standard.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/osm_street.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/osm_lightgrey_base.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/osm_darkgrey_base.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/esri/osm_blueprint.json',
                 ############################################ 
-                # Versatiles         
-                'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/colorful.json',
-                'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/eclipse.json',
-                'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/neutrino.json',
-                ############################################ 
-                # OpenMaptiles  
+               # Carto  
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/basic.json',
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/dark.json',
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/fiord.json',
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/osmliberty.json',
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/positron.json',
-                'https://raw.githubusercontent.com/thangqd/vstyles/refs/heads/main/openmaptiles/toner.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/toner.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/stadiamaps/alidade_smooth.json'
+                ############################################
+                 # Versatiles         
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/colorful.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/eclipse.json',
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/neutrino.json',
+                ############################################ 
+
+                # Apache URL              
+                ############################################ 
+                # https://demo.baremaps.com/2024-07/tiles/{z}/{x}/{y}.mvt
+                
                 ############################################
                 # Vgrid  
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/vstyles/bright/style.json'
@@ -237,12 +257,16 @@ def hcmgis_vectortiles_basemap(vectortiles_basemap_name):
     style_url = vectortiles_style_urls[idx]   
     if (vectortiles_basemap_name.startswith("ESRI")):
         vectortiles_basemap_url= 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf'
-    elif (vectortiles_basemap_name.startswith("Versatile")):
+    if (vectortiles_basemap_name.startswith("ESRI OSM")):
+        vectortiles_basemap_url= 'https://basemaps.arcgis.com/arcgis/rest/services/OpenStreetMap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf'
+
+    elif (vectortiles_basemap_name.startswith("Carto")):
+        # vectortiles_basemap_url = 'https://tiles.merginmaps.com/data/default/{z}/{x}/{y}.pbf'
+        vectortiles_basemap_url = 'https://tiles.basemaps.cartocdn.com/vectortiles/carto.streets/v1/{z}/{x}/{y}.mvt'
+
+    elif (vectortiles_basemap_name.startswith("Versatiles")):
         vectortiles_basemap_url = 'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'
     
-    elif (vectortiles_basemap_name.startswith("OpenMapTiles")):
-        vectortiles_basemap_url = 'https://map-api-new.sovereignsolutions.net/sovereign/v20240410/vietnam/{z}/{x}/{y}.pbf'
-        
     elif (vectortiles_basemap_name.startswith("Vgrid")):
         vectortiles_basemap_url = 'https://map-api-new.sovereignsolutions.net/sovereign/v20240410/vietnam/{z}/{x}/{y}.pbf'
 

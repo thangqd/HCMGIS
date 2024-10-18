@@ -134,8 +134,8 @@ class hcmgis_menu ():
 
         #ESRI OSM Dark Grey
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_esri.png")  
-        self.esriosmdarkgrey_action = QAction(icon, u'ESRI OSM Dark Grey', self.iface.mainWindow())
-        self.esriosmdarkgrey_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI OSM Dark Grey'))
+        self.esriosmdarkgrey_action = QAction(icon, u'ESRI OSM Blueprint', self.iface.mainWindow())
+        self.esriosmdarkgrey_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('ESRI OSM Blueprint'))
         self.vectortiles_menu.addAction(self.esriosmdarkgrey_action)
         
         self.vectortiles_menu.addSeparator()

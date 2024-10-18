@@ -134,7 +134,6 @@ vectortiles_style_urls = [
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/osmliberty.json',
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/positron.json',
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/openmaptiles/toner.json',
-                'https://raw.githubusercontent.com/thangqd/vstyles/main/stadiamaps/alidade_smooth.json'
                 ############################################
                  # Versatiles         
                 'https://raw.githubusercontent.com/thangqd/vstyles/main/versatiles/colorful.json',

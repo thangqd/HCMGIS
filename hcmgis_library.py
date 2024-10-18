@@ -109,7 +109,7 @@ vectortiles_basemap_names=[
                 'Versatiles Neutrino',
                 # Apache
                 # Vgrid         
-                'Vgrid Bright'
+                'Vgrid Vietnam Islands'
                 ]
 
 vectortiles_style_urls = [
@@ -148,7 +148,7 @@ vectortiles_style_urls = [
                 
                 ############################################
                 # Vgrid  
-                'https://raw.githubusercontent.com/thangqd/vstyles/main/vstyles/bright/style.json'
+                'https://raw.githubusercontent.com/thangqd/vstyles/main/vstyles/vn_islands/vn_islands.json'
             ]
             
 
@@ -268,7 +268,7 @@ def hcmgis_vectortiles_basemap(vectortiles_basemap_name):
         vectortiles_basemap_url = 'https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}'
     
     elif (vectortiles_basemap_name.startswith("Vgrid")):
-        vectortiles_basemap_url = 'https://map-api-new.sovereignsolutions.net/sovereign/v20240410/vietnam/{z}/{x}/{y}.pbf'
+        vectortiles_basemap_url = 'https://map-api-new.sovereignsolutions.net/sovereign/v20240410/vn_islands/{z}/{x}/{y}.pbf'
 
     vectortiles_basemap_uri = f"styleUrl={style_url}&type=xyz&url={vectortiles_basemap_url}"
     vectortiles_layer = QgsVectorTileLayer(vectortiles_basemap_uri,vectortiles_basemap_name)

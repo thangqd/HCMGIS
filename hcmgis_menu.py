@@ -205,10 +205,10 @@ class hcmgis_menu ():
         ############################################
         # Vgrid
         ###########################################
-        'Vgrid Bright',
+        'Vgrid Vietnam Islands',
         icon = QIcon(os.path.dirname(__file__) + "/icons/hcmgis_vgrid.png")  
-        self.vgridbright_action = QAction(icon, u'Vgrid Bright', self.iface.mainWindow())
-        self.vgridbright_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Vgrid Bright'))
+        self.vgridbright_action = QAction(icon, u'Vgrid Vietnam Islands', self.iface.mainWindow())
+        self.vgridbright_action.triggered.connect(lambda: hcmgis_vectortiles_basemap('Vgrid Vietnam Islands'))
         self.vectortiles_menu.addAction(self.vgridbright_action)
 
         ##https://mc.bbbike.org/mc/?num=2&mt0=mapnik&mt1=watercolor

@@ -186,7 +186,7 @@ class hcmgis_dialog(QtWidgets.QDialog):
             elif percent_complete > 100:
                 self.status_bar.setValue(100)
             else:
-                self.status_bar.setValue(percent_complete)
+                self.status_bar.setValue(int(percent_complete))
 
             self.iface.statusBarIface().showMessage(message)
 
@@ -730,7 +730,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                         ii+=1
                         self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers added")
                         percent_complete = ii/len(layernames)*100
-                        self.status.setValue(percent_complete)
+                        self.status_bar.setValue(int(percent_complete))
                         message = str(int(percent_complete)) + "%"
                         self.status.setFormat(message)
                     except Exception as e:
@@ -775,7 +775,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                                             ii+=1
                                             self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and added")
                                             percent_complete = ii/len(layernames)*100
-                                            self.status.setValue(percent_complete)
+                                            self.status_bar.setValue(int(percent_complete))
                                             message = str(int(percent_complete)) + "%"
                                             self.status.setFormat(message)
                         else:
@@ -792,7 +792,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                                 ii+=1
                                 self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and added")
                                 percent_complete = ii/len(layernames)*100
-                                self.status.setValue(percent_complete)
+                                self.status_bar.setValue(int(percent_complete))
                                 message = str(int(percent_complete)) + "%"
                                 self.status.setFormat(message)
                     except Exception as e:
@@ -843,7 +843,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                             ii+=1
                             self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers added")
                             percent_complete = ii/len(layernames)*100
-                            self.status.setValue(percent_complete)
+                            self.status_bar.setValue(int(percent_complete))
                             message = str(int(percent_complete)) + "%"
                             self.status.setFormat(message)
 
@@ -865,7 +865,7 @@ class hcmgis_opendata_dialog(hcmgis_dialog, Ui_hcmgis_opendata_form):
                             ii+=1
                             self.LblStatus.setText (str(ii)+"/ "+ str(len(layernames)) + " layers saved and added")
                             percent_complete = ii/len(layernames)*100
-                            self.status.setValue(percent_complete)
+                            self.status_bar.setValue(int(percent_complete))
                             message = str(int(percent_complete)) + "%"
                             self.status.setFormat(message)
 
@@ -2483,7 +2483,7 @@ class hcmgis_format_convert_dialog(hcmgis_dialog, Ui_hcmgis_format_convert_form)
                 item_count +=1
                 self.LblStatus.setText (str(item_count)+"/ "+ str(self.lsFiles.count()) + " files converted")
                 percent_complete = item_count/self.lsFiles.count()*100
-                self.status_bar.setValue(percent_complete)
+                self.status_bar.setValue(int(percent_complete))
                 message = str(int(percent_complete)) + "%"
                 self.status_bar.setFormat(message)
 
